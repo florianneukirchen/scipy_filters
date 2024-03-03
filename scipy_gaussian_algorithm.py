@@ -38,7 +38,8 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterRasterLayer,
                        QgsProcessingParameterNumber,
                        QgsProcessingParameterRasterDestination,
-                       QgsProcessingParameterEnum
+                       QgsProcessingParameterEnum,
+                       QgsProcessingParameterBand
                         )
 
 
@@ -62,6 +63,7 @@ class SciPyGaussianAlgorithm(QgsProcessingAlgorithm):
 
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
+    # BANDS = 'BANDS'
     SIGMA = 'SIGMA'
     ORDER = 'ORDER'
     MODE = 'MODE'
@@ -84,6 +86,15 @@ class SciPyGaussianAlgorithm(QgsProcessingAlgorithm):
                 self.tr('Input layer'),
             )
         )
+
+        # self.addParameter(
+        #     QgsProcessingParameterBand(
+        #         self.BANDS,
+        #         self.tr('Bands'),
+        #         parentLayerParameterName=self.INPUT,
+        #         allowMultiple = True,
+        #     )
+        # )
 
         self.addParameter(QgsProcessingParameterNumber(
             self.SIGMA,
@@ -162,17 +173,20 @@ class SciPyGaussianAlgorithm(QgsProcessingAlgorithm):
         # Get Parameters
         kargs = {}
         inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
-        self.output_raster = self.parameterAsOutputLayer(parameters,self.OUTPUT,context)
-        kargs['sigma'] = self.parameterAsDouble(parameters,self.SIGMA, context)
-        kargs['order'] = self.parameterAsInt(parameters,self.ORDER, context) 
-        mode = self.parameterAsInt(parameters,self.MODE, context) 
+        # bands = self.parameterAsMatrix(parameters, self.BANDS, context)
+
+
+        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
+        kargs['sigma'] = self.parameterAsDouble(parameters, self.SIGMA, context)
+        kargs['order'] = self.parameterAsInt(parameters, self.ORDER, context) 
+        mode = self.parameterAsInt(parameters, self.MODE, context) 
         kargs['mode'] = self.modes[mode]
 
-        cval = self.parameterAsDouble(parameters,self.CVAL, context)
+        cval = self.parameterAsDouble(parameters, self.CVAL, context)
         if cval:
             kargs['cval'] = cval
 
-        truncate = self.parameterAsDouble(parameters,self.TRUNCATE, context)
+        truncate = self.parameterAsDouble(parameters, self.TRUNCATE, context)
         if truncate and truncate > 0:
             kargs['truncate'] = truncate
 
