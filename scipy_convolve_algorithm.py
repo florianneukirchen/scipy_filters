@@ -225,10 +225,6 @@ class SciPyConvolveAlgorithm(QgsProcessingAlgorithm):
         # Close the dataset to write file to disk
         self.out_ds = None 
 
-
-
-
-
         return {self.OUTPUT: self.output_raster}
 
     def name(self):

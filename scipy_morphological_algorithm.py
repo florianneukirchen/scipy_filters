@@ -30,25 +30,24 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 
 __revision__ = '$Format:%H$'
 
+
+from osgeo import gdal
+from scipy import ndimage
 from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import (QgsProcessing,
                        QgsProcessingAlgorithm,
                        QgsProcessingParameterRasterLayer,
+                       QgsProcessingParameterEnum,
+                       QgsProcessingParameterNumber,
+                       QgsProcessingParameterRasterDestination,
                         )
 
 
-class SciPyMorphologicalAlgorithm(QgsProcessingAlgorithm):
+class SciPyBinaryMorphologicalAlgorithm(QgsProcessingAlgorithm):
     """
-    This is an example algorithm that takes a vector layer and
-    creates a new identical one.
+    Binary Morphological Algorithm
 
-    It is meant to be used as an example of how to create your own
-    algorithms and explain methods and variables used to do it. An
-    algorithm like this will be available in all elements, and there
-    is not need for additional work.
 
-    All Processing algorithms should extend the QgsProcessingAlgorithm
-    class.
     """
 
     # Constants used to refer to parameters and outputs. They will be
@@ -57,10 +56,11 @@ class SciPyMorphologicalAlgorithm(QgsProcessingAlgorithm):
 
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
-    ALGORITHM = ['Binary Dilation', 'Binary Erosion', 'Binary Closing', 'Binary Opening']
+    ALGORITHM = 'ALGORITHM' 
     STRUCTURE = 'STRUCTURE'
     MASK = 'MASK'
     ITERATIONS = 'ITERATIONS'
+
 
     def initAlgorithm(self, config):
         """
@@ -68,8 +68,8 @@ class SciPyMorphologicalAlgorithm(QgsProcessingAlgorithm):
         with some other properties.
         """
 
-        # We add the input vector features source. It can have any kind of
-        # geometry.
+        # Add parameters
+
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.INPUT,
@@ -77,43 +77,114 @@ class SciPyMorphologicalAlgorithm(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter()
+        self.algorithms = ['Dilation', 'Erosion', 'Closing', 'Opening']
+
+
+        self.addParameter(QgsProcessingParameterEnum(
+            self.ALGORITHM,
+            self.tr('Filter'),
+            self.algorithms,
+            defaultValue=0)) 
+
+        self.addParameter(QgsProcessingParameterEnum(
+            self.STRUCTURE,
+            self.tr('Structure'),
+            ["Cross", "Square"],
+            defaultValue=1)) 
+
+        self.addParameter(QgsProcessingParameterNumber(
+            self.ITERATIONS,
+            self.tr('Iterations'),
+            QgsProcessingParameterNumber.Type.Integer,
+            defaultValue=1, 
+            optional=True, 
+            minValue=1, 
+            # maxValue=100
+            ))    
+        
+        self.addParameter(
+            QgsProcessingParameterRasterLayer(
+                self.MASK,
+                self.tr('Mask layer'),
+                optional=True,
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterRasterDestination(
+                self.OUTPUT,
+            self.tr("Binary Morphology")))
+      
+    def morphologyfnct(self, idx):
+        alg = self.algorithms[idx]
+        if alg == 'Dilation':
+            fct = ndimage.binary_dilation
+        elif alg == 'Erosion':
+            fct = ndimage.binary_erosion
+        elif alg == 'Closing':
+            fct = ndimage.binary_closing
+        else:
+            fct = ndimage.binary_opening
+        return fct
+
+
 
     def processAlgorithm(self, parameters, context, feedback):
         """
         Here is where the processing itself takes place.
         """
 
-        # Retrieve the feature source and sink. The 'dest_id' variable is used
-        # to uniquely identify the feature sink, and must be included in the
-        # dictionary returned by the processAlgorithm function.
-        source = self.parameterAsSource(parameters, self.INPUT, context)
-        (sink, dest_id) = self.parameterAsSink(parameters, self.OUTPUT,
-                context, source.fields(), source.wkbType(), source.sourceCrs())
+        # Get Parameters
+        kargs = {}
 
-        # Compute the number of steps to display within the progress bar and
-        # get features from source
-        total = 100.0 / source.featureCount() if source.featureCount() else 0
-        features = source.getFeatures()
+        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        masklayer = self.parameterAsRasterLayer(parameters, self.MASK, context)
+        print("m", masklayer)
+        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
 
-        for current, feature in enumerate(features):
-            # Stop the algorithm if cancel button has been clicked
+        self.alg = self.parameterAsInt(parameters, self.ALGORITHM, context)
+        self.fct = self.morphologyfnct(self.alg)
+        
+
+        structure = self.parameterAsInt(parameters, self.STRUCTURE, context) + 1
+        kargs['structure'] = ndimage.generate_binary_structure(2,structure)
+
+
+        # Open Raster with GDAL
+        self.ds = gdal.Open(inputlayer.source())
+
+        if not self.ds:
+            raise Exception("Failed to open Raster Layer")
+        
+        self.bandcount = self.ds.RasterCount
+
+        if masklayer:
+            self.mask_ds = gdal.Open(masklayer.source())
+            if not self.mask_ds:
+                raise Exception("Failed to open Mask Layer")
+            kargs['mask'] = self.mask_ds.GetRasterBand(1).ReadAsArray()
+
+        # Prepare output
+        driver = gdal.GetDriverByName('GTiff')
+        self.out_ds = driver.CreateCopy(self.output_raster, self.ds, strict=0)
+
+        # Iterate over bands and calculate 
+
+        for i in range(1, self.bandcount + 1):
+            a = self.ds.GetRasterBand(i).ReadAsArray()
+            filtered = self.fct(a, **kargs)
+            self.out_ds.GetRasterBand(i).WriteArray(filtered)
+
+            feedback.setProgress(i * 100 / self.bandcount)
             if feedback.isCanceled():
-                break
+                return {}
 
-            # Add a feature in the sink
-            sink.addFeature(feature, QgsFeatureSink.FastInsert)
+        # Close the dataset to write file to disk
+        self.out_ds = None 
 
-            # Update the progress bar
-            feedback.setProgress(int(current * total))
 
-        # Return the results of the algorithm. In this case our only result is
-        # the feature sink which contains the processed features, but some
-        # algorithms may return multiple feature sinks, calculated numeric
-        # statistics, etc. These should all be included in the returned
-        # dictionary, with keys matching the feature corresponding parameter
-        # or output names.
-        return {self.OUTPUT: dest_id}
+        return {self.OUTPUT: self.output_raster}
+    
 
     def name(self):
         """
@@ -123,14 +194,14 @@ class SciPyMorphologicalAlgorithm(QgsProcessingAlgorithm):
         lowercase alphanumeric characters only and no spaces or other
         formatting characters.
         """
-        return 'Morphological Filter'
+        return 'binary_morphology'
 
     def displayName(self):
         """
         Returns the translated algorithm name, which should be used for any
         user-visible display of the algorithm name.
         """
-        return self.tr(self.name())
+        return self.tr('Binary Morphological Filter')
 
     def group(self):
         """
@@ -153,4 +224,4 @@ class SciPyMorphologicalAlgorithm(QgsProcessingAlgorithm):
         return QCoreApplication.translate('Processing', string)
 
     def createInstance(self):
-        return SciPyFiltersAlgorithm()
+        return SciPyBinaryMorphologicalAlgorithm()

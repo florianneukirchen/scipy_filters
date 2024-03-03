@@ -32,6 +32,8 @@ __revision__ = '$Format:%H$'
 
 from qgis.core import QgsProcessingProvider
 from .scipy_gaussian_algorithm import SciPyGaussianAlgorithm
+from .scipy_convolve_algorithm import SciPyConvolveAlgorithm
+from .scipy_morphological_algorithm import SciPyBinaryMorphologicalAlgorithm
 
 
 class SciPyFiltersProvider(QgsProcessingProvider):
@@ -54,8 +56,9 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         Loads all algorithms belonging to this provider.
         """
         self.addAlgorithm(SciPyGaussianAlgorithm())
-        # add additional algorithms here
-        # self.addAlgorithm(MyOtherAlgorithm())
+        self.addAlgorithm(SciPyConvolveAlgorithm())
+        self.addAlgorithm(SciPyBinaryMorphologicalAlgorithm())
+
 
     def id(self):
         """
