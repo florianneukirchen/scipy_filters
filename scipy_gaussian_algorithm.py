@@ -71,8 +71,7 @@ class SciPyGaussianAlgorithm(QgsProcessingAlgorithm):
         with some other properties.
         """
 
-        # We add the input vector features source. It can have any kind of
-        # geometry.
+        # Add parametes
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.INPUT,

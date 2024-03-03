@@ -74,8 +74,7 @@ class SciPyConvolveAlgorithm(QgsProcessingAlgorithm):
         with some other properties.
         """
 
-        # We add the input vector features source. It can have any kind of
-        # geometry.
+        # Add parameters
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.INPUT,
