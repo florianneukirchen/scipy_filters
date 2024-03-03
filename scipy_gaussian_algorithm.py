@@ -39,22 +39,15 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterNumber,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterEnum,
-                       QgsProcessingParameterBand
+                       QgsProcessingParameterBand,
                         )
 
 
 class SciPyGaussianAlgorithm(QgsProcessingAlgorithm):
     """
-    This is an example algorithm that takes a vector layer and
-    creates a new identical one.
+    Gaussian Filter (Blur)
 
-    It is meant to be used as an example of how to create your own
-    algorithms and explain methods and variables used to do it. An
-    algorithm like this will be available in all elements, and there
-    is not need for additional work.
 
-    All Processing algorithms should extend the QgsProcessingAlgorithm
-    class.
     """
 
     # Constants used to refer to parameters and outputs. They will be
