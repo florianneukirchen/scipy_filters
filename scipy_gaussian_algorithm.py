@@ -71,7 +71,7 @@ class SciPyGaussianAlgorithm(QgsProcessingAlgorithm):
         with some other properties.
         """
 
-        # Add parametes
+        # Add parameters
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.INPUT,
