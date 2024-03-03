@@ -33,7 +33,7 @@ __revision__ = '$Format:%H$'
 from qgis.core import QgsProcessingProvider
 from .scipy_gaussian_algorithm import SciPyGaussianAlgorithm
 from .scipy_convolve_algorithm import SciPyConvolveAlgorithm
-from .scipy_morphological_algorithm import SciPyBinaryMorphologicalAlgorithm
+from .scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm, SciPyGreyMorphologicalAlgorithm)
 
 
 class SciPyFiltersProvider(QgsProcessingProvider):
@@ -58,6 +58,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyGaussianAlgorithm())
         self.addAlgorithm(SciPyConvolveAlgorithm())
         self.addAlgorithm(SciPyBinaryMorphologicalAlgorithm())
+        self.addAlgorithm(SciPyGreyMorphologicalAlgorithm())        
 
 
     def id(self):

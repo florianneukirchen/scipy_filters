@@ -30,7 +30,8 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 
 __revision__ = '$Format:%H$'
 
-
+import json
+import numpy as np
 from osgeo import gdal
 from scipy import ndimage
 from qgis.PyQt.QtCore import QCoreApplication
@@ -40,14 +41,14 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterNumber,
                        QgsProcessingParameterRasterDestination,
+                       QgsProcessingParameterString,
+                       QgsProcessingException,
                         )
 
 
-class SciPyBinaryMorphologicalAlgorithm(QgsProcessingAlgorithm):
+class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
     """
-    Binary Morphological Algorithm
-
-
+    Base Class for Morphological Filters, not to be used directly
     """
 
     # Constants used to refer to parameters and outputs. They will be
@@ -58,8 +59,10 @@ class SciPyBinaryMorphologicalAlgorithm(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     ALGORITHM = 'ALGORITHM' 
     STRUCTURE = 'STRUCTURE'
-    MASK = 'MASK'
-    ITERATIONS = 'ITERATIONS'
+    
+
+    def getAlgs(self):
+        return ['Dilation', 'Erosion', 'Closing', 'Opening']
 
 
     def initAlgorithm(self, config):
@@ -77,8 +80,7 @@ class SciPyBinaryMorphologicalAlgorithm(QgsProcessingAlgorithm):
             )
         )
 
-        self.algorithms = ['Dilation', 'Erosion', 'Closing', 'Opening']
-
+        self.algorithms = self.getAlgs()
 
         self.addParameter(QgsProcessingParameterEnum(
             self.ALGORITHM,
@@ -91,6 +93,156 @@ class SciPyBinaryMorphologicalAlgorithm(QgsProcessingAlgorithm):
             self.tr('Structure'),
             ["Cross", "Square"],
             defaultValue=1)) 
+
+
+      
+    def morphologyfnct(self, idx):
+        alg = self.algorithms[idx]
+        if alg == 'Dilation':
+            fct = ndimage.binary_dilation
+        elif alg == 'Erosion':
+            fct = ndimage.binary_erosion
+        elif alg == 'Closing':
+            fct = ndimage.binary_closing
+        else:
+            fct = ndimage.binary_opening
+        return fct
+
+
+    def processAlgorithm(self, parameters, context, feedback):
+        """
+        Here is where the processing itself takes place.
+        """
+
+        # Get Parameters
+        self.kargs = {}
+
+        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+
+        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
+
+        self.alg = self.parameterAsInt(parameters, self.ALGORITHM, context)
+        self.fct = self.morphologyfnct(self.alg)
+        
+
+        structure = self.parameterAsInt(parameters, self.STRUCTURE, context) + 1
+        self.kargs['structure'] = ndimage.generate_binary_structure(2,structure)
+
+        if isinstance(self, SciPyBinaryMorphologicalAlgorithm):
+            masklayer = self.parameterAsRasterLayer(parameters, self.MASK, context)
+            iterations = self.parameterAsInt(parameters, self.MASK, context)
+            if iterations:
+                self.kargs['iterations'] = iterations
+        else:
+            masklayer = None
+
+        if isinstance(self, SciPyGreyMorphologicalAlgorithm):
+            size = iterations = self.parameterAsInt(parameters, self.SIZE, context)
+            if size:
+                self.kargs['size'] = size
+            footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
+            if footprint:
+                # Try to parse the Footprint
+                try:
+                    decoded = json.loads(footprint)
+                    footprint = np.array(decoded, dtype=np.float32)
+                except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                    raise QgsProcessingException(self.tr('Can not parse Footprint string!'))
+                self.kargs['footprint'] = footprint
+            else:
+                if not size:
+                    # Either size or footprint must be set
+                    self.kargs['size'] = 1
+
+            mode = self.parameterAsInt(parameters, self.MODE, context) 
+            self.kargs['mode'] = self.modes[mode]
+
+            cval = self.parameterAsDouble(parameters, self.CVAL, context)
+            if cval:
+                self.kargs['cval'] = cval
+
+                
+
+        # Open Raster with GDAL
+        self.ds = gdal.Open(inputlayer.source())
+
+        if not self.ds:
+            raise Exception("Failed to open Raster Layer")
+        
+        self.bandcount = self.ds.RasterCount
+
+        if masklayer:
+            self.mask_ds = gdal.Open(masklayer.source())
+            if not self.mask_ds:
+                raise Exception("Failed to open Mask Layer")
+            self.kargs['mask'] = self.mask_ds.GetRasterBand(1).ReadAsArray()
+
+        # Prepare output
+        driver = gdal.GetDriverByName('GTiff')
+        self.out_ds = driver.CreateCopy(self.output_raster, self.ds, strict=0)
+
+        # Iterate over bands and calculate 
+
+        for i in range(1, self.bandcount + 1):
+            a = self.ds.GetRasterBand(i).ReadAsArray()
+            filtered = self.fct(a, **self.kargs)
+            self.out_ds.GetRasterBand(i).WriteArray(filtered)
+
+            feedback.setProgress(i * 100 / self.bandcount)
+            if feedback.isCanceled():
+                return {}
+
+        # Close the dataset to write file to disk
+        self.out_ds = None 
+
+
+        return {self.OUTPUT: self.output_raster}
+    
+
+    def group(self):
+        """
+        Returns the name of the group this algorithm belongs to. This string
+        should be localised.
+        """
+        return self.tr(self.groupId())
+
+    def groupId(self):
+        """
+        Returns the unique ID of the group this algorithm belongs to. This
+        string should be fixed for the algorithm, and must not be localised.
+        The group id should be unique within each provider. Group id should
+        contain lowercase alphanumeric characters only and no spaces or other
+        formatting characters.
+        """
+        return ''
+
+    def tr(self, string):
+        return QCoreApplication.translate('Processing', string)
+
+
+
+class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
+
+    ITERATIONS = 'ITERATIONS'
+    MASK = 'MASK'
+
+
+    def morphologyfnct(self, idx):
+        alg = self.algorithms[idx]
+        if alg == 'Dilation':
+            fct = ndimage.binary_dilation
+        elif alg == 'Erosion':
+            fct = ndimage.binary_erosion
+        elif alg == 'Closing':
+            fct = ndimage.binary_closing
+        else:
+            fct = ndimage.binary_opening
+        return fct
+    
+
+
+    def initAlgorithm(self, config):
+        super().initAlgorithm(config)
 
         self.addParameter(QgsProcessingParameterNumber(
             self.ITERATIONS,
@@ -114,77 +266,6 @@ class SciPyBinaryMorphologicalAlgorithm(QgsProcessingAlgorithm):
             QgsProcessingParameterRasterDestination(
                 self.OUTPUT,
             self.tr("Binary Morphology")))
-      
-    def morphologyfnct(self, idx):
-        alg = self.algorithms[idx]
-        if alg == 'Dilation':
-            fct = ndimage.binary_dilation
-        elif alg == 'Erosion':
-            fct = ndimage.binary_erosion
-        elif alg == 'Closing':
-            fct = ndimage.binary_closing
-        else:
-            fct = ndimage.binary_opening
-        return fct
-
-
-
-    def processAlgorithm(self, parameters, context, feedback):
-        """
-        Here is where the processing itself takes place.
-        """
-
-        # Get Parameters
-        kargs = {}
-
-        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
-        masklayer = self.parameterAsRasterLayer(parameters, self.MASK, context)
-        print("m", masklayer)
-        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
-
-        self.alg = self.parameterAsInt(parameters, self.ALGORITHM, context)
-        self.fct = self.morphologyfnct(self.alg)
-        
-
-        structure = self.parameterAsInt(parameters, self.STRUCTURE, context) + 1
-        kargs['structure'] = ndimage.generate_binary_structure(2,structure)
-
-
-        # Open Raster with GDAL
-        self.ds = gdal.Open(inputlayer.source())
-
-        if not self.ds:
-            raise Exception("Failed to open Raster Layer")
-        
-        self.bandcount = self.ds.RasterCount
-
-        if masklayer:
-            self.mask_ds = gdal.Open(masklayer.source())
-            if not self.mask_ds:
-                raise Exception("Failed to open Mask Layer")
-            kargs['mask'] = self.mask_ds.GetRasterBand(1).ReadAsArray()
-
-        # Prepare output
-        driver = gdal.GetDriverByName('GTiff')
-        self.out_ds = driver.CreateCopy(self.output_raster, self.ds, strict=0)
-
-        # Iterate over bands and calculate 
-
-        for i in range(1, self.bandcount + 1):
-            a = self.ds.GetRasterBand(i).ReadAsArray()
-            filtered = self.fct(a, **kargs)
-            self.out_ds.GetRasterBand(i).WriteArray(filtered)
-
-            feedback.setProgress(i * 100 / self.bandcount)
-            if feedback.isCanceled():
-                return {}
-
-        # Close the dataset to write file to disk
-        self.out_ds = None 
-
-
-        return {self.OUTPUT: self.output_raster}
-    
 
     def name(self):
         """
@@ -202,26 +283,112 @@ class SciPyBinaryMorphologicalAlgorithm(QgsProcessingAlgorithm):
         user-visible display of the algorithm name.
         """
         return self.tr('Binary Morphological Filter')
-
-    def group(self):
-        """
-        Returns the name of the group this algorithm belongs to. This string
-        should be localised.
-        """
-        return self.tr(self.groupId())
-
-    def groupId(self):
-        """
-        Returns the unique ID of the group this algorithm belongs to. This
-        string should be fixed for the algorithm, and must not be localised.
-        The group id should be unique within each provider. Group id should
-        contain lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return ''
-
-    def tr(self, string):
-        return QCoreApplication.translate('Processing', string)
-
+    
     def createInstance(self):
         return SciPyBinaryMorphologicalAlgorithm()
+
+
+
+
+class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
+
+    SIZE = 'SIZE'
+    FOOTPRINT = 'FOOTPRINT'
+    MODE = 'MODE'
+    CVAL = 'CVAL'
+
+    def initAlgorithm(self, config):
+        super().initAlgorithm(config)
+        
+        self.addParameter(QgsProcessingParameterNumber(
+            self.SIZE,
+            self.tr('Size (Optional if footprint provided)'),
+            QgsProcessingParameterNumber.Type.Integer,
+            defaultValue=1, 
+            optional=True, 
+            minValue=1, 
+            # maxValue=100
+            ))    
+        
+        default_kernel = "[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]"
+
+        self.addParameter(QgsProcessingParameterString(
+            self.FOOTPRINT,
+            self.tr('Footprint array'),
+            defaultValue=default_kernel,
+            multiLine=True,
+            optional=True,
+            ))
+
+    
+        self.modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
+
+        self.addParameter(QgsProcessingParameterEnum(
+            self.MODE,
+            self.tr('Border Mode'),
+            self.modes,
+            defaultValue=0)) 
+        
+        self.addParameter(QgsProcessingParameterNumber(
+            self.CVAL,
+            self.tr('Constant value past edges for border mode "constant"'),
+            QgsProcessingParameterNumber.Type.Double,
+            defaultValue=0, 
+            optional=True, 
+            minValue=0, 
+            # maxValue=100
+            ))    
+        
+        self.addParameter(
+            QgsProcessingParameterRasterDestination(
+                self.OUTPUT,
+            self.tr("Grey Morphology")))
+
+
+    def checkParameterValues(self, parameters, context):     
+
+        footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
+
+        if not footprint.strip() == "":
+            try:
+                decoded = json.loads(footprint)
+                _ = np.array(decoded, dtype=np.float32)
+            except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                return (False, self.tr('Can not parse footprint string'))
+        
+        ok, s = super().checkParameterValues(parameters, context)
+        return (ok, s)
+
+
+    def morphologyfnct(self, idx):
+        alg = self.algorithms[idx]
+        if alg == 'Dilation':
+            fct = ndimage.grey_dilation
+        elif alg == 'Erosion':
+            fct = ndimage.grey_erosion
+        elif alg == 'Closing':
+            fct = ndimage.grey_closing
+        else:
+            fct = ndimage.grey_opening
+        return fct
+
+    def name(self):
+        """
+        Returns the algorithm name, used for identifying the algorithm. This
+        string should be fixed for the algorithm, and must not be localised.
+        The name should be unique within each provider. Names should contain
+        lowercase alphanumeric characters only and no spaces or other
+        formatting characters.
+        """
+        return 'grey_morphology'
+
+    def displayName(self):
+        """
+        Returns the translated algorithm name, which should be used for any
+        user-visible display of the algorithm name.
+        """
+        return self.tr('Grey Morphological Filter')
+    
+    def createInstance(self):
+        return SciPyGreyMorphologicalAlgorithm()
+
