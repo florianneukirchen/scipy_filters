@@ -133,6 +133,9 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
             iterations = self.parameterAsInt(parameters, self.MASK, context)
             if iterations:
                 self.kargs['iterations'] = iterations
+            bordervalue = self.parameterAsInt(parameters, self.BORDERVALUE, context)
+            if bordervalue:
+                self.kargs['border_value'] = bordervalue
         else:
             masklayer = None
 
@@ -184,7 +187,7 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
                 feedback.pushInfo("Mask layer does not match input layer, reprojecting mask.")
 
                 geoTransform = self.ds.GetGeoTransform()
-                
+
                 kwargs = {"format": "GTiff", 'resampleAlg':'near'}
                 kwargs["xRes"] = geoTransform[1]
                 kwargs["yRes"] = abs(geoTransform[5])
@@ -249,6 +252,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
     ITERATIONS = 'ITERATIONS'
     MASK = 'MASK'
+    BORDERVALUE = 'BORDERVALUE'
 
 
     def morphologyfnct(self, idx):
@@ -277,6 +281,13 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             minValue=1, 
             # maxValue=100
             ))    
+        
+        self.addParameter(QgsProcessingParameterEnum(
+            self.BORDERVALUE,
+            self.tr('Border value (value at border of output array)'),
+            ["0","1"],
+            optional=True,
+            defaultValue=0))
         
         self.addParameter(
             QgsProcessingParameterRasterLayer(
