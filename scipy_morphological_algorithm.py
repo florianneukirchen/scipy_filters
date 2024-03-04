@@ -59,6 +59,7 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     ALGORITHM = 'ALGORITHM' 
     STRUCTURE = 'STRUCTURE'
+    CUSTOMSTRUCTURE = 'CUSTOMSTRUCTURE'
     
 
     def getAlgs(self):
@@ -70,6 +71,7 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
         Here we define the inputs and output of the algorithm, along
         with some other properties.
         """
+        print("init base")
 
         # Add parameters
 
@@ -91,11 +93,34 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterEnum(
             self.STRUCTURE,
             self.tr('Structure'),
-            ["Cross", "Square"],
+            ["Cross", "Square", "Custom"],
             defaultValue=1)) 
 
+        self.addParameter(QgsProcessingParameterString(
+            self.CUSTOMSTRUCTURE,
+            self.tr('Custom structure (array), ignored if structure is set to cross or square'),
+            defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
+            multiLine=True,
+            optional=True,
+            ))
 
-      
+    def checkParameterValues(self, parameters, context): 
+        """base class: check values and call the same function of super class"""   
+        print("Check base") 
+        structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
+        print("b", structure)
+        if structure == 2:
+            custom = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
+            print("xx", custom)
+            try:
+                decoded = json.loads(custom)
+                _ = np.array(decoded, dtype=np.float32)
+            except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                return (False, self.tr('Can not parse custom structure string'))
+        
+        return = super().checkParameterValues(parameters, context)
+
+
     def morphologyfnct(self, idx):
         alg = self.algorithms[idx]
         if alg == 'Dilation':
@@ -125,8 +150,18 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
         self.fct = self.morphologyfnct(self.alg)
         
 
-        structure = self.parameterAsInt(parameters, self.STRUCTURE, context) + 1
-        self.kargs['structure'] = ndimage.generate_binary_structure(2,structure)
+        structure = self.parameterAsInt(parameters, self.STRUCTURE, context) 
+        if structure in (0,1):
+            self.kargs['structure'] = ndimage.generate_binary_structure(2,structure + 1)
+        else:
+            structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
+            # Try to parse the Footprint
+            try:
+                decoded = json.loads(structure)
+                structure = np.array(decoded, dtype=np.float32)
+            except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                raise QgsProcessingException(self.tr('Can not parse custom structure string!'))
+            self.kargs['structure'] = structure
 
         if isinstance(self, SciPyBinaryMorphologicalAlgorithm):
             masklayer = self.parameterAsRasterLayer(parameters, self.MASK, context)
@@ -334,6 +369,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
     def initAlgorithm(self, config):
         super().initAlgorithm(config)
+
         
         self.addParameter(QgsProcessingParameterNumber(
             self.SIZE,
@@ -381,7 +417,8 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
 
     def checkParameterValues(self, parameters, context):     
-
+        """Grey Morphology: check footprint and call checkvalues of super"""
+        print("Check grey")
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
 
         if not footprint.strip() == "":
@@ -391,8 +428,8 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             except (json.decoder.JSONDecodeError, ValueError, TypeError):
                 return (False, self.tr('Can not parse footprint string'))
         
-        ok, s = super().checkParameterValues(parameters, context)
-        return (ok, s)
+        return super().checkParameterValues(parameters, context)
+
 
 
     def morphologyfnct(self, idx):
