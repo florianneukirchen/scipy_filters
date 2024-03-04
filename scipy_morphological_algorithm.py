@@ -175,7 +175,31 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
             self.mask_ds = gdal.Open(masklayer.source())
             if not self.mask_ds:
                 raise Exception("Failed to open Mask Layer")
-            self.kargs['mask'] = self.mask_ds.GetRasterBand(1).ReadAsArray()
+            
+            # Mask must have same crs etc.
+            if not (self.mask_ds.GetProjection() == self.ds.GetProjection()
+                    and self.mask_ds.RasterXSize == self.ds.RasterXSize
+                    and self.mask_ds.RasterYSize == self.ds.RasterYSize
+                    and self.mask_ds.GetGeoTransform() == self.ds.GetGeoTransform()):
+                feedback.pushInfo("Mask layer does not match input layer, reprojecting mask.")
+
+                geoTransform = self.ds.GetGeoTransform()
+                
+                kwargs = {"format": "GTiff", 'resampleAlg':'near'}
+                kwargs["xRes"] = geoTransform[1]
+                kwargs["yRes"] = abs(geoTransform[5])
+
+                minx = geoTransform[0]
+                maxy = geoTransform[3]
+                maxx = minx + geoTransform[1] * self.ds.RasterXSize
+                miny = maxy + geoTransform[5] * self.ds.RasterYSize
+
+                kwargs["outputBounds"] = (minx, miny, maxx, maxy)
+
+                warped_mask = gdal.Warp("/vsimem/tmpmask", self.mask_ds, **kwargs)
+                self.kargs['mask'] = warped_mask.GetRasterBand(1).ReadAsArray()
+            else:
+                self.kargs['mask'] = self.mask_ds.GetRasterBand(1).ReadAsArray()
 
         # Prepare output
         driver = gdal.GetDriverByName('GTiff')
