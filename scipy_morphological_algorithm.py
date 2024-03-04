@@ -42,6 +42,7 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterNumber,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterString,
+                       QgsProcessingParameterBoolean,
                        QgsProcessingException,
                         )
 
@@ -71,7 +72,6 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
         Here we define the inputs and output of the algorithm, along
         with some other properties.
         """
-        print("init base")
 
         # Add parameters
 
@@ -106,12 +106,9 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
 
     def checkParameterValues(self, parameters, context): 
         """base class: check values and call the same function of super class"""   
-        print("Check base") 
         structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
-        print("b", structure)
         if structure == 2:
             custom = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
-            print("xx", custom)
             try:
                 decoded = json.loads(custom)
                 _ = np.array(decoded, dtype=np.float32)
@@ -155,7 +152,7 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
             self.kargs['structure'] = ndimage.generate_binary_structure(2,structure + 1)
         else:
             structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
-            # Try to parse the Footprint
+            # Try to parse the Structure
             try:
                 decoded = json.loads(structure)
                 structure = np.array(decoded, dtype=np.float32)
@@ -178,8 +175,9 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
             size = iterations = self.parameterAsInt(parameters, self.SIZE, context)
             if size:
                 self.kargs['size'] = size
+            footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
             footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
-            if footprint:
+            if footprintbool and footprint:
                 # Try to parse the Footprint
                 try:
                     decoded = json.loads(footprint)
@@ -363,9 +361,11 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
     SIZE = 'SIZE'
-    FOOTPRINT = 'FOOTPRINT'
     MODE = 'MODE'
     CVAL = 'CVAL'
+    FOOTPRINT = 'FOOTPRINT'
+    BOOLFOOTPRINT = 'BOOLFOOTPRINT'
+
 
     def initAlgorithm(self, config):
         super().initAlgorithm(config)
@@ -381,16 +381,6 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             # maxValue=100
             ))    
         
-        default_kernel = "[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]"
-
-        self.addParameter(QgsProcessingParameterString(
-            self.FOOTPRINT,
-            self.tr('Footprint array'),
-            defaultValue=default_kernel,
-            multiLine=True,
-            optional=True,
-            ))
-
     
         self.modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
 
@@ -409,6 +399,23 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             minValue=0, 
             # maxValue=100
             ))    
+
+        self.addParameter(QgsProcessingParameterBoolean(
+            self.BOOLFOOTPRINT,
+            self.tr('Use footprint array'),
+            defaultValue=False, 
+            optional=True
+            )) 
+        
+        default_kernel = "[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]"
+
+        self.addParameter(QgsProcessingParameterString(
+            self.FOOTPRINT,
+            self.tr('Footprint array'),
+            defaultValue=default_kernel,
+            multiLine=True,
+            optional=True,
+            ))
         
         self.addParameter(
             QgsProcessingParameterRasterDestination(
@@ -418,10 +425,10 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
     def checkParameterValues(self, parameters, context):     
         """Grey Morphology: check footprint and call checkvalues of super"""
-        print("Check grey")
+        footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
 
-        if not footprint.strip() == "":
+        if footprintbool and not footprint.strip() == "":
             try:
                 decoded = json.loads(footprint)
                 _ = np.array(decoded, dtype=np.float32)
