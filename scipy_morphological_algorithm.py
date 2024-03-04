@@ -350,7 +350,26 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         Returns the translated algorithm name, which should be used for any
         user-visible display of the algorithm name.
         """
-        return self.tr('Binary Dilation, Erosion, Closing, Opening')
+        return self.tr('Binary dilation, erosion, closing, opening')
+    
+    def shortHelpString(self):
+        h = """
+            Binary morphological filters: dilation, erosion, closing, and opening.
+            Dilation: Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
+            Erosion: Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
+            Closing: Perform dilation and then erosion. Fills small holes, large shapes are preserved.
+            Opening: Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
+            
+
+            Parameters:
+            Structure: Structuring element of filter. 
+            Custom structure: String representation of array, only used if "Structure" is set to "Custom".
+            Iterations: Each step of filter is repeated this number of times.
+            Border value: Valute at border of output array, defaults to 0. 
+            Mask: Optional mask layer.
+            """
+    
+        return self.tr(h)    
     
     def createInstance(self):
         return SciPyBinaryMorphologicalAlgorithm()
@@ -373,11 +392,11 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         
         self.addParameter(QgsProcessingParameterNumber(
             self.SIZE,
-            self.tr('Size (Optional if footprint provided)'),
+            self.tr('Size of flat structuring element (Optional if footprint or structure provided, 0 for no size)'),
             QgsProcessingParameterNumber.Type.Integer,
-            defaultValue=1, 
+            defaultValue=0, 
             optional=True, 
-            minValue=1, 
+            minValue=0, 
             # maxValue=100
             ))    
         
@@ -467,7 +486,25 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         user-visible display of the algorithm name.
         """
         return self.tr('Grey Dilation, Erosion, Closing, Opening') 
+
+    def shortHelpString(self):
+        h = """
+            Grey morphological filters: dilation, erosion, closing, and opening.  
+            Dilation: Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
+            Erosion: Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
+            Closing: Perform dilation and then erosion. Fills small holes, large shapes are preserved.
+            Opening: Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
+            Parameters:
+            Size: Size of flat and full structuring element, optional if footprint or structure is provided.
+            Structure: Structuring element of filter. 
+            Custom structure: String representation of array, only used if "Structure" is set to "Custom".
+            Border mode: Determine how input is extended around the edges.
+            Footprint: Positions of elements of a flat structuring element used for the filter (string representation of array, only used if checkbox is checked).
+            Border mode: Determine how input is extended around the edges. 
+            """
+        return self.tr(h)  
     
+
     def createInstance(self):
         return SciPyGreyMorphologicalAlgorithm()
 

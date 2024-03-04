@@ -264,7 +264,11 @@ class SciPyConvolveAlgorithm(QgsProcessingAlgorithm):
     def shortHelpString(self):
       
         h =  """
-
+             Convolve raster with given kernel.
+             Kernel: String representation of array
+             Normalization: Normalize the kernel by deviding through given value; set to 0 to devide through the sum of kernel values.
+             Border mode: Determine how input is extended around the edges.
+             Origin: Shift the filter
              """
 		
         return self.tr(h)

@@ -331,9 +331,10 @@ class SciPyTophatAlgorithm(QgsProcessingAlgorithm):
                 Morphological gradient: difference between dilation and erosion.
                 Morphological laplace: difference between internal and external gradient.
                 Parameters:
-                Size: Size of flat and full structuring element, optional if footpring or structure is provided.
-                Structure: Structuring element of filter
-                Footprint: Positions of elements of a flat structuring element used for the filter.
+                Size: Size of flat and full structuring element, optional if footprint or structure is provided.
+                Structure: Structuring element of filter. 
+                Custom structure: String representation of array, only used if "Structure" is set to "Custom".
+                Footprint: Positions of elements of a flat structuring element used for the filter (string representation of array, only used if checkbox is checked).
                 Border mode: Determine how input is extended around the edges. 
                 """
     
