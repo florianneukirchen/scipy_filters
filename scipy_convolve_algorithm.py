@@ -176,7 +176,6 @@ class SciPyConvolveAlgorithm(QgsProcessingAlgorithm):
         if origin:
             kargs['origin'] = origin
 
-        print("weights", self.weights)
 
         # Try to parse the Kernel
         try:
