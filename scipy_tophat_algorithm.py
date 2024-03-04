@@ -228,7 +228,7 @@ class SciPyTophatAlgorithm(QgsProcessingAlgorithm):
             self.kargs['structure'] = structure
 
 
-        size = iterations = self.parameterAsInt(parameters, self.SIZE, context)
+        size = self.parameterAsInt(parameters, self.SIZE, context)
         if size and (size > 0):
             self.kargs['size'] = size
         footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)

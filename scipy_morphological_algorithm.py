@@ -172,7 +172,7 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
             masklayer = None
 
         if isinstance(self, SciPyGreyMorphologicalAlgorithm):
-            size = iterations = self.parameterAsInt(parameters, self.SIZE, context)
+            size = self.parameterAsInt(parameters, self.SIZE, context)
             if size:
                 self.kargs['size'] = size
             footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
