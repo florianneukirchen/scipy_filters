@@ -118,7 +118,7 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
             except (json.decoder.JSONDecodeError, ValueError, TypeError):
                 return (False, self.tr('Can not parse custom structure string'))
         
-        return = super().checkParameterValues(parameters, context)
+        return super().checkParameterValues(parameters, context)
 
 
     def morphologyfnct(self, idx):
@@ -266,7 +266,7 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
         Returns the name of the group this algorithm belongs to. This string
         should be localised.
         """
-        return self.tr(self.groupId())
+        return self.tr("Morphological Filters")
 
     def groupId(self):
         """
@@ -276,7 +276,7 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
         contain lowercase alphanumeric characters only and no spaces or other
         formatting characters.
         """
-        return ''
+        return 'morphological'
 
     def tr(self, string):
         return QCoreApplication.translate('Processing', string)
@@ -352,7 +352,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         Returns the translated algorithm name, which should be used for any
         user-visible display of the algorithm name.
         """
-        return self.tr('Binary Morphological Filter')
+        return self.tr('Binary Dilation, Erosion, Closing, Opening')
     
     def createInstance(self):
         return SciPyBinaryMorphologicalAlgorithm()
@@ -459,7 +459,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         Returns the translated algorithm name, which should be used for any
         user-visible display of the algorithm name.
         """
-        return self.tr('Grey Morphological Filter')
+        return self.tr('Grey Dilation, Erosion, Closing, Opening') 
     
     def createInstance(self):
         return SciPyGreyMorphologicalAlgorithm()
