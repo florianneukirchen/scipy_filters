@@ -45,212 +45,86 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterBoolean,
                        QgsProcessingException,
                         )
+from .scipy_algorithm_baseclasses import SciPyAlgorithm
 
 
-class SciPyBinaryHitMissAlgorithm(QgsProcessingAlgorithm):
-    """
-    Morphological Filters: Tophat, morphological gradient, morphological laplace.
-    """
+class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
-    # Constants used to refer to parameters and outputs. They will be
-    # used when calling the algorithm from another algorithm, or when
-    # calling from the QGIS console.
 
-    OUTPUT = 'OUTPUT'
-    INPUT = 'INPUT'
-    STRUCTURE1 = 'STRUCTURE1'
     CUSTOMSTRUCTURE1 = 'CUSTOMSTRUCTURE1'
-    STRUCTURE2 = 'STRUCTURE2'
     CUSTOMSTRUCTURE2 = 'CUSTOMSTRUCTURE2'
-      
 
+    # Overwrite constants of base class
+    _name = 'hit_or_miss'
+    _displayname = 'Morphological (binary) hit or miss'
+    _outputname = "Morphology: binary hit or miss"# If set to None, the displayname is used 
+    _groupid = 'morphological'
+    _help = """
+            Preserves pixels whose neighbourhood matches structure1, but does not match the (disjoint) structure2.  \
+            Calculated for every band with  \
+            binary_hit_or_miss from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+            <b>Structure 1</b> Structuring element of filter, can be cross, square or custom. 
+            <b>Custom structure</b> String representation of array, only used if "Structure 1" is set to "Custom".
+
+            <b>Structure 2</b> Structuring element of filter, can be cross, square or custom. 
+            <b>Custom structure</b> String representation of array, only used if "Structure 2" is set to "Custom".
+            """
+    
+    # The function to be called
+    def get_fct(self):
+        return ndimage.binary_hit_or_miss
+ 
     def initAlgorithm(self, config):
-        """
-        Here we define the inputs and output of the algorithm, along
-        with some other properties.
-        """
+        super().initAlgorithm(config)
 
-        # Add parameters
-
-        self.addParameter(
-            QgsProcessingParameterRasterLayer(
-                self.INPUT,
-                self.tr('Input layer'),
-            )
-        )
-
-        self.addParameter(QgsProcessingParameterEnum(
-            self.STRUCTURE1,
-            self.tr('Structure 1'),
-            ["Cross", "Square", "Custom"],
-            defaultValue=1)) 
 
         self.addParameter(QgsProcessingParameterString(
             self.CUSTOMSTRUCTURE1,
-            self.tr('Structure 1: Custom structure (array), ignored if structure is set to cross or square'),
+            self.tr('Structure 1: Custom structure (string representation of array)'),
             defaultValue="[[1, 0, 0],\n[0, 1, 1],\n[0, 1, 1]]",
             multiLine=True,
             optional=True,
             ))
         
-        self.addParameter(QgsProcessingParameterEnum(
-            self.STRUCTURE2,
-            self.tr('Structure 2'),
-            ["Cross", "Square", "Custom"],
-            defaultValue=1)) 
 
         self.addParameter(QgsProcessingParameterString(
             self.CUSTOMSTRUCTURE2,
-            self.tr('Structure 2: Custom structure (array), ignored if structure is set to cross or square'),
+            self.tr('Structure 2: Custom structure (string representation of array)'),
             defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
             multiLine=True,
             optional=True,
             ))
-               
-        self.addParameter(
-            QgsProcessingParameterRasterDestination(
-                self.OUTPUT,
-            self.tr("Morphology: binary hit or miss")))
 
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
+
+        structure1 = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE1, context)
+        kwargs['structure1'] = self.str_to_array(structure1)
+
+
+        structure2 = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE2, context)
+        kwargs['structure2'] = self.str_to_array(structure1)
+
+        return kwargs
+    
+    
     def checkParameterValues(self, parameters, context): 
 
-        structure1 = self.parameterAsInt(parameters, self.STRUCTURE1, context)
-        if structure1 == 2:
-            custom = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE1, context)
-            try:
-                decoded = json.loads(custom)
-                _ = np.array(decoded, dtype=np.float32)
-            except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                return (False, self.tr('Structure 1: Can not parse custom structure string'))
-
-        structure2 = self.parameterAsInt(parameters, self.STRUCTURE2, context)
-        if structure2 == 2:
-            custom = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE2, context)
-            try:
-                decoded = json.loads(custom)
-                _ = np.array(decoded, dtype=np.float32)
-            except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                return (False, self.tr('Structure 2: Can not parse custom structure string'))
-                    
-        return super().checkParameterValues(parameters, context)
-
-
-
-    def processAlgorithm(self, parameters, context, feedback):
-        """
-        Here is where the processing itself takes place.
-        """
-
-        # Get Parameters
-        self.kargs = {}
-
-        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
-
-        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
-      
-
-        structure1 = self.parameterAsInt(parameters, self.STRUCTURE1, context) 
-        if structure1 in (0,1):
-            self.kargs['structure1'] = ndimage.generate_binary_structure(2, structure1 + 1)
-        else:
-            structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE1, context)
-            # Try to parse the Structure
-            try:
-                decoded = json.loads(structure1)
-                structure1 = np.array(decoded, dtype=np.float32)
-            except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                raise QgsProcessingException(self.tr('Stucture 1: Can not parse custom structure string!'))
-            self.kargs['structure1'] = structure1
-
-        structure2 = self.parameterAsInt(parameters, self.STRUCTURE2, context) 
-        if structure2 in (0,1):
-            self.kargs['structure2'] = ndimage.generate_binary_structure(2, structure2 + 1)
-        else:
-            structure2 = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE2, context)
-            # Try to parse the Structure
-            try:
-                decoded = json.loads(structure2)
-                structure2 = np.array(decoded, dtype=np.float32)
-            except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                raise QgsProcessingException(self.tr('Stucture 2: Can not parse custom structure string!'))
-            self.kargs['structure2'] = structure2
-
-        # Open Raster with GDAL
-        self.ds = gdal.Open(inputlayer.source())
-
-        if not self.ds:
-            raise Exception("Failed to open Raster Layer")
+        structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE1, context)
+        ok, s = self.check_structure(structure)
+        if not ok:
+            s = self.tr("Could not parse structure 1")
+            return (ok, s)
         
-        self.bandcount = self.ds.RasterCount
-
-        # Prepare output
-        driver = gdal.GetDriverByName('GTiff')
-        self.out_ds = driver.CreateCopy(self.output_raster, self.ds, strict=0)
-
-        # Iterate over bands and calculate 
-
-        for i in range(1, self.bandcount + 1):
-            a = self.ds.GetRasterBand(i).ReadAsArray()
-            filtered = ndimage.binary_hit_or_miss(a, **self.kargs)
-            self.out_ds.GetRasterBand(i).WriteArray(filtered)
-
-            feedback.setProgress(i * 100 / self.bandcount)
-            if feedback.isCanceled():
-                return {}
-
-        # Close the dataset to write file to disk
-        self.out_ds = None 
-
-
-        return {self.OUTPUT: self.output_raster}
-    
-
-    def group(self):
-        """
-        Returns the name of the group this algorithm belongs to. This string
-        should be localised.
-        """
-        return self.tr("Morphological Filters")
-
-    def groupId(self):
-        """
-        Returns the unique ID of the group this algorithm belongs to. This
-        string should be fixed for the algorithm, and must not be localised.
-        The group id should be unique within each provider. Group id should
-        contain lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return 'morphological'
-
-    def tr(self, string):
-        return QCoreApplication.translate('Processing', string)
-
-
-    def name(self):
-        """
-        Returns the algorithm name, used for identifying the algorithm. This
-        string should be fixed for the algorithm, and must not be localised.
-        The name should be unique within each provider. Names should contain
-        lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return 'hit_or_miss'
-
-    def displayName(self):
-        """
-        Returns the translated algorithm name, which should be used for any
-        user-visible display of the algorithm name.
-        """
-        return self.tr('Morphological (binary) hit or miss') 
-    
-    def shortHelpString(self):
-        h = """
-            Preserves pixels whose neighbourhood matches structure1, but does not match the (disjoint) structure2. 
-            """
-    
-        return self.tr(h)
+        structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE2, context)
+        ok, s = self.check_structure(structure)
+        if not ok:
+            s = self.tr("Could not parse structure 2")
+            return (ok, s)
+        
+        return super().checkParameterValues(parameters, context)
     
     def createInstance(self):
         return SciPyBinaryHitMissAlgorithm()
-

@@ -98,7 +98,7 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
         else:
             structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
             kwargs['structure'] = self.str_to_array(structure)
-        print(kwargs)
+
         return kwargs
     
     
