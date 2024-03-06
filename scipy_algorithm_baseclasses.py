@@ -59,8 +59,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
     In inheriting classes, parameters can be added by:
     1) setting constants as class variables
-    2) overwriting the function initAlgorithm (don't forget to call
-       the same function on super())
+    2) overwriting either insert_parameters (added below input parameter)
+       or initAlgorithm (added above output parameter). 
+       Don't forget to call the same function on super().
     3) overwriting the function get_parameters (don't forget to call
        the same function on super())
 
@@ -90,6 +91,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     def get_fct(self):
         return ndimage.laplace
 
+    # Function to insert Parameters (overwrite in inherited classes)
+    def insert_parameters(self, config):
+        return
+
     # Init Algorithm
     def initAlgorithm(self, config):
         """
@@ -104,6 +109,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 self.tr('Input layer'),
             )
         )
+
+        # Insert Parameters 
+        self.insert_parameters(config)
 
         if not self._outputname:
             self._outputname = self._displayname
@@ -275,7 +283,17 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
     AXIS = 'AXIS'
     axis_modes = ['Horizontal edges', 'Vertical edges', 'Magnitude']
 
-    def initAlgorithm(self, config):
+    # def initAlgorithm(self, config):
+        
+    #     self.addParameter(QgsProcessingParameterEnum(
+    #         self.AXIS,
+    #         self.tr('Axis'),
+    #         self.axis_modes,
+    #         defaultValue=0)) 
+        
+    #     super().initAlgorithm(config)
+
+    def insert_parameters(self, config):
         
         self.addParameter(QgsProcessingParameterEnum(
             self.AXIS,
@@ -283,7 +301,7 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
             self.axis_modes,
             defaultValue=0)) 
         
-        super().initAlgorithm(config)
+        super().insert_parameters(config)
            
     def get_parameters(self, parameters, context):
         """Axis parameter must be set in inheriting class to implement magnitude"""
