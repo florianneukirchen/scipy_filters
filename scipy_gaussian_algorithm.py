@@ -187,3 +187,36 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
     
 
 
+class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
+    """
+    Gradient magnitude using Gaussian derivatives.
+
+
+    """
+
+    # Overwrite constants of base class
+    _name = 'gaussian_gradient_magnitude'
+    _displayname = 'Gaussian gradient magnitude'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "edges" 
+    _help = """
+            Gradient magnitude using Gaussian derivatives. \
+            Calculated for every band with \
+            gaussian_gradient_magnitude from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Sigma</b> Standard deviation of the gaussian filter.
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return ndimage.gaussian_gradient_magnitude
+
+    def createInstance(self):
+        return SciPyGaussianGradientMagnitudeAlgorithm()
