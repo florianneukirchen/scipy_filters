@@ -47,40 +47,45 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingException,
                         )
 
+from .scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
 
-class SciPyConvolveAlgorithm(QgsProcessingAlgorithm):
-    """
-    Convolution Filter
-    """
 
-    # Constants used to refer to parameters and outputs. They will be
-    # used when calling the algorithm from another algorithm, or when
-    # calling from the QGIS console.
+class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
-    OUTPUT = 'OUTPUT'
-    INPUT = 'INPUT'
     KERNEL = 'KERNEL'
     NORMALIZATION = 'NORMALIZATION'
-
-
-    MODE = 'MODE'
-    CVAL = 'CVAL'
     ORIGIN = 'ORIGIN'
 
+    # Overwrite constants of base class
+    _name = 'convolve'
+    _displayname = 'Convolve'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = ''
+    _help = """
+            Convolve raster with given kernel. \
+            Calculated for every band with  \
+            convolve from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-    def initAlgorithm(self, config):
-        """
-        Here we define the inputs and output of the algorithm, along
-        with some other properties.
-        """
+            <b>Kernel</b> String representation of array, only used if "Structure" is set to "Custom".
+            <b>Normalization</b> Normalize the kernel by dividing through given value; set to 0 to devide through the sum of kernel values.
+            <b>Origin</b> Shift the filter
 
-        # Add parameters
-        self.addParameter(
-            QgsProcessingParameterRasterLayer(
-                self.INPUT,
-                self.tr('Input layer'),
-            )
-        )
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    # The function to be called
+    def get_fct(self):
+        return ndimage.convolve
+
+ 
+    def insert_parameters(self, config):
+        super().insert_parameters(config)
 
         default_kernel = "[[1, 2, 1],\n[2, 4, 2],\n[1, 2, 1]]"
 
@@ -101,25 +106,6 @@ class SciPyConvolveAlgorithm(QgsProcessingAlgorithm):
             # maxValue=100
             )) 
 
-    
-        self.modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
-
-        self.addParameter(QgsProcessingParameterEnum(
-            self.MODE,
-            self.tr('Border Mode'),
-            self.modes,
-            defaultValue=0)) 
-        
-        self.addParameter(QgsProcessingParameterNumber(
-            self.CVAL,
-            self.tr('Constant value past edges for border mode "constant"'),
-            QgsProcessingParameterNumber.Type.Double,
-            defaultValue=0, 
-            optional=True, 
-            minValue=0, 
-            # maxValue=100
-            ))        
-
         self.addParameter(QgsProcessingParameterNumber(
             self.ORIGIN,
             self.tr('Origin (shift the filter)'),
@@ -129,151 +115,37 @@ class SciPyConvolveAlgorithm(QgsProcessingAlgorithm):
             ))    
 
 
-        self.addParameter(
-            QgsProcessingParameterRasterDestination(
-                self.OUTPUT,
-            self.tr("Convolution")))
-        
-        self.weights = None
-        
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
 
-    def checkParameterValues(self, parameters, context):     
+        weights = self.parameterAsString(parameters, self.KERNEL, context)
+        weights = self.str_to_array(weights)
 
-        kernel = self.parameterAsString(parameters, self.KERNEL, context)
-
-        try:
-            decoded = json.loads(kernel)
-            _ = np.array(decoded, dtype=np.float32)
-        except (json.decoder.JSONDecodeError, ValueError, TypeError):
-            return (False, self.tr('Can not parse kernel string'))
-        
-        ok, s = super().checkParameterValues(parameters, context)
-        return (ok, s)
-
-    def processAlgorithm(self, parameters, context, feedback):
-        """
-        Here is where the processing itself takes place.
-        """
-
-        # Get Parameters
-        kargs = {}
-        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
-        # bands = self.parameterAsMatrix(parameters, self.BANDS, context)
-
-
-        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
-        kernel = self.parameterAsString(parameters, self.KERNEL, context)
         normalization = self.parameterAsDouble(parameters, self.NORMALIZATION, context)
 
-        mode = self.parameterAsInt(parameters, self.MODE, context) 
-        kargs['mode'] = self.modes[mode]
-
-        cval = self.parameterAsDouble(parameters, self.CVAL, context)
-        if cval:
-            kargs['cval'] = cval
-
-        origin = self.parameterAsInt(parameters, self.ORIGIN, context)
-        if origin:
-            kargs['origin'] = origin
-
-
-        # Try to parse the Kernel
-        try:
-            decoded = json.loads(kernel)
-            weights = np.array(decoded, dtype=np.float32)
-        except (json.decoder.JSONDecodeError, ValueError, TypeError):
-            raise QgsProcessingException(self.tr('Can not parse kernel string!'))
-        
         if normalization == 0:
             weights = weights / weights.sum()
         else:
             weights = weights / normalization
-        
+            
+        kwargs['weights'] = weights
 
+        origin = self.parameterAsInt(parameters, self.ORIGIN, context)
+        if origin:
+            kwargs['origin'] = origin
 
-        # Open Raster with GDAL
-        self.ds = gdal.Open(inputlayer.source())
-
-        if not self.ds:
-            raise Exception("Failed to open Raster Layer")
-        
-        # x in gdal is y dimension un numpy (the first dimension)
-        xs , ys = self.ds.RasterXSize , self.ds.RasterYSize
-
-        self.bandcount = self.ds.RasterCount
-        self.gt = self.ds.GetGeoTransform()
-        
-        self.nodata = self.ds.GetRasterBand(1).GetNoDataValue()
-
-
-        # Prepare output
-        driver = gdal.GetDriverByName('GTiff')
-        self.out_ds = driver.CreateCopy(self.output_raster, self.ds, strict=0)
-
-        # Iterate over bands and calculate Convolution
-
-        for i in range(1, self.bandcount + 1):
-            a = self.ds.GetRasterBand(i).ReadAsArray()
-            filtered = ndimage.convolve(a, weights, **kargs)
-            self.out_ds.GetRasterBand(i).WriteArray(filtered)
-
-            feedback.setProgress(i * 100 / self.bandcount)
-            if feedback.isCanceled():
-                return {}
-
-        # Close the dataset to write file to disk
-        self.out_ds = None 
-
-        return {self.OUTPUT: self.output_raster}
-
-    def name(self):
-        """
-        Returns the algorithm name, used for identifying the algorithm. This
-        string should be fixed for the algorithm, and must not be localised.
-        The name should be unique within each provider. Names should contain
-        lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return 'convolve'
-
-    def displayName(self):
-        """
-        Returns the translated algorithm name, which should be used for any
-        user-visible display of the algorithm name.
-        """
-        return self.tr('Convolution')
-
-    def group(self):
-        """
-        Returns the name of the group this algorithm belongs to. This string
-        should be localised.
-        """
-        return self.tr(self.groupId())
-
-    def groupId(self):
-        """
-        Returns the unique ID of the group this algorithm belongs to. This
-        string should be fixed for the algorithm, and must not be localised.
-        The group id should be unique within each provider. Group id should
-        contain lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return ''
+        return kwargs
     
-    def shortHelpString(self):
-      
-        h =  """
-             Convolve raster with given kernel.
-             Kernel: String representation of array
-             Normalization: Normalize the kernel by deviding through given value; set to 0 to devide through the sum of kernel values.
-             Border mode: Determine how input is extended around the edges.
-             Origin: Shift the filter
-             """
-		
-        return self.tr(h)
+    
+    def checkParameterValues(self, parameters, context): 
 
-    def tr(self, string):
-        return QCoreApplication.translate('Processing', string)
-
+        structure = self.parameterAsString(parameters, self.KERNEL, context)
+        ok, s = self.check_structure(structure)
+        if not ok:
+            return (ok, s)
+        
+        return super().checkParameterValues(parameters, context)
+    
     def createInstance(self):
         return SciPyConvolveAlgorithm()
+
