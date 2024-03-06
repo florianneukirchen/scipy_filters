@@ -92,19 +92,19 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
         super().insert_parameters(config)
            
     def get_parameters(self, parameters, context):
-        kargs = super().get_parameters(parameters, context)
+        kwargs = super().get_parameters(parameters, context)
 
         self.alg = self.parameterAsInt(parameters, self.ALGORITHM, context)
 
         structure = self.parameterAsInt(parameters, self.STRUCTURE, context) 
         if structure in (0,1):
-            kargs['structure'] = ndimage.generate_binary_structure(2,structure + 1)
+            kwargs['structure'] = ndimage.generate_binary_structure(2,structure + 1)
         else:
             structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
-            kargs['structure'] = self.str_to_array(structure)
+            kwargs['structure'] = self.str_to_array(structure)
 
       
-        return kargs
+        return kwargs
 
     def checkParameterValues(self, parameters, context): 
         structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
@@ -188,25 +188,25 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         )
 
     def get_parameters(self, parameters, context):
-        kargs = super().get_parameters(parameters, context)
+        kwargs = super().get_parameters(parameters, context)
 
         self.masklayer = self.parameterAsRasterLayer(parameters, self.MASK, context)
 
         iterations = self.parameterAsInt(parameters, self.MASK, context)
         if iterations:
-            kargs['iterations'] = iterations
+            kwargs['iterations'] = iterations
 
         bordervalue = self.parameterAsInt(parameters, self.BORDERVALUE, context)
         if bordervalue:
-            kargs['border_value'] = bordervalue
+            kwargs['border_value'] = bordervalue
 
-        return kargs
+        return kwargs
     
     def createInstance(self):
         return SciPyBinaryMorphologicalAlgorithm()
 
 
-  class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
+class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
     SIZE = 'SIZE'
     MODE = 'MODE'
@@ -314,11 +314,11 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     
 
     def get_parameters(self, parameters, context):
-        kargs = super().get_parameters(parameters, context)
+        kwargs = super().get_parameters(parameters, context)
 
         size = self.parameterAsInt(parameters, self.SIZE, context)
         if size:
-            kargs['size'] = size
+            kwargs['size'] = size
         footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
         if footprintbool and footprint:
@@ -328,20 +328,20 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
                 footprint = np.array(decoded, dtype=np.float32)
             except (json.decoder.JSONDecodeError, ValueError, TypeError):
                 raise QgsProcessingException(self.tr('Can not parse Footprint string!'))
-            kargs['footprint'] = footprint
+            kwargs['footprint'] = footprint
         else:
             if not size:
                 # Either size or footprint must be set
-                kargs['size'] = 1
+                kwargs['size'] = 1
 
         mode = self.parameterAsInt(parameters, self.MODE, context) 
-        kargs['mode'] = self.modes[mode]
+        kwargs['mode'] = self.modes[mode]
 
         cval = self.parameterAsDouble(parameters, self.CVAL, context)
         if cval:
-            kargs['cval'] = cval
+            kwargs['cval'] = cval
 
-        return kargs
+        return kwargs
     
  
 

@@ -135,10 +135,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         in classes inheriting form this base class by overwriting this
         function. 
 
-        Returns kargs dictionary and sets variables self.variable for 
+        Returns kwargs dictionary and sets variables self.variable for 
         non-keyword arguments.
 
-        This is the most basic base class and kargs is empty {}.
+        This is the most basic base class and kwargs is empty {}.
         """
         self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
@@ -152,7 +152,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         """
 
         # Get Parameters
-        kargs = self.get_parameters(parameters, context)
+        kwargs = self.get_parameters(parameters, context)
 
         self.fct = self.get_fct()
 
@@ -191,10 +191,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 kwargs_w["outputBounds"] = (minx, miny, maxx, maxy)
 
                 warped_mask = gdal.Warp("/vsimem/tmpmask", self.mask_ds, **kwargs_w)
-                kargs['mask'] = warped_mask.GetRasterBand(1).ReadAsArray()
+                kwargs['mask'] = warped_mask.GetRasterBand(1).ReadAsArray()
             else:
                 feedback.pushInfo("Mask layer does match input layer.")
-                kargs['mask'] = self.mask_ds.GetRasterBand(1).ReadAsArray()
+                kwargs['mask'] = self.mask_ds.GetRasterBand(1).ReadAsArray()
 
 
         # Prepare output
@@ -205,7 +205,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         for i in range(1, self.bandcount + 1):
             a = self.ds.GetRasterBand(i).ReadAsArray()
             # The actual function
-            filtered = self.fct(a, **kargs)
+            filtered = self.fct(a, **kwargs)
 
             self.out_ds.GetRasterBand(i).WriteArray(filtered)
 
@@ -319,16 +319,16 @@ class SciPyAlgorithmWithMode(SciPyAlgorithm):
             ))      
     
     def get_parameters(self, parameters, context):
-        kargs = super().get_parameters(parameters, context)
+        kwargs = super().get_parameters(parameters, context)
 
         mode = self.parameterAsInt(parameters, self.MODE, context) 
-        kargs['mode'] = self.modes[mode]
+        kwargs['mode'] = self.modes[mode]
 
         cval = self.parameterAsDouble(parameters, self.CVAL, context)
         if cval:
-            kargs['cval'] = cval
+            kwargs['cval'] = cval
 
-        return kargs
+        return kwargs
     
 
 class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
@@ -351,9 +351,9 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
            
     def get_parameters(self, parameters, context):
         """Axis parameter must be set in inheriting class to implement magnitude"""
-        kargs = super().get_parameters(parameters, context)
+        kwargs = super().get_parameters(parameters, context)
 
         self.axis_mode = self.parameterAsInt(parameters, self.AXIS, context) 
       
-        return kargs
+        return kwargs
     

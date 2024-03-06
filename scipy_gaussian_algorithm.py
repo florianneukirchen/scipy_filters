@@ -68,9 +68,9 @@ class SciPyAlgorithmWithSigma(SciPyAlgorithmWithMode):
 
     
     def get_parameters(self, parameters, context):
-        kargs = super().get_parameters(parameters, context)
-        kargs['sigma'] = self.parameterAsDouble(parameters, self.SIGMA, context)
-        return kargs
+        kwargs = super().get_parameters(parameters, context)
+        kwargs['sigma'] = self.parameterAsDouble(parameters, self.SIGMA, context)
+        return kwargs
 
 
 class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
@@ -170,15 +170,15 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
             ))    
         
     def get_parameters(self, parameters, context):
-        kargs = super().get_parameters(parameters, context)
+        kwargs = super().get_parameters(parameters, context)
 
-        kargs['order'] = self.parameterAsInt(parameters, self.ORDER, context) 
+        kwargs['order'] = self.parameterAsInt(parameters, self.ORDER, context) 
        
         truncate = self.parameterAsDouble(parameters, self.TRUNCATE, context)
         if truncate and truncate > 0:
-            kargs['truncate'] = truncate
+            kwargs['truncate'] = truncate
 
-        return kargs
+        return kwargs
 
    
 

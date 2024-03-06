@@ -99,13 +99,13 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
     def get_fct(self):
         return self.myfunction
 
-    def myfunction(self, input, **kargs):
+    def myfunction(self, input, **kwargs):
         if self.axis_mode in (0,1):
-            kargs['axis'] = self.axis_mode
-            return ndimage.sobel(input, **kargs)
+            kwargs['axis'] = self.axis_mode
+            return ndimage.sobel(input, **kwargs)
         else:
-            horiz = ndimage.sobel(input, axis=0, **kargs)
-            vertical = ndimage.sobel(input, axis=1, **kargs)
+            horiz = ndimage.sobel(input, axis=0, **kwargs)
+            vertical = ndimage.sobel(input, axis=1, **kwargs)
             return np.hypot(horiz, vertical)
 
     def createInstance(self):
@@ -136,13 +136,13 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
     def get_fct(self):
         return self.myfunction
 
-    def myfunction(self, input, **kargs):
+    def myfunction(self, input, **kwargs):
         if self.axis_mode in (0,1):
-            kargs['axis'] = self.axis_mode
-            return ndimage.prewitt(input, **kargs)
+            kwargs['axis'] = self.axis_mode
+            return ndimage.prewitt(input, **kwargs)
         else:
-            horiz = ndimage.prewitt(input, axis=0, **kargs)
-            vertical = ndimage.prewitt(input, axis=1, **kargs)
+            horiz = ndimage.prewitt(input, axis=0, **kwargs)
+            vertical = ndimage.prewitt(input, axis=1, **kwargs)
             return np.hypot(horiz, vertical)
 
     def createInstance(self):
