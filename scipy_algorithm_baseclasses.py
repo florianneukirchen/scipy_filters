@@ -44,7 +44,7 @@ from qgis.core import (QgsProcessing,
 
 # Group IDs and group names
 groups = {
-
+    'edges': 'Edges',
 }
 
 

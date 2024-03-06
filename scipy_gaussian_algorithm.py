@@ -262,7 +262,6 @@ class SciPyGaussianAlgorithm(QgsProcessingAlgorithm):
              Gaussian filter (blur with a gaussian kernel). 
              Sigma: Standard deviation of a gaussian kernel.
              Order: Optionally use first, second or third derivative of gaussian.
-             Border mode: Determine how input is extended around the edges. 
              Truncate: Radius of kernel in standard deviations.
              """
 		
