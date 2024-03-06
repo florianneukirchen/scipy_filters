@@ -38,6 +38,8 @@ from .scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm,
                                             SciPyTophatAlgorithm)
 
 from .scipy_morphological_binary_fill_holes import SciPyBinaryFillHolesAlgorithm
+# from .scipy_morphological_bak import SciPyBinaryFillHolesAlgorithm
+
 from .scipy_binary_hit_miss import SciPyBinaryHitMissAlgorithm
 
 from .scipy_gaussian_algorithm import (SciPyGaussianAlgorithm, 

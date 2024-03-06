@@ -30,8 +30,7 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 
 __revision__ = '$Format:%H$'
 
-import json
-import numpy as np
+
 from osgeo import gdal
 from scipy import ndimage
 from qgis.PyQt.QtCore import QCoreApplication
@@ -45,37 +44,36 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingException,
                         )
 
+from .scipy_algorithm_baseclasses import SciPyAlgorithm
 
-class SciPyBinaryFillHolesAlgorithm(QgsProcessingAlgorithm):
-    """
-    Morphological Filters: Tophat, morphological gradient, morphological laplace.
-    """
 
-    # Constants used to refer to parameters and outputs. They will be
-    # used when calling the algorithm from another algorithm, or when
-    # calling from the QGIS console.
+class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
 
-    OUTPUT = 'OUTPUT'
-    INPUT = 'INPUT'
     STRUCTURE = 'STRUCTURE'
     CUSTOMSTRUCTURE = 'CUSTOMSTRUCTURE'
-      
 
+    # Overwrite constants of base class
+    _name = 'fill_holes'
+    _displayname = 'Morphological (binary) fill holes'
+    _outputname = "Morphology: Fill holes" # If set to None, the displayname is used 
+    _groupid = 'morphological'
+    _help = """
+            Fill holes in binary shapes by using binary dilations. \
+            Calculated for every band with  \
+            binary_fill_holes from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+            <b>Structure</b> Structuring element of filter, can be cross, square or custom. 
+            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom".
+            """
+    
+    # The function to be called
+    def get_fct(self):
+        return ndimage.binary_fill_holes
+
+ 
     def initAlgorithm(self, config):
-        """
-        Here we define the inputs and output of the algorithm, along
-        with some other properties.
-        """
-
-        # Add parameters
-
-        self.addParameter(
-            QgsProcessingParameterRasterLayer(
-                self.INPUT,
-                self.tr('Input layer'),
-            )
-        )
+        super().initAlgorithm(config)
 
         self.addParameter(QgsProcessingParameterEnum(
             self.STRUCTURE,
@@ -90,129 +88,29 @@ class SciPyBinaryFillHolesAlgorithm(QgsProcessingAlgorithm):
             multiLine=True,
             optional=True,
             ))
-               
-        self.addParameter(
-            QgsProcessingParameterRasterDestination(
-                self.OUTPUT,
-            self.tr("Morphology: Fill holes")))
 
-    def checkParameterValues(self, parameters, context): 
-
-        structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
-        if structure == 2:
-            custom = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
-            try:
-                decoded = json.loads(custom)
-                _ = np.array(decoded, dtype=np.float32)
-            except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                return (False, self.tr('Can not parse custom structure string'))
-        
-        return super().checkParameterValues(parameters, context)
-
-
-
-    def processAlgorithm(self, parameters, context, feedback):
-        """
-        Here is where the processing itself takes place.
-        """
-
-        # Get Parameters
-        self.kargs = {}
-
-        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
-
-        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
-      
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
 
         structure = self.parameterAsInt(parameters, self.STRUCTURE, context) 
         if structure in (0,1):
-            self.kargs['structure'] = ndimage.generate_binary_structure(2,structure + 1)
+            kwargs['structure'] = ndimage.generate_binary_structure(2,structure + 1)
         else:
             structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
-            # Try to parse the Structure
-            try:
-                decoded = json.loads(structure)
-                structure = np.array(decoded, dtype=np.float32)
-            except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                raise QgsProcessingException(self.tr('Can not parse custom structure string!'))
-            self.kargs['structure'] = structure
-
-        # Open Raster with GDAL
-        self.ds = gdal.Open(inputlayer.source())
-
-        if not self.ds:
-            raise Exception("Failed to open Raster Layer")
+            kwargs['structure'] = self.str_to_array(structure)
+        print(kwargs)
+        return kwargs
+    
+    
+    def checkParameterValues(self, parameters, context): 
+        structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
+        if structure == 2:
+            structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
+            ok, s = self.check_structure(structure)
+            if not ok:
+                return (ok, s)
         
-        self.bandcount = self.ds.RasterCount
-
-        # Prepare output
-        driver = gdal.GetDriverByName('GTiff')
-        self.out_ds = driver.CreateCopy(self.output_raster, self.ds, strict=0)
-
-        # Iterate over bands and calculate 
-
-        for i in range(1, self.bandcount + 1):
-            a = self.ds.GetRasterBand(i).ReadAsArray()
-            filtered = ndimage.binary_fill_holes(a, **self.kargs)
-            self.out_ds.GetRasterBand(i).WriteArray(filtered)
-
-            feedback.setProgress(i * 100 / self.bandcount)
-            if feedback.isCanceled():
-                return {}
-
-        # Close the dataset to write file to disk
-        self.out_ds = None 
-
-
-        return {self.OUTPUT: self.output_raster}
-    
-
-    def group(self):
-        """
-        Returns the name of the group this algorithm belongs to. This string
-        should be localised.
-        """
-        return self.tr("Morphological Filters")
-
-    def groupId(self):
-        """
-        Returns the unique ID of the group this algorithm belongs to. This
-        string should be fixed for the algorithm, and must not be localised.
-        The group id should be unique within each provider. Group id should
-        contain lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return 'morphological'
-
-    def tr(self, string):
-        return QCoreApplication.translate('Processing', string)
-
-
-    def name(self):
-        """
-        Returns the algorithm name, used for identifying the algorithm. This
-        string should be fixed for the algorithm, and must not be localised.
-        The name should be unique within each provider. Names should contain
-        lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return 'fill_holes'
-
-    def displayName(self):
-        """
-        Returns the translated algorithm name, which should be used for any
-        user-visible display of the algorithm name.
-        """
-        return self.tr('Morphological (binary) fill holes') 
-    
-    def shortHelpString(self):
-        h = """
-            Fill holes in binary shapes by using binary dilations.
-            Structure: Structuring element of filter. 
-            Custom structure: String representation of array, only used if "Structure" is set to "Custom".
-            """
-    
-        return self.tr(h)
+        return super().checkParameterValues(parameters, context)
     
     def createInstance(self):
         return SciPyBinaryFillHolesAlgorithm()
