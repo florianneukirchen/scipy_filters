@@ -223,7 +223,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     _help = """
             Grey morphological filters: dilation, erosion, closing, and opening. \
             Calculated for every band with grey_dilation, \
-            grey_erosion, gey_closing, grey_opening respectively from \
+            grey_erosion, gey_closing or grey_opening, respectively from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
             <b>Dilation</b> Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
@@ -343,10 +343,57 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
         return kwargs
     
- 
-
-
 
     def createInstance(self):
         return SciPyGreyMorphologicalAlgorithm()
+
+    
+class SciPyTophatAlgorithm(SciPyGreyMorphologicalAlgorithm):
+
+    # Overwrite constants of base class
+    _name = 'tophat'
+    _displayname = 'Tophat or morphological gradient/laplace'
+    _outputname = 'Tophat' # If set to None, the displayname is used 
+    _help = """
+            Morphological filters: black/white tophat, morphological gradient/laplace. \
+            Calculated for every band with black_tophat, \
+            white_tophat, morphological_radient or morphological_laplace, respectively from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>White tophat</b> Difference between input raster and it's opening. Extracts white spots smaller than the structural element.
+            <b>Black tophat</b> Difference between input raster and it's closing. Extracts black spots smaller than the structural element.
+            <b>Morphological gradient</b> Difference between dilation and erosion.
+            <b>Morphological laplace</b> Difference between internal and external gradient.
+
+            <b>Structure</b> Structuring element of filter, can be cross, square or custom. 
+            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom".
+            <b>Size</b> Size of flat and full structuring element, optional if footprint or structure is provided.
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            <b>Footprint</b> Positions of elements of a flat structuring element used for the filter (string representation of array, only used if checkbox is checked).
+            """
+    
+    def getAlgs(self):
+        return ['White Tophat', 'Black Tophat', 'Morphological Gradient', 'Morphological Laplace']
+
+    # The function to be called
+    def get_fct(self):
+        if self.alg == 1:
+            fct = ndimage.black_tophat
+        elif self.alg == 2:
+            fct = ndimage.morphological_gradient
+        elif self.alg == 3:
+            fct = ndimage.morphological_laplace
+        else:
+            fct = ndimage.white_tophat
+        
+        return fct
+
+    def createInstance(self):
+        return SciPyTophatAlgorithm()
+
 

@@ -33,12 +33,10 @@ __revision__ = '$Format:%H$'
 from qgis.core import QgsProcessingProvider
                                    
 from .scipy_convolve_algorithm import SciPyConvolveAlgorithm
+from .scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm, 
+                                            SciPyGreyMorphologicalAlgorithm,
+                                            SciPyTophatAlgorithm)
 
-from .scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm, SciPyGreyMorphologicalAlgorithm)
-#from .scipy_morphological_bak import (SciPyBinaryMorphologicalAlgorithm, SciPyGreyMorphologicalAlgorithm)
-
-
-from .scipy_tophat_algorithm import SciPyTophatAlgorithm
 from .scipy_morphological_binary_fill_holes import SciPyBinaryFillHolesAlgorithm
 from .scipy_binary_hit_miss import SciPyBinaryHitMissAlgorithm
 
