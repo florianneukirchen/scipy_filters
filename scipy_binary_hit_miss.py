@@ -65,11 +65,8 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
             binary_hit_or_miss from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-            <b>Structure 1</b> Structuring element of filter, can be cross, square or custom. 
-            <b>Custom structure</b> String representation of array, only used if "Structure 1" is set to "Custom".
-
-            <b>Structure 2</b> Structuring element of filter, can be cross, square or custom. 
-            <b>Custom structure</b> String representation of array, only used if "Structure 2" is set to "Custom".
+            <b>Structure 1</b>  String representation of array.
+            <b>Structure 2</b> String representation of array.
             """
     
     # The function to be called
