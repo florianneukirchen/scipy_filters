@@ -74,6 +74,7 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
     def createInstance(self):
         return SciPyLaplaceAlgorithm()    
 
+
 class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
     # Overwrite constants of base class
     _name = 'sobel'
@@ -109,4 +110,41 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
 
     def createInstance(self):
         return SciPySobelAlgorithm()  
+
+
+class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
+    # Overwrite constants of base class
+    _name = 'prewitt'
+    _displayname = 'Prewitt'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "edges" 
+    _help = """
+            Prewitt filter.\
+            Calculated for every band with\
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Axis</b>: Find horizontal or vertical edges (or combined as magnitude).
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.myfunction
+
+    def myfunction(self, input, **kargs):
+        if self.axis_mode in (0,1):
+            kargs['axis'] = self.axis_mode
+            return ndimage.prewitt(input, **kargs)
+        else:
+            horiz = ndimage.prewitt(input, axis=0, **kargs)
+            vertical = ndimage.prewitt(input, axis=1, **kargs)
+            return np.hypot(horiz, vertical)
+
+    def createInstance(self):
+        return SciPyPrewittAlgorithm()  
     

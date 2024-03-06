@@ -40,7 +40,8 @@ from .scipy_binary_hit_miss import SciPyBinaryHitMissAlgorithm
 from .scipy_gaussian_gradient_magnitude_algorithm import SciPyGaussianGradientMagnitudeAlgorithm
 from .scipy_gaussian_laplace_algorithm import SciPyGaussianLaplaceAlgorithm
 from .scipy_simple_algorithms import (SciPyLaplaceAlgorithm,
-                                      SciPySobelAlgorithm)
+                                      SciPySobelAlgorithm,
+                                      SciPyPrewittAlgorithm)
 
 class SciPyFiltersProvider(QgsProcessingProvider):
 
@@ -72,6 +73,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyGaussianLaplaceAlgorithm()) 
         self.addAlgorithm(SciPyLaplaceAlgorithm()) 
         self.addAlgorithm(SciPySobelAlgorithm()) 
+        self.addAlgorithm(SciPyPrewittAlgorithm()) 
 
 
 
