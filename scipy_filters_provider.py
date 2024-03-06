@@ -39,7 +39,8 @@ from .scipy_morphological_binary_fill_holes import SciPyBinaryFillHolesAlgorithm
 from .scipy_binary_hit_miss import SciPyBinaryHitMissAlgorithm
 from .scipy_gaussian_gradient_magnitude_algorithm import SciPyGaussianGradientMagnitudeAlgorithm
 from .scipy_gaussian_laplace_algorithm import SciPyGaussianLaplaceAlgorithm
-from .scipy_simple_algorithms import (SciPyLaplaceAlgorithm)
+from .scipy_simple_algorithms import (SciPyLaplaceAlgorithm,
+                                      SciPySobelAlgorithm)
 
 class SciPyFiltersProvider(QgsProcessingProvider):
 
@@ -70,6 +71,8 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyGaussianGradientMagnitudeAlgorithm()) 
         self.addAlgorithm(SciPyGaussianLaplaceAlgorithm()) 
         self.addAlgorithm(SciPyLaplaceAlgorithm()) 
+        self.addAlgorithm(SciPySobelAlgorithm()) 
+
 
 
     def id(self):

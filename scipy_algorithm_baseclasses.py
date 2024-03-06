@@ -160,8 +160,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         for i in range(1, self.bandcount + 1):
             a = self.ds.GetRasterBand(i).ReadAsArray()
+            # The actual function
             filtered = self.fct(a, **kargs)
-            # filtered = ndimage.laplace(a, **kargs)
+
             self.out_ds.GetRasterBand(i).WriteArray(filtered)
 
             feedback.setProgress(i * 100 / self.bandcount)
@@ -263,4 +264,31 @@ class SciPyAlgorithmWithMode(SciPyAlgorithm):
         if cval:
             kargs['cval'] = cval
 
+        return kargs
+    
+
+class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
+    """
+    Base class with added mode and cval and axis; used by sobel etc.
+    """
+
+    AXIS = 'AXIS'
+    axis_modes = ['Horizontal edges', 'Vertical edges', 'Magnitude']
+
+    def initAlgorithm(self, config):
+        
+        self.addParameter(QgsProcessingParameterEnum(
+            self.AXIS,
+            self.tr('Axis'),
+            self.axis_modes,
+            defaultValue=0)) 
+        
+        super().initAlgorithm(config)
+           
+    def get_parameters(self, parameters, context):
+        """Axis parameter must be set in inheriting class to implement magnitude"""
+        kargs = super().get_parameters(parameters, context)
+
+        self.axis_mode = self.parameterAsInt(parameters, self.AXIS, context) 
+      
         return kargs

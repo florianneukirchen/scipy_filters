@@ -30,6 +30,7 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 
 __revision__ = '$Format:%H$'
 
+import numpy as np
 from osgeo import gdal
 from scipy import ndimage
 from qgis.PyQt.QtCore import QCoreApplication
@@ -42,7 +43,8 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterBand,
                         )
 from .scipy_algorithm_baseclasses import (SciPyAlgorithm,
-                                          SciPyAlgorithmWithMode)
+                                          SciPyAlgorithmWithMode,
+                                          SciPyAlgorithmWithModeAxis)
 
 
 
@@ -63,10 +65,8 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
             <i>Nearest</i> (extend by replicating the nearest pixel), \
             <i>Mirror</i> (extend by reflecting about the center of last pixel), \
             <i>Wrap</i> (extend by wrapping around to the opposite edge).
-
-
-
             """
+    
     # The function to be called, to be overwritten
     def get_fct(self):
         return ndimage.laplace
@@ -74,3 +74,39 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
     def createInstance(self):
         return SciPyLaplaceAlgorithm()    
 
+class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
+    # Overwrite constants of base class
+    _name = 'sobel'
+    _displayname = 'Sobel'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "edges" 
+    _help = """
+            Sobel filter.\
+            Calculated for every band with\
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Axis</b>: Find horizontal or vertical edges (or combined as magnitude).
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.myfunction
+
+    def myfunction(self, input, **kargs):
+        if self.axis_mode in (0,1):
+            kargs['axis'] = self.axis_mode
+            return ndimage.sobel(input, **kargs)
+        else:
+            horiz = ndimage.sobel(input, axis=0, **kargs)
+            vertical = ndimage.sobel(input, axis=1, **kargs)
+            return np.hypot(horiz, vertical)
+
+    def createInstance(self):
+        return SciPySobelAlgorithm()  
+    
