@@ -42,51 +42,17 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterBand,
                         )
 
+from .scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
 
-class SciPyGaussianAlgorithm(QgsProcessingAlgorithm):
+
+class SciPyAlgorithmWithSigma(SciPyAlgorithmWithMode):
     """
-    Gaussian Filter (Blur)
-
-
+    Base class with mode and sigma for any algorithm using gaussian.
     """
 
-    # Constants used to refer to parameters and outputs. They will be
-    # used when calling the algorithm from another algorithm, or when
-    # calling from the QGIS console.
-
-    OUTPUT = 'OUTPUT'
-    INPUT = 'INPUT'
-    # BANDS = 'BANDS'
     SIGMA = 'SIGMA'
-    ORDER = 'ORDER'
-    MODE = 'MODE'
-    CVAL = 'CVAL'
-    TRUNCATE = 'TRUNCATE'
-    # RADIUS = 'RADIUS'
 
-
-    def initAlgorithm(self, config):
-        """
-        Here we define the inputs and output of the algorithm, along
-        with some other properties.
-        """
-
-        # Add parameters
-        self.addParameter(
-            QgsProcessingParameterRasterLayer(
-                self.INPUT,
-                self.tr('Input layer'),
-            )
-        )
-
-        # self.addParameter(
-        #     QgsProcessingParameterBand(
-        #         self.BANDS,
-        #         self.tr('Bands'),
-        #         parentLayerParameterName=self.INPUT,
-        #         allowMultiple = True,
-        #     )
-        # )
+    def insert_parameters(self, config):
 
         self.addParameter(QgsProcessingParameterNumber(
             self.SIGMA,
@@ -97,36 +63,102 @@ class SciPyGaussianAlgorithm(QgsProcessingAlgorithm):
             minValue=0, 
             maxValue=100
             ))
+        
+        super().insert_parameters(config)
+
+    
+    def get_parameters(self, parameters, context):
+        kargs = super().get_parameters(parameters, context)
+        kargs['sigma'] = self.parameterAsDouble(parameters, self.SIGMA, context)
+        return kargs
+
+
+class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
+    """
+    Gradient magnitude using Gaussian derivatives.
+
+
+    """
+
+    # Overwrite constants of base class
+    _name = 'gaussian_laplace'
+    _displayname = 'Gaussian Laplace'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "edges" 
+    _help = """
+            Laplace filter using Gaussian second derivatives. \
+            Calculated for every band with gaussian_laplace from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Sigma</b> Standard deviation of the gaussian filter.
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return ndimage.gaussian_laplace
+
+    def createInstance(self):
+        return SciPyGaussianLaplaceAlgorithm()
+
+
+class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
+    """
+    Gaussian Filter (Blur) using scipy.ndimage.gaussian_filter
+
+
+    """
+
+    TRUNCATE = 'TRUNCATE'
+    ORDER = 'ORDER'
+
+    # Overwrite constants of base class
+    _name = 'gaussian'
+    _displayname = 'Gaussian filter (blur)'
+    _outputname = 'Gaussian' 
+    _groupid = "" 
+    _help = """
+            Gaussian filter (blur with a gaussian kernel). \
+            Calculated for every band with gaussian_filter from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+            <b>Sigma</b> Standard deviation of a gaussian kernel.
+
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+
+            <b>Order</b> Optionally use first, second or third derivative of gaussian.
+            <b>Truncate</b> Radius of kernel in standard deviations.
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return ndimage.gaussian_filter
+    
+    def initAlgorithm(self, config):
+        # Call the super function first
+        # (otherwise input is not the first parameter in the GUI)
+        super().initAlgorithm(config)
 
         self.order_options = ["0 (Gaussian)", 
                               "1 (First derivative of Gaussian)", 
                               "2 (Second derivative of Gaussian)", 
                               "3 (Third derivative of Gaussian)"]
-
+        
         self.addParameter(QgsProcessingParameterEnum(
             self.ORDER,
             self.tr('Order'),
             self.order_options,
             defaultValue=0)) 
-
-        self.modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
-
-        self.addParameter(QgsProcessingParameterEnum(
-            self.MODE,
-            self.tr('Border Mode'),
-            self.modes,
-            defaultValue=0)) 
         
-        self.addParameter(QgsProcessingParameterNumber(
-            self.CVAL,
-            self.tr('Constant value past edges for border mode "constant"'),
-            QgsProcessingParameterNumber.Type.Double,
-            defaultValue=0, 
-            optional=True, 
-            minValue=0, 
-            # maxValue=100
-            ))        
-
         self.addParameter(QgsProcessingParameterNumber(
             self.TRUNCATE,
             self.tr('Truncate filter at x standard deviations'),
@@ -136,139 +168,22 @@ class SciPyGaussianAlgorithm(QgsProcessingAlgorithm):
             minValue=1, 
             # maxValue=100
             ))    
-
-        # I get an excepton with radius
-
-        # self.addParameter(QgsProcessingParameterNumber(
-        #     self.RADIUS,
-        #     self.tr('Radius of filter kernel in pixels (optional, overwrites truncate)'),
-        #     QgsProcessingParameterNumber.Type.Integer,
-        #     defaultValue=None, 
-        #     optional=True, 
-        #     minValue=0, 
-        #     # maxValue=100
-        #     ))    
-
-        self.addParameter(
-            QgsProcessingParameterRasterDestination(
-                self.OUTPUT,
-            self.tr("Gaussian Blur")))
         
+    def get_parameters(self, parameters, context):
+        kargs = super().get_parameters(parameters, context)
 
-
-
-    def processAlgorithm(self, parameters, context, feedback):
-        """
-        Here is where the processing itself takes place.
-        """
-
-        # Get Parameters
-        kargs = {}
-        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
-        # bands = self.parameterAsMatrix(parameters, self.BANDS, context)
-
-
-        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
-        kargs['sigma'] = self.parameterAsDouble(parameters, self.SIGMA, context)
         kargs['order'] = self.parameterAsInt(parameters, self.ORDER, context) 
-        mode = self.parameterAsInt(parameters, self.MODE, context) 
-        kargs['mode'] = self.modes[mode]
-
-        cval = self.parameterAsDouble(parameters, self.CVAL, context)
-        if cval:
-            kargs['cval'] = cval
-
+       
         truncate = self.parameterAsDouble(parameters, self.TRUNCATE, context)
         if truncate and truncate > 0:
             kargs['truncate'] = truncate
 
-        # radius = self.parameterAsDouble(parameters,self.RADIUS, context)
-        # if radius and radius > 0:
-        #     kargs['radius'] = radius
+        return kargs
 
-
-        # Open Raster with GDAL
-        self.ds = gdal.Open(inputlayer.source())
-
-        if not self.ds:
-            raise Exception("Failed to open Raster Layer")
-        
-        # x in gdal is y dimension un numpy (the first dimension)
-        xs , ys = self.ds.RasterXSize , self.ds.RasterYSize
-
-        self.bandcount = self.ds.RasterCount
-        self.gt = self.ds.GetGeoTransform()
-        
-        self.nodata = self.ds.GetRasterBand(1).GetNoDataValue()
-
-
-        # Prepare output
-        driver = gdal.GetDriverByName('GTiff')
-        self.out_ds = driver.CreateCopy(self.output_raster, self.ds, strict=0)
-
-        # Iterate over bands and calculate gaussian
-
-        for i in range(1, self.bandcount + 1):
-            a = self.ds.GetRasterBand(i).ReadAsArray()
-            filtered = ndimage.gaussian_filter(a, **kargs)
-            self.out_ds.GetRasterBand(i).WriteArray(filtered)
-
-            feedback.setProgress(i * 100 / self.bandcount)
-            if feedback.isCanceled():
-                return {}
-
-        # Close the dataset to write file to disk
-        self.out_ds = None 
-
-        return {self.OUTPUT: self.output_raster}
-
-    def name(self):
-        """
-        Returns the algorithm name, used for identifying the algorithm. This
-        string should be fixed for the algorithm, and must not be localised.
-        The name should be unique within each provider. Names should contain
-        lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return 'gaussian'
-
-    def displayName(self):
-        """
-        Returns the translated algorithm name, which should be used for any
-        user-visible display of the algorithm name.
-        """
-        return self.tr('Gaussian Blur Filter')
-
-    def group(self):
-        """
-        Returns the name of the group this algorithm belongs to. This string
-        should be localised.
-        """
-        return self.tr(self.groupId())
-
-    def groupId(self):
-        """
-        Returns the unique ID of the group this algorithm belongs to. This
-        string should be fixed for the algorithm, and must not be localised.
-        The group id should be unique within each provider. Group id should
-        contain lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return ''
-    
-    def shortHelpString(self):
-      
-        h =  """
-             Gaussian filter (blur with a gaussian kernel). 
-             Sigma: Standard deviation of a gaussian kernel.
-             Order: Optionally use first, second or third derivative of gaussian.
-             Truncate: Radius of kernel in standard deviations.
-             """
-		
-        return self.tr(h)
-
-    def tr(self, string):
-        return QCoreApplication.translate('Processing', string)
+   
 
     def createInstance(self):
         return SciPyGaussianAlgorithm()
+    
+
+

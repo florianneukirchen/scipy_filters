@@ -31,14 +31,18 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 __revision__ = '$Format:%H$'
 
 from qgis.core import QgsProcessingProvider
-from .scipy_gaussian_algorithm import SciPyGaussianAlgorithm
+                                   
 from .scipy_convolve_algorithm import SciPyConvolveAlgorithm
 from .scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm, SciPyGreyMorphologicalAlgorithm)
 from .scipy_tophat_algorithm import SciPyTophatAlgorithm
 from .scipy_morphological_binary_fill_holes import SciPyBinaryFillHolesAlgorithm
 from .scipy_binary_hit_miss import SciPyBinaryHitMissAlgorithm
 from .scipy_gaussian_gradient_magnitude_algorithm import SciPyGaussianGradientMagnitudeAlgorithm
-from .scipy_gaussian_laplace_algorithm import SciPyGaussianLaplaceAlgorithm
+# from .scipy_gaussian_laplace_algorithm import SciPyGaussianLaplaceAlgorithm
+
+from .scipy_gaussian_algorithm import (SciPyGaussianAlgorithm, 
+                                       SciPyGaussianLaplaceAlgorithm)
+
 from .scipy_simple_algorithms import (SciPyLaplaceAlgorithm,
                                       SciPySobelAlgorithm,
                                       SciPyPrewittAlgorithm)

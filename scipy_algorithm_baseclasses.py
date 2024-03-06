@@ -244,6 +244,8 @@ class SciPyAlgorithmWithMode(SciPyAlgorithm):
     modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
 
     def initAlgorithm(self, config):
+        # Call the super function first
+        # (otherwise input is not the first parameter in the GUI)
         super().initAlgorithm(config)
 
         self.addParameter(QgsProcessingParameterEnum(
