@@ -46,49 +46,34 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingException,
                         )
 
+from .scipy_algorithm_baseclasses import SciPyAlgorithm
 
-class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
+
+class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
     """
-    Base Class for Morphological Filters, not to be used directly
+    Base class for morphological filters.
     """
 
-    # Constants used to refer to parameters and outputs. They will be
-    # used when calling the algorithm from another algorithm, or when
-    # calling from the QGIS console.
-
-    OUTPUT = 'OUTPUT'
-    INPUT = 'INPUT'
     ALGORITHM = 'ALGORITHM' 
     STRUCTURE = 'STRUCTURE'
     CUSTOMSTRUCTURE = 'CUSTOMSTRUCTURE'
-    
+
+    _groupid = 'morphological'
 
     def getAlgs(self):
         return ['Dilation', 'Erosion', 'Closing', 'Opening']
+    
 
-
-    def initAlgorithm(self, config):
-        """
-        Here we define the inputs and output of the algorithm, along
-        with some other properties.
-        """
-
-        # Add parameters
-
-        self.addParameter(
-            QgsProcessingParameterRasterLayer(
-                self.INPUT,
-                self.tr('Input layer'),
-            )
-        )
+    def insert_parameters(self, config):
 
         self.algorithms = self.getAlgs()
-
+        
         self.addParameter(QgsProcessingParameterEnum(
             self.ALGORITHM,
             self.tr('Filter'),
             self.algorithms,
             defaultValue=0)) 
+        
 
         self.addParameter(QgsProcessingParameterEnum(
             self.STRUCTURE,
@@ -103,182 +88,33 @@ class SciPyMorphologicalBaseAlgorithm(QgsProcessingAlgorithm):
             multiLine=True,
             optional=True,
             ))
-
-    def checkParameterValues(self, parameters, context): 
-        """base class: check values and call the same function of super class"""   
-        structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
-        if structure == 2:
-            custom = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
-            try:
-                decoded = json.loads(custom)
-                _ = np.array(decoded, dtype=np.float32)
-            except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                return (False, self.tr('Can not parse custom structure string'))
         
-        return super().checkParameterValues(parameters, context)
-
-
-    def morphologyfnct(self, idx):
-        alg = self.algorithms[idx]
-        if alg == 'Dilation':
-            fct = ndimage.binary_dilation
-        elif alg == 'Erosion':
-            fct = ndimage.binary_erosion
-        elif alg == 'Closing':
-            fct = ndimage.binary_closing
-        else:
-            fct = ndimage.binary_opening
-        return fct
-
-
-    def processAlgorithm(self, parameters, context, feedback):
-        """
-        Here is where the processing itself takes place.
-        """
-
-        # Get Parameters
-        self.kargs = {}
-
-        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
-
-        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
+        super().insert_parameters(config)
+           
+    def get_parameters(self, parameters, context):
+        kargs = super().get_parameters(parameters, context)
 
         self.alg = self.parameterAsInt(parameters, self.ALGORITHM, context)
-        self.fct = self.morphologyfnct(self.alg)
-        
 
         structure = self.parameterAsInt(parameters, self.STRUCTURE, context) 
         if structure in (0,1):
-            self.kargs['structure'] = ndimage.generate_binary_structure(2,structure + 1)
+            kargs['structure'] = ndimage.generate_binary_structure(2,structure + 1)
         else:
             structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
-            # Try to parse the Structure
-            try:
-                decoded = json.loads(structure)
-                structure = np.array(decoded, dtype=np.float32)
-            except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                raise QgsProcessingException(self.tr('Can not parse custom structure string!'))
-            self.kargs['structure'] = structure
+            kargs['structure'] = self.str_to_array(structure)
 
-        if isinstance(self, SciPyBinaryMorphologicalAlgorithm):
-            masklayer = self.parameterAsRasterLayer(parameters, self.MASK, context)
-            iterations = self.parameterAsInt(parameters, self.MASK, context)
-            if iterations:
-                self.kargs['iterations'] = iterations
-            bordervalue = self.parameterAsInt(parameters, self.BORDERVALUE, context)
-            if bordervalue:
-                self.kargs['border_value'] = bordervalue
-        else:
-            masklayer = None
+      
+        return kargs
 
-        if isinstance(self, SciPyGreyMorphologicalAlgorithm):
-            size = self.parameterAsInt(parameters, self.SIZE, context)
-            if size:
-                self.kargs['size'] = size
-            footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
-            footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
-            if footprintbool and footprint:
-                # Try to parse the Footprint
-                try:
-                    decoded = json.loads(footprint)
-                    footprint = np.array(decoded, dtype=np.float32)
-                except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                    raise QgsProcessingException(self.tr('Can not parse Footprint string!'))
-                self.kargs['footprint'] = footprint
-            else:
-                if not size:
-                    # Either size or footprint must be set
-                    self.kargs['size'] = 1
-
-            mode = self.parameterAsInt(parameters, self.MODE, context) 
-            self.kargs['mode'] = self.modes[mode]
-
-            cval = self.parameterAsDouble(parameters, self.CVAL, context)
-            if cval:
-                self.kargs['cval'] = cval
-
-                
-
-        # Open Raster with GDAL
-        self.ds = gdal.Open(inputlayer.source())
-
-        if not self.ds:
-            raise Exception("Failed to open Raster Layer")
+    def checkParameterValues(self, parameters, context): 
+        structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
+        if structure == 2:
+            structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
+            ok, s = self.check_structure(structure)
+            if not ok:
+                return (ok, s)
         
-        self.bandcount = self.ds.RasterCount
-
-        if masklayer:
-            self.mask_ds = gdal.Open(masklayer.source())
-            if not self.mask_ds:
-                raise Exception("Failed to open Mask Layer")
-            
-            # Mask must have same crs etc.
-            if not (self.mask_ds.GetProjection() == self.ds.GetProjection()
-                    and self.mask_ds.RasterXSize == self.ds.RasterXSize
-                    and self.mask_ds.RasterYSize == self.ds.RasterYSize
-                    and self.mask_ds.GetGeoTransform() == self.ds.GetGeoTransform()):
-                feedback.pushInfo("Mask layer does not match input layer, reprojecting mask.")
-
-                geoTransform = self.ds.GetGeoTransform()
-
-                kwargs = {"format": "GTiff", 'resampleAlg':'near'}
-                kwargs["xRes"] = geoTransform[1]
-                kwargs["yRes"] = abs(geoTransform[5])
-
-                minx = geoTransform[0]
-                maxy = geoTransform[3]
-                maxx = minx + geoTransform[1] * self.ds.RasterXSize
-                miny = maxy + geoTransform[5] * self.ds.RasterYSize
-
-                kwargs["outputBounds"] = (minx, miny, maxx, maxy)
-
-                warped_mask = gdal.Warp("/vsimem/tmpmask", self.mask_ds, **kwargs)
-                self.kargs['mask'] = warped_mask.GetRasterBand(1).ReadAsArray()
-            else:
-                self.kargs['mask'] = self.mask_ds.GetRasterBand(1).ReadAsArray()
-
-        # Prepare output
-        driver = gdal.GetDriverByName('GTiff')
-        self.out_ds = driver.CreateCopy(self.output_raster, self.ds, strict=0)
-
-        # Iterate over bands and calculate 
-
-        for i in range(1, self.bandcount + 1):
-            a = self.ds.GetRasterBand(i).ReadAsArray()
-            filtered = self.fct(a, **self.kargs)
-            self.out_ds.GetRasterBand(i).WriteArray(filtered)
-
-            feedback.setProgress(i * 100 / self.bandcount)
-            if feedback.isCanceled():
-                return {}
-
-        # Close the dataset to write file to disk
-        self.out_ds = None 
-
-
-        return {self.OUTPUT: self.output_raster}
-    
-
-    def group(self):
-        """
-        Returns the name of the group this algorithm belongs to. This string
-        should be localised.
-        """
-        return self.tr("Morphological Filters")
-
-    def groupId(self):
-        """
-        Returns the unique ID of the group this algorithm belongs to. This
-        string should be fixed for the algorithm, and must not be localised.
-        The group id should be unique within each provider. Group id should
-        contain lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return 'morphological'
-
-    def tr(self, string):
-        return QCoreApplication.translate('Processing', string)
-
+        return super().checkParameterValues(parameters, context)
 
 
 class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
@@ -287,21 +123,42 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     MASK = 'MASK'
     BORDERVALUE = 'BORDERVALUE'
 
+    # Overwrite constants of base class
+    _name = 'binary_morphology'
+    _displayname = 'Binary dilation, erosion, closing, opening'
+    _outputname = 'Binary morphology' # If set to None, the displayname is used 
+    _help = """
+            Binary morphological filters: dilation, erosion, closing, and opening. \
+            Calculated for every band with binary_dilation, \
+            binary_erosion, binary_closing, binary_opening respectively from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-    def morphologyfnct(self, idx):
-        alg = self.algorithms[idx]
-        if alg == 'Dilation':
-            fct = ndimage.binary_dilation
-        elif alg == 'Erosion':
-            fct = ndimage.binary_erosion
-        elif alg == 'Closing':
-            fct = ndimage.binary_closing
-        else:
-            fct = ndimage.binary_opening
-        return fct
+            <b>Dilation</b> Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
+            <b>Erosion</b> Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
+            <b>Closing</b> Perform dilation and then erosion. Fills small holes, large shapes are preserved.
+            <b>Opening</b> Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
+            
+            <b>Structure</b> Structuring element of filter, can be cross, square or custom. 
+            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom".
+            <b>Iterations</b> Each step of filter is repeated this number of times.
+            <b>Border value</b> Valute at border of output array, defaults to 0. 
+            <b>Mask</b> Optional mask layer.
+            """
     
+    # The function to be called
+    def get_fct(self):
+        if self.alg == 1:
+            fct = ndimage.binary_erosion
+        elif self.alg == 2:
+            fct = ndimage.binary_closing
+        elif self.alg == 3:
+            fct = ndimage.binary_opening
+        else:
+            fct = ndimage.binary_dilation
+        
+        return fct
 
-
+ 
     def initAlgorithm(self, config):
         super().initAlgorithm(config)
 
@@ -330,54 +187,26 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             )
         )
 
-        self.addParameter(
-            QgsProcessingParameterRasterDestination(
-                self.OUTPUT,
-            self.tr("Binary Morphology")))
+    def get_parameters(self, parameters, context):
+        kargs = super().get_parameters(parameters, context)
 
-    def name(self):
-        """
-        Returns the algorithm name, used for identifying the algorithm. This
-        string should be fixed for the algorithm, and must not be localised.
-        The name should be unique within each provider. Names should contain
-        lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return 'binary_morphology'
+        self.masklayer = self.parameterAsRasterLayer(parameters, self.MASK, context)
 
-    def displayName(self):
-        """
-        Returns the translated algorithm name, which should be used for any
-        user-visible display of the algorithm name.
-        """
-        return self.tr('Binary dilation, erosion, closing, opening')
-    
-    def shortHelpString(self):
-        h = """
-            Binary morphological filters: dilation, erosion, closing, and opening.
-            Dilation: Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
-            Erosion: Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
-            Closing: Perform dilation and then erosion. Fills small holes, large shapes are preserved.
-            Opening: Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
-            
+        iterations = self.parameterAsInt(parameters, self.MASK, context)
+        if iterations:
+            kargs['iterations'] = iterations
 
-            Parameters:
-            Structure: Structuring element of filter. 
-            Custom structure: String representation of array, only used if "Structure" is set to "Custom".
-            Iterations: Each step of filter is repeated this number of times.
-            Border value: Valute at border of output array, defaults to 0. 
-            Mask: Optional mask layer.
-            """
-    
-        return self.tr(h)    
+        bordervalue = self.parameterAsInt(parameters, self.BORDERVALUE, context)
+        if bordervalue:
+            kargs['border_value'] = bordervalue
+
+        return kargs
     
     def createInstance(self):
         return SciPyBinaryMorphologicalAlgorithm()
 
 
-
-
-class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
+  class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
     SIZE = 'SIZE'
     MODE = 'MODE'
@@ -385,11 +214,52 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     FOOTPRINT = 'FOOTPRINT'
     BOOLFOOTPRINT = 'BOOLFOOTPRINT'
 
+    modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
 
+    # Overwrite constants of base class
+    _name = 'grey_morphology'
+    _displayname = 'Grey dilation, erosion, closing, opening'
+    _outputname = 'Grey morphology' # If set to None, the displayname is used 
+    _help = """
+            Grey morphological filters: dilation, erosion, closing, and opening. \
+            Calculated for every band with grey_dilation, \
+            grey_erosion, gey_closing, grey_opening respectively from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dilation</b> Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
+            <b>Erosion</b> Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
+            <b>Closing</b> Perform dilation and then erosion. Fills small holes, large shapes are preserved.
+            <b>Opening</b> Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
+            
+            <b>Structure</b> Structuring element of filter, can be cross, square or custom. 
+            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom".
+            <b>Size</b> Size of flat and full structuring element, optional if footprint or structure is provided.
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            <b>Footprint</b> Positions of elements of a flat structuring element used for the filter (string representation of array, only used if checkbox is checked).
+            """
+    
+    # The function to be called
+    def get_fct(self):
+        if self.alg == 1:
+            fct = ndimage.grey_erosion
+        elif self.alg == 2:
+            fct = ndimage.grey_closing
+        elif self.alg == 3:
+            fct = ndimage.grey_opening
+        else:
+            fct = ndimage.grey_dilation
+        
+        return fct
+
+ 
     def initAlgorithm(self, config):
         super().initAlgorithm(config)
 
-        
         self.addParameter(QgsProcessingParameterNumber(
             self.SIZE,
             self.tr('Size of flat structuring element (Optional if footprint or structure provided, 0 for no size)'),
@@ -400,13 +270,10 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             # maxValue=100
             ))    
         
-    
-        self.modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
-
         self.addParameter(QgsProcessingParameterEnum(
             self.MODE,
             self.tr('Border Mode'),
-            self.modes,
+            [mode.capitalize() for mode in self.modes],
             defaultValue=0)) 
         
         self.addParameter(QgsProcessingParameterNumber(
@@ -417,8 +284,8 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             optional=True, 
             minValue=0, 
             # maxValue=100
-            ))    
-
+            ))      
+        
         self.addParameter(QgsProcessingParameterBoolean(
             self.BOOLFOOTPRINT,
             self.tr('Use footprint array'),
@@ -426,84 +293,59 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             optional=True
             )) 
         
-        default_kernel = "[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]"
 
         self.addParameter(QgsProcessingParameterString(
             self.FOOTPRINT,
             self.tr('Footprint array'),
-            defaultValue=default_kernel,
+            defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
             multiLine=True,
             optional=True,
             ))
-        
-        self.addParameter(
-            QgsProcessingParameterRasterDestination(
-                self.OUTPUT,
-            self.tr("Grey Morphology")))
 
-
-    def checkParameterValues(self, parameters, context):     
-        """Grey Morphology: check footprint and call checkvalues of super"""
+    def checkParameterValues(self, parameters, context): 
         footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
-
         if footprintbool and not footprint.strip() == "":
-            try:
-                decoded = json.loads(footprint)
-                _ = np.array(decoded, dtype=np.float32)
-            except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                return (False, self.tr('Can not parse footprint string'))
+            ok, _ = self.check_structure(footprint)
+            if not ok:
+                return (ok, self.tr('Can not parse footprint string'))
         
         return super().checkParameterValues(parameters, context)
-
-
-
-    def morphologyfnct(self, idx):
-        alg = self.algorithms[idx]
-        if alg == 'Dilation':
-            fct = ndimage.grey_dilation
-        elif alg == 'Erosion':
-            fct = ndimage.grey_erosion
-        elif alg == 'Closing':
-            fct = ndimage.grey_closing
-        else:
-            fct = ndimage.grey_opening
-        return fct
-
-    def name(self):
-        """
-        Returns the algorithm name, used for identifying the algorithm. This
-        string should be fixed for the algorithm, and must not be localised.
-        The name should be unique within each provider. Names should contain
-        lowercase alphanumeric characters only and no spaces or other
-        formatting characters.
-        """
-        return 'grey_morphology'
-
-    def displayName(self):
-        """
-        Returns the translated algorithm name, which should be used for any
-        user-visible display of the algorithm name.
-        """
-        return self.tr('Grey Dilation, Erosion, Closing, Opening') 
-
-    def shortHelpString(self):
-        h = """
-            Grey morphological filters: dilation, erosion, closing, and opening.  
-            Dilation: Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
-            Erosion: Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
-            Closing: Perform dilation and then erosion. Fills small holes, large shapes are preserved.
-            Opening: Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
-            Parameters:
-            Size: Size of flat and full structuring element, optional if footprint or structure is provided.
-            Structure: Structuring element of filter. 
-            Custom structure: String representation of array, only used if "Structure" is set to "Custom".
-            Border mode: Determine how input is extended around the edges.
-            Footprint: Positions of elements of a flat structuring element used for the filter (string representation of array, only used if checkbox is checked).
-            Border mode: Determine how input is extended around the edges. 
-            """
-        return self.tr(h)  
     
+
+    def get_parameters(self, parameters, context):
+        kargs = super().get_parameters(parameters, context)
+
+        size = self.parameterAsInt(parameters, self.SIZE, context)
+        if size:
+            kargs['size'] = size
+        footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
+        footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
+        if footprintbool and footprint:
+            # Try to parse the Footprint
+            try:
+                decoded = json.loads(footprint)
+                footprint = np.array(decoded, dtype=np.float32)
+            except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                raise QgsProcessingException(self.tr('Can not parse Footprint string!'))
+            kargs['footprint'] = footprint
+        else:
+            if not size:
+                # Either size or footprint must be set
+                kargs['size'] = 1
+
+        mode = self.parameterAsInt(parameters, self.MODE, context) 
+        kargs['mode'] = self.modes[mode]
+
+        cval = self.parameterAsDouble(parameters, self.CVAL, context)
+        if cval:
+            kargs['cval'] = cval
+
+        return kargs
+    
+ 
+
+
 
     def createInstance(self):
         return SciPyGreyMorphologicalAlgorithm()

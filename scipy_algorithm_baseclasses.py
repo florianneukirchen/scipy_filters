@@ -32,6 +32,8 @@ __revision__ = '$Format:%H$'
 
 from osgeo import gdal
 from scipy import ndimage
+import numpy as np
+import json
 from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import (QgsProcessing,
                        QgsProcessingAlgorithm,
@@ -40,11 +42,14 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterBand,
+                       QgsProcessingParameterString
                         )
+
 
 # Group IDs and group names
 groups = {
     'edges': 'Edges',
+    'morphological': "Morphological Filters",
 }
 
 
@@ -102,6 +107,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         with some other properties.
         """
 
+        # Some Algorithms will add a masklayer
+        self.masklayer = None
+
         # Add parameters
         self.addParameter(
             QgsProcessingParameterRasterLayer(
@@ -146,8 +154,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         # Get Parameters
         kargs = self.get_parameters(parameters, context)
 
-        print(kargs)
-
         self.fct = self.get_fct()
 
         # Open Raster with GDAL
@@ -158,14 +164,44 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         
         self.bandcount = self.ds.RasterCount
 
+        # Eventually open mask layer 
+        if self.masklayer:
+            self.mask_ds = gdal.Open(self.masklayer.source())
+            if not self.mask_ds:
+                raise Exception(self.tr("Failed to open Mask Layer"))
+            
+            # Mask must have same crs etc.
+            if not (self.mask_ds.GetProjection() == self.ds.GetProjection()
+                    and self.mask_ds.RasterXSize == self.ds.RasterXSize
+                    and self.mask_ds.RasterYSize == self.ds.RasterYSize
+                    and self.mask_ds.GetGeoTransform() == self.ds.GetGeoTransform()):
+                feedback.pushInfo("Mask layer does not match input layer, reprojecting mask.")
+
+                geoTransform = self.ds.GetGeoTransform()
+
+                kwargs_w = {"format": "GTiff", 'resampleAlg':'near'}
+                kwargs_w["xRes"] = geoTransform[1]
+                kwargs_w["yRes"] = abs(geoTransform[5])
+
+                minx = geoTransform[0]
+                maxy = geoTransform[3]
+                maxx = minx + geoTransform[1] * self.ds.RasterXSize
+                miny = maxy + geoTransform[5] * self.ds.RasterYSize
+
+                kwargs_w["outputBounds"] = (minx, miny, maxx, maxy)
+
+                warped_mask = gdal.Warp("/vsimem/tmpmask", self.mask_ds, **kwargs_w)
+                kargs['mask'] = warped_mask.GetRasterBand(1).ReadAsArray()
+            else:
+                feedback.pushInfo("Mask layer does match input layer.")
+                kargs['mask'] = self.mask_ds.GetRasterBand(1).ReadAsArray()
+
+
         # Prepare output
         driver = gdal.GetDriverByName('GTiff')
         self.out_ds = driver.CreateCopy(self.output_raster, self.ds, strict=0)
 
         # Iterate over bands and calculate 
-
-        print(self.fct)
-
         for i in range(1, self.bandcount + 1):
             a = self.ds.GetRasterBand(i).ReadAsArray()
             # The actual function
@@ -181,6 +217,24 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         self.out_ds = None 
 
         return {self.OUTPUT: self.output_raster}
+
+    def str_to_array(self, s):
+        try:
+            decoded = json.loads(s)
+            a = np.array(decoded, dtype=np.float32)
+        except (json.decoder.JSONDecodeError, ValueError, TypeError):
+            raise QgsProcessingException(self.tr('Can not parse custom structure string!'))
+        return a
+
+
+    def check_structure(self, s):
+        try:
+            decoded = json.loads(s)
+            _ = np.array(decoded, dtype=np.float32)
+        except (json.decoder.JSONDecodeError, ValueError, TypeError):
+            return (False, self.tr('Can not parse custom structure string'))
+        return (True, "")
+
 
     def name(self):
         """
@@ -285,16 +339,6 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
     AXIS = 'AXIS'
     axis_modes = ['Horizontal edges', 'Vertical edges', 'Magnitude']
 
-    # def initAlgorithm(self, config):
-        
-    #     self.addParameter(QgsProcessingParameterEnum(
-    #         self.AXIS,
-    #         self.tr('Axis'),
-    #         self.axis_modes,
-    #         defaultValue=0)) 
-        
-    #     super().initAlgorithm(config)
-
     def insert_parameters(self, config):
         
         self.addParameter(QgsProcessingParameterEnum(
@@ -312,3 +356,4 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
         self.axis_mode = self.parameterAsInt(parameters, self.AXIS, context) 
       
         return kargs
+    
