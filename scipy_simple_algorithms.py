@@ -44,7 +44,8 @@ from qgis.core import (QgsProcessing,
                         )
 from .scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           SciPyAlgorithmWithMode,
-                                          SciPyAlgorithmWithModeAxis)
+                                          SciPyAlgorithmWithModeAxis,
+                                          SciPyStatisticalAlgorithm)
 
 
 
@@ -173,3 +174,123 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
     def createInstance(self):
         return SciPyPrewittAlgorithm()  
     
+
+
+class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
+    # Overwrite constants of base class
+    _name = 'median'
+    _displayname = 'Median filter'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "statistic" 
+    _help = """
+            Median filter.\
+            Calculated with median_filter from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Size</b> Size of filter if no footprint is given.
+            <b>Footprint</b> String representation of array, specifiying \
+            the kernel of the filter. \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
+
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return ndimage.median_filter
+        
+    def createInstance(self):
+        return SciPyMedianAlgorithm()  
+
+
+class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
+    # Overwrite constants of base class
+    _name = 'minimum'
+    _displayname = 'Minimum filter'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "statistic" 
+    _help = """
+            Minimum filter.\
+            Calculated with minimum_filter from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Size</b> Size of filter if no footprint is given.
+            <b>Footprint</b> String representation of array, specifiying \
+            the kernel of the filter. \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
+
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return ndimage.minimum_filter
+        
+    def createInstance(self):
+        return SciPyMinimumAlgorithm()      
+    
+
+class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
+    # Overwrite constants of base class
+    _name = 'maximum'
+    _displayname = 'Maximum filter'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "statistic" 
+    _help = """
+            Maximum filter.\
+            Calculated with maximum_filter from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Size</b> Size of filter if no footprint is given.
+            <b>Footprint</b> String representation of array, specifiying \
+            the kernel of the filter. \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
+
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return ndimage.maximum_filter
+        
+    def createInstance(self):
+        return SciPyMaximumAlgorithm() 

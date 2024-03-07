@@ -45,6 +45,7 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterBand,
                        QgsProcessingParameterString,
                        QgsProcessingLayerPostProcessorInterface,
+                       QgsProcessingParameterBoolean,
                        QgsProcessingException,
                         )
 
@@ -53,6 +54,7 @@ from qgis.core import (QgsProcessing,
 groups = {
     'edges': 'Edges',
     'morphological': "Morphological Filters",
+    'statistic': 'Statistical Filters',
 }
 
 
@@ -495,4 +497,84 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
         return super().checkParameterValues(parameters, context)
     
 
+
+class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
+    """
+    Base class for median, minimum etc.
+    """
+    SIZE = 'SIZE'
+    FOOTPRINT = 'FOOTPRINT'
+    BOOLFOOTPRINT = 'BOOLFOOTPRINT'
+
+    def initAlgorithm(self, config):
+        super().initAlgorithm(config)
+
+        self.addParameter(QgsProcessingParameterNumber(
+            self.SIZE,
+            self.tr('Size of flat structuring element (either size or footprint must be given, with footprint, size is ignored)'),
+            QgsProcessingParameterNumber.Type.Integer,
+            defaultValue=0, 
+            optional=True, 
+            minValue=0, 
+            maxValue=20, # Large sizes are really slow
+            ))    
+        
+       
+        self.addParameter(QgsProcessingParameterBoolean(
+            self.BOOLFOOTPRINT,
+            self.tr('Use footprint array'),
+            defaultValue=True, 
+            optional=True
+            )) 
+        
+
+        self.addParameter(QgsProcessingParameterString(
+            self.FOOTPRINT,
+            self.tr('Footprint array'),
+            defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
+            multiLine=True,
+            optional=True,
+            ))
+
+    def checkParameterValues(self, parameters, context): 
+        footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
+        footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
+        if footprintbool and not footprint.strip() == "":
+            dims = 2
+            if self._dimension == self.Dimensions.nD:
+                dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
+                if dim_option == 1:
+                    dims = 3
+
+            ok, _ = self.check_structure(footprint, dims)
+            if not ok:
+                return (ok, self.tr('Can not parse footprint string or dimensions are wrong'))
+        
+        return super().checkParameterValues(parameters, context)
+    
+
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
+
+        size = self.parameterAsInt(parameters, self.SIZE, context)
+        if size:
+            kwargs['size'] = size
+        footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
+        footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
+        if footprintbool and footprint:
+            kwargs['footprint'] = self.str_to_array(footprint)
+        else:
+            if not size:
+                # Either size or footprint must be set
+                kwargs['size'] = 1
+
+        mode = self.parameterAsInt(parameters, self.MODE, context) 
+        kwargs['mode'] = self.modes[mode]
+
+        cval = self.parameterAsDouble(parameters, self.CVAL, context)
+        if cval:
+            kwargs['cval'] = cval
+
+        return kwargs
+    
 

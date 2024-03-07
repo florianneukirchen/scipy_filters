@@ -48,7 +48,10 @@ from .scipy_gaussian_algorithm import (SciPyGaussianAlgorithm,
 
 from .scipy_simple_algorithms import (SciPyLaplaceAlgorithm,
                                       SciPySobelAlgorithm,
-                                      SciPyPrewittAlgorithm)
+                                      SciPyPrewittAlgorithm,
+                                      SciPyMedianAlgorithm,
+                                      SciPyMaximumAlgorithm,
+                                      SciPyMinimumAlgorithm)
 
 class SciPyFiltersProvider(QgsProcessingProvider):
 
@@ -81,6 +84,9 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyLaplaceAlgorithm()) 
         self.addAlgorithm(SciPySobelAlgorithm()) 
         self.addAlgorithm(SciPyPrewittAlgorithm()) 
+        self.addAlgorithm(SciPyMedianAlgorithm()) 
+        self.addAlgorithm(SciPyMaximumAlgorithm())
+        self.addAlgorithm(SciPyMinimumAlgorithm())
 
 
 
