@@ -87,8 +87,12 @@ class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
     _groupid = "edges" 
     _help = """
             Laplace filter using Gaussian second derivatives. \
-            Calculated for every band with gaussian_laplace from \
+            Calculated with gaussian_laplace from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
 
             <b>Sigma</b> Standard deviation of the gaussian filter.
             <b>Border mode</b> determines how input is extended around \
@@ -124,8 +128,12 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
     _groupid = "" 
     _help = """
             Gaussian filter (blur with a gaussian kernel). \
-            Calculated for every band with gaussian_filter from \
+            Calculated with gaussian_filter from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
             <b>Sigma</b> Standard deviation of a gaussian kernel.
 
             <b>Border mode</b> determines how input is extended around \
@@ -201,9 +209,12 @@ class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
     _groupid = "edges" 
     _help = """
             Gradient magnitude using Gaussian derivatives. \
-            Calculated for every band with \
-            gaussian_gradient_magnitude from \
+            Calculated with gaussian_gradient_magnitude from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
 
             <b>Sigma</b> Standard deviation of the gaussian filter.
             <b>Border mode</b> determines how input is extended around \

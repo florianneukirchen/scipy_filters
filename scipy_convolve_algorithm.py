@@ -63,11 +63,19 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
     _groupid = ''
     _help = """
             Convolve raster with given kernel. \
-            Calculated for every band with  \
-            convolve from \
+            Calculated with convolve from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-            <b>Kernel</b> String representation of array.
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Kernel</b> String representation of array. \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
             <b>Normalization</b> Normalize the kernel by dividing through given value; set to 0 to devide through the sum of kernel values.
             <b>Origin</b> Shift the filter
 
