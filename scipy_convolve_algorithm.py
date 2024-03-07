@@ -67,7 +67,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
             convolve from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-            <b>Kernel</b> String representation of array, only used if "Structure" is set to "Custom".
+            <b>Kernel</b> String representation of array.
             <b>Normalization</b> Normalize the kernel by dividing through given value; set to 0 to devide through the sum of kernel values.
             <b>Origin</b> Shift the filter
 
@@ -140,7 +140,14 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
     def checkParameterValues(self, parameters, context): 
 
         structure = self.parameterAsString(parameters, self.KERNEL, context)
-        ok, s = self.check_structure(structure)
+
+        dims = 2
+        if self._dimension == self.Dimensions.nD:
+            dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
+            if dim_option == 1:
+                dims = 3
+
+        ok, s = self.check_structure(structure, dims)
         if not ok:
             return (ok, s)
         
