@@ -78,7 +78,7 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
         self.addParameter(QgsProcessingParameterEnum(
             self.STRUCTURE,
             self.tr('Structure'),
-            ["Cross", "Square", "Custom"],
+            ["Cross", "Square (2D) / Ball (3D)", "Cube (only 3D)", "Custom"],
             defaultValue=1)) 
 
         self.addParameter(QgsProcessingParameterString(
@@ -93,8 +93,21 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
         kwargs = super().get_parameters(parameters, context)
 
         structure = self.parameterAsInt(parameters, self.STRUCTURE, context) 
+
+        dims = 2
+
+        if self._dimension == self.Dimensions.threeD:
+            dims = 3
+        
         if structure in (0,1):
-            kwargs['structure'] = ndimage.generate_binary_structure(2,structure + 1)
+            kwargs['structure'] = ndimage.generate_binary_structure(dims, structure + 1)
+        elif structure == 2:
+            # Cube only in 3D
+            if dims == 2:
+                raise Exception(self.tr("Cube only for 3D"))
+            else:
+                kwargs['structure'] = ndimage.generate_binary_structure(3,3)
+
         else:
             structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
             kwargs['structure'] = self.str_to_array(structure)
@@ -104,12 +117,23 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
     
     def checkParameterValues(self, parameters, context): 
         structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
-        if structure == 2:
+
+        dims = 2
+        if self._dimension == self.Dimensions.nD:
+            dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
+            if dim_option == 1:
+                dims = 3
+
+        if structure == 2 and dims == 2:
+            # No Cube in 2D
+            return (False, "No cube in 2D.")
+        
+        if structure == 3:
             structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
-            ok, s = self.check_structure(structure)
+            ok, s = self.check_structure(structure, dims)
             if not ok:
                 return (ok, s)
-        
+            
         return super().checkParameterValues(parameters, context)
     
     def createInstance(self):
