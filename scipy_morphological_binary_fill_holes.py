@@ -59,12 +59,22 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
     _groupid = 'morphological'
     _help = """
             Fill holes in binary shapes by using binary dilations. \
-            Calculated for every band with  \
-            binary_fill_holes from \
+            Calculated with binary_fill_holes from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-            <b>Structure</b> Structuring element of filter, can be cross, square or custom. 
-            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom".
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Structure</b> Structuring element of filter, can be cross, square or custom in 2D; \
+            or cross, ball or cube in 3D. 
+
+            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom". \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
             """
     
     # The function to be called
