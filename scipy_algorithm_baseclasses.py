@@ -299,7 +299,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             decoded = json.loads(s)
             a = np.array(decoded, dtype=np.float32)
         except (json.decoder.JSONDecodeError, ValueError, TypeError):
-            raise QgsProcessingException(self.tr('Can not parse string to array!'))
+            raise QgsProcessingException(self.tr(f'Can not parse string to array!'))
 
         # Array must have same number of dims as the filter input,
         # but for 3D input and 2D structure I automatically add one axis

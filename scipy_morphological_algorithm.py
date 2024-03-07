@@ -78,7 +78,7 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
         self.addParameter(QgsProcessingParameterEnum(
             self.STRUCTURE,
             self.tr('Structure'),
-            ["Cross", "Square", "Custom"],
+            ["Cross", "Square (2D) / Ball (3D)", "Cube (only 3D)", "Custom"],
             defaultValue=1)) 
 
         self.addParameter(QgsProcessingParameterString(
@@ -90,27 +90,51 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
             ))
         
         super().insert_parameters(config)
+
            
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
 
         self.alg = self.parameterAsInt(parameters, self.ALGORITHM, context)
 
-        structure = self.parameterAsInt(parameters, self.STRUCTURE, context) 
+        structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
+
+        dims = 2
+
+        if self._dimension == self.Dimensions.threeD:
+            dims = 3
+        
         if structure in (0,1):
-            kwargs['structure'] = ndimage.generate_binary_structure(2,structure + 1)
+            kwargs['structure'] = ndimage.generate_binary_structure(dims, structure + 1)
+        elif structure == 2:
+            # Cube only in 3D
+            if dims == 2:
+                raise Exception(self.tr("Cube only for 3D"))
+            else:
+                kwargs['structure'] = ndimage.generate_binary_structure(3,3)
+
         else:
             structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
             kwargs['structure'] = self.str_to_array(structure)
 
-      
         return kwargs
 
     def checkParameterValues(self, parameters, context): 
         structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
-        if structure == 2:
+
+        dims = 2
+        if self._dimension == self.Dimensions.nD:
+            dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
+            if dim_option == 1:
+                dims = 3
+
+        if structure == 2 and dims == 2:
+            # No Cube in 2D
+            return (False, "No cube in 2D.")
+
+        if structure == 3:
             structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
-            ok, s = self.check_structure(structure)
+            ok, s = self.check_structure(structure, dims)
             if not ok:
                 return (ok, s)
         
@@ -129,17 +153,29 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     _outputname = 'Binary morphology' # If set to None, the displayname is used 
     _help = """
             Binary morphological filters: dilation, erosion, closing, and opening. \
-            Calculated for every band with binary_dilation, \
+            Calculated with binary_dilation, \
             binary_erosion, binary_closing, binary_opening respectively from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
 
             <b>Dilation</b> Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
             <b>Erosion</b> Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
             <b>Closing</b> Perform dilation and then erosion. Fills small holes, large shapes are preserved.
             <b>Opening</b> Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
             
-            <b>Structure</b> Structuring element of filter, can be cross, square or custom. 
-            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom".
+            <b>Structure</b> Structuring element of filter, can be cross, square or custom in 2D; \
+            or cross, ball or cube in 3D. 
+
+            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom". \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
+
             <b>Iterations</b> Each step of filter is repeated this number of times.
             <b>Border value</b> Valute at border of output array, defaults to 0. 
             <b>Mask</b> Optional mask layer.
@@ -230,9 +266,17 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             <b>Erosion</b> Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
             <b>Closing</b> Perform dilation and then erosion. Fills small holes, large shapes are preserved.
             <b>Opening</b> Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
-            
-            <b>Structure</b> Structuring element of filter, can be cross, square or custom. 
-            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom".
+
+            <b>Structure</b> Structuring element of filter, can be cross, square or custom in 2D; \
+            or cross, ball or cube in 3D. 
+
+            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom". \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
+
             <b>Size</b> Size of flat and full structuring element, optional if footprint or structure is provided.
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
@@ -306,9 +350,15 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
         if footprintbool and not footprint.strip() == "":
-            ok, _ = self.check_structure(footprint)
+            dims = 2
+            if self._dimension == self.Dimensions.nD:
+                dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
+                if dim_option == 1:
+                    dims = 3
+
+            ok, _ = self.check_structure(footprint, dims)
             if not ok:
-                return (ok, self.tr('Can not parse footprint string'))
+                return (ok, self.tr('Can not parse footprint string or dimensions are wrong'))
         
         return super().checkParameterValues(parameters, context)
     
@@ -322,13 +372,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
         if footprintbool and footprint:
-            # Try to parse the Footprint
-            try:
-                decoded = json.loads(footprint)
-                footprint = np.array(decoded, dtype=np.float32)
-            except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                raise QgsProcessingException(self.tr('Can not parse Footprint string!'))
-            kwargs['footprint'] = footprint
+            kwargs['footprint'] = self.str_to_array(footprint)
         else:
             if not size:
                 # Either size or footprint must be set
@@ -356,17 +400,28 @@ class SciPyTophatAlgorithm(SciPyGreyMorphologicalAlgorithm):
     _outputname = 'Tophat' # If set to None, the displayname is used 
     _help = """
             Morphological filters: black/white tophat, morphological gradient/laplace. \
-            Calculated for every band with black_tophat, \
+            Calculated with black_tophat, \
             white_tophat, morphological_radient or morphological_laplace, respectively from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
 
             <b>White tophat</b> Difference between input raster and it's opening. Extracts white spots smaller than the structural element.
             <b>Black tophat</b> Difference between input raster and it's closing. Extracts black spots smaller than the structural element.
             <b>Morphological gradient</b> Difference between dilation and erosion.
             <b>Morphological laplace</b> Difference between internal and external gradient.
 
-            <b>Structure</b> Structuring element of filter, can be cross, square or custom. 
-            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom".
+            <b>Structure</b> Structuring element of filter, can be cross, square or custom in 2D; \
+            or cross, ball or cube in 3D. 
+            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom". \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
+
             <b>Size</b> Size of flat and full structuring element, optional if footprint or structure is provided.
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
