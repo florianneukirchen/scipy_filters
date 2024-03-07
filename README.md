@@ -6,7 +6,9 @@ QGIS plugin that gives acces to filters implemented with [SciPy](https://scipy.o
 - Edge detection (sobel, laplace etc.)
 - Convolution with a custom kernel
 
-Most filters work either on each layer seperately, or on a 3D datacube of all bands. 
+Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html),
+a libary to filter images (or arrays, rasters) in n dimensions. These 
+work either on each layer seperately, or on a 3D datacube of all bands. 
 You could also apply a convolution or median filter etc. across the bands for each pixel
 by giving the corresponding array as kernel/footprint (note that "bands" is the first axis):
 
