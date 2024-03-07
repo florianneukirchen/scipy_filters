@@ -98,6 +98,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     _help = """
             Help
             """
+    
+
+    modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
 
     # Return the function to be called, to be overwritten
     def get_fct(self):
@@ -413,8 +416,6 @@ class SciPyAlgorithmWithMode(SciPyAlgorithm):
     MODE = 'MODE'
     CVAL = 'CVAL'
 
-    modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
-
     def initAlgorithm(self, config):
         # Call the super function first
         # (otherwise input is not the first parameter in the GUI)
@@ -495,4 +496,3 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
     
 
 
-    

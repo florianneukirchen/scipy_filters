@@ -252,8 +252,6 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     FOOTPRINT = 'FOOTPRINT'
     BOOLFOOTPRINT = 'BOOLFOOTPRINT'
 
-    modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
-
     # Overwrite constants of base class
     _name = 'grey_morphology'
     _displayname = 'Grey dilation, erosion, closing, opening'
