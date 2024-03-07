@@ -61,12 +61,21 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
     _groupid = 'morphological'
     _help = """
             Preserves pixels whose neighbourhood matches structure1, but does not match the (disjoint) structure2.  \
-            Calculated for every band with  \
-            binary_hit_or_miss from \
+            Calculated with binary_hit_or_miss from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
             <b>Structure 1</b>  String representation of array.
-            <b>Structure 2</b> String representation of array.
+            <b>Structure 2</b> String representation of array, disjoint to structure 1.
+
+            Both structures must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
             """
     
     # The function to be called
@@ -102,23 +111,28 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
 
         structure2 = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE2, context)
-        kwargs['structure2'] = self.str_to_array(structure1)
+        kwargs['structure2'] = self.str_to_array(structure2)
 
         return kwargs
     
     
     def checkParameterValues(self, parameters, context): 
+        dims = 2
+        if self._dimension == self.Dimensions.nD:
+            dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
+            if dim_option == 1:
+                dims = 3
 
         structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE1, context)
-        ok, s = self.check_structure(structure)
+        ok, s = self.check_structure(structure, dims)
         if not ok:
-            s = self.tr("Could not parse structure 1")
+            s = self.tr("Could not parse structure 1 or dimensions do not match")
             return (ok, s)
         
         structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE2, context)
-        ok, s = self.check_structure(structure)
+        ok, s = self.check_structure(structure, dims)
         if not ok:
-            s = self.tr("Could not parse structure 2")
+            s = self.tr("Could not parse structure 2 or dimensions do not match")
             return (ok, s)
         
         return super().checkParameterValues(parameters, context)
