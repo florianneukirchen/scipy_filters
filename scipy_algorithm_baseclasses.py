@@ -206,6 +206,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         
         self.bandcount = self.ds.RasterCount
 
+        # Set to 2D if layer has only one band
+        if self.bandcount == 1:
+            _dimension = self.Dimensions.twoD
+
         # Eventually open mask layer 
         if self.masklayer:
             self.mask_ds = gdal.Open(self.masklayer.source())
@@ -281,6 +285,15 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         return {self.OUTPUT: self.output_raster}
 
 
+    def checkParameterValues(self, parameters, context):
+        dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
+        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        # 3D only possible with more than 1 bands
+        if dim_option == 1 and layer.bandCount() == 1:
+            return (False, self.tr("3D only possible if input layer has more than 1 bands"))
+            
+        return super().checkParameterValues(parameters, context)
+    
     def str_to_array(self, s):
         try:
             decoded = json.loads(s)
