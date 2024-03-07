@@ -51,7 +51,9 @@ from .scipy_simple_algorithms import (SciPyLaplaceAlgorithm,
                                       SciPyPrewittAlgorithm,
                                       SciPyMedianAlgorithm,
                                       SciPyMaximumAlgorithm,
-                                      SciPyMinimumAlgorithm)
+                                      SciPyMinimumAlgorithm,
+                                      SciPyPercentileAlgorithm,
+                                      SciPyRankAlgorithm)
 
 class SciPyFiltersProvider(QgsProcessingProvider):
 
@@ -87,6 +89,8 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyMedianAlgorithm()) 
         self.addAlgorithm(SciPyMaximumAlgorithm())
         self.addAlgorithm(SciPyMinimumAlgorithm())
+        self.addAlgorithm(SciPyPercentileAlgorithm())
+        # self.addAlgorithm(SciPyRankAlgorithm())
 
 
 

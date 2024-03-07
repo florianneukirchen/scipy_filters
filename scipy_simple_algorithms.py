@@ -294,3 +294,135 @@ class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
         
     def createInstance(self):
         return SciPyMaximumAlgorithm() 
+
+
+class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
+
+    PERCENTILE = 'PERCENTILE'
+
+    # Overwrite constants of base class
+    _name = 'percentile'
+    _displayname = 'Percentile filter'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "statistic" 
+    _help = """
+            Percentile filter.\
+            Calculated with percentile_filter from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Percentile</b> Percentile from 0 to 100. Negative values: \
+            use 100 - given value as percentile.
+
+            <b>Size</b> Size of filter if no footprint is given.
+            <b>Footprint</b> String representation of array, specifiying \
+            the kernel of the filter. \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
+
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return ndimage.percentile_filter
+    
+    def insert_parameters(self, config):
+        
+        self.addParameter(QgsProcessingParameterNumber(
+            self.PERCENTILE,
+            self.tr('Percentile'),
+            QgsProcessingParameterNumber.Type.Integer,
+            optional=False, 
+            minValue=-100,
+            maxValue=100,
+            defaultValue=80
+            ))   
+        
+        super().insert_parameters(config)
+
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
+
+        kwargs['percentile'] = self.parameterAsInt(parameters, self.PERCENTILE, context) 
+
+        return kwargs
+        
+    def createInstance(self):
+        return SciPyPercentileAlgorithm() 
+    
+
+# Disabled, needs checks. E.g. rank must be < size or footprint
+
+class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
+
+    RANK = 'RANK'
+
+    # Overwrite constants of base class
+    _name = 'rank'
+    _displayname = 'Rank filter'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "statistic" 
+    _help = """
+            Rank filter.\
+            Calculated with rank_filter from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Rank</b> The rank parameter may be less than zero, i.e., rank = -1 indicates the largest element.
+
+            <b>Size</b> Size of filter if no footprint is given.
+            <b>Footprint</b> String representation of array, specifiying \
+            the kernel of the filter. \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
+
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return ndimage.rank_filter
+    
+    def insert_parameters(self, config):
+        
+        self.addParameter(QgsProcessingParameterNumber(
+            self.RANK,
+            self.tr('Rank'),
+            QgsProcessingParameterNumber.Type.Integer,
+            optional=False, 
+            ))   
+        
+        super().insert_parameters(config)
+
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
+
+        kwargs['rank'] = self.parameterAsInt(parameters, self.RANK, context) 
+
+        return kwargs
+        
+    def createInstance(self):
+        return SciPyRankAlgorithm() 
