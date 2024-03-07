@@ -55,9 +55,13 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
     _help = """
-            Laplace filter based on approximate second derivatives.\
-            Calculated for every band with\
+            Multidimensional Laplace filter based on approximate second derivatives.\
+            Calculated with gaussian_laplace from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
@@ -82,11 +86,17 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
     _help = """
-            Sobel filter.\
-            Calculated for every band with\
+            Sobel filter. \
+            Calculated with sobel from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-            <b>Axis</b>: Find horizontal or vertical edges (or combined as magnitude).
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Axis</b>: Find horizontal or vertical edges or in case \
+            of 3D edges across the bands. Magnitude: all axes combined \
+            with hypothenuse of the triangle.
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
             <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
@@ -100,13 +110,17 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
         return self.myfunction
 
     def myfunction(self, input, **kwargs):
-        if self.axis_mode in (0,1):
-            kwargs['axis'] = self.axis_mode
-            return ndimage.sobel(input, **kwargs)
+        if self.axis_mode == 3: # Magnitude
+            horiz = ndimage.sobel(input, axis=-2, **kwargs)
+            vertical = ndimage.sobel(input, axis=-1, **kwargs)
+            magnitude = np.hypot(horiz, vertical)
+            if self._dimension == self.Dimensions.threeD:
+                third = ndimage.sobel(input, axis=-3, **kwargs)
+                magnitude = np.hypot(magnitude, third)
+            return magnitude
         else:
-            horiz = ndimage.sobel(input, axis=0, **kwargs)
-            vertical = ndimage.sobel(input, axis=1, **kwargs)
-            return np.hypot(horiz, vertical)
+            kwargs['axis'] = self.axis
+            return ndimage.sobel(input, **kwargs)
 
     def createInstance(self):
         return SciPySobelAlgorithm()  
@@ -120,10 +134,16 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
     _groupid = "edges" 
     _help = """
             Prewitt filter.\
-            Calculated for every band with\
+            Calculated with prewitt from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-            <b>Axis</b>: Find horizontal or vertical edges (or combined as magnitude).
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Axis</b>: Find horizontal or vertical edges or in case \
+            of 3D edges across the bands. Magnitude: all axes combined \
+            with hypothenuse of the triangle.
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
             <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
@@ -137,14 +157,19 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
         return self.myfunction
 
     def myfunction(self, input, **kwargs):
-        if self.axis_mode in (0,1):
-            kwargs['axis'] = self.axis_mode
-            return ndimage.prewitt(input, **kwargs)
-        else:
-            horiz = ndimage.prewitt(input, axis=0, **kwargs)
-            vertical = ndimage.prewitt(input, axis=1, **kwargs)
-            return np.hypot(horiz, vertical)
 
+        if self.axis_mode == 3: # Magnitude
+            horiz = ndimage.prewitt(input, axis=-2, **kwargs)
+            vertical = ndimage.prewitt(input, axis=-1, **kwargs)
+            magnitude = np.hypot(horiz, vertical)
+            if self._dimension == self.Dimensions.threeD:
+                third = ndimage.prewitt(input, axis=-3, **kwargs)
+                magnitude = np.hypot(magnitude, third)
+            return magnitude
+        else:
+            kwargs['axis'] = self.axis
+            return ndimage.prewitt(input, **kwargs)
+        
     def createInstance(self):
         return SciPyPrewittAlgorithm()  
     

@@ -420,7 +420,7 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
     """
 
     AXIS = 'AXIS'
-    axis_modes = ['Horizontal edges', 'Vertical edges', 'Magnitude']
+    axis_modes = ['Horizontal edges', 'Vertical edges', 'Band axis edges', 'Magnitude']
 
     def insert_parameters(self, config):
         
@@ -437,6 +437,27 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
         kwargs = super().get_parameters(parameters, context)
 
         self.axis_mode = self.parameterAsInt(parameters, self.AXIS, context) 
-      
+
+        self.axis = -1
+
+        if self.axis_mode == 0:
+            self.axis = -2
+        if self.axis_mode == 1:
+            self.axis = -1
+        if self.axis_mode == 2 and self._dimension == self.Dimensions.threeD:
+            self.axis = -3
+
         return kwargs
+    
+    def checkParameterValues(self, parameters, context):
+        dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
+        if dim_option == 0: # 2D
+            axis_mode = self.parameterAsInt(parameters, self.AXIS, context)
+            if axis_mode == 2: # Band (not in 2D)
+                return (False, self.tr("Band axis not possible in 2D case"))
+            
+        return super().checkParameterValues(parameters, context)
+    
+
+
     
