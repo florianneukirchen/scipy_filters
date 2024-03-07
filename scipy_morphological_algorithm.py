@@ -236,6 +236,8 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         if bordervalue:
             kwargs['border_value'] = bordervalue
 
+        self._outputname = 'Binary ' + self.algorithms[self.alg]
+
         return kwargs
     
     def createInstance(self):
@@ -384,6 +386,11 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         cval = self.parameterAsDouble(parameters, self.CVAL, context)
         if cval:
             kwargs['cval'] = cval
+
+        if isinstance(self, SciPyTophatAlgorithm):
+            self._outputname = self.algorithms[self.alg]
+        else:
+            self._outputname = 'Grey ' + self.algorithms[self.alg]
 
         return kwargs
     

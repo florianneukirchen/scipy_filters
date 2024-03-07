@@ -43,7 +43,9 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterBand,
-                       QgsProcessingParameterString
+                       QgsProcessingParameterString,
+                       QgsProcessingLayerPostProcessorInterface,
+                       QgsProcessingException,
                         )
 
 
@@ -89,7 +91,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     # The following constants are supposed to be overwritten
     _name = 'name, short, lowercase without spaces'
     _displayname = 'User-visible name'
-    _outputname = None # If set to None, the displayname is used 
+    # Output layer name: If set to None, the displayname is used 
+    # Can be changed while getting the parameters.
+    _outputname = None 
     _groupid = "" 
     _help = """
             Help
@@ -282,6 +286,13 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         feedback.setProgress(100)
 
+        # Optionally rename the output layer
+        if self._outputname:
+            global renamer
+            renamer = self.Renamer(self._outputname)
+            context.layerToLoadOnCompletionDetails(self.output_raster).setPostProcessor(renamer)
+
+
         return {self.OUTPUT: self.output_raster}
 
 
@@ -330,6 +341,17 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         return (True, "")
 
+
+    class Renamer(QgsProcessingLayerPostProcessorInterface):
+        """
+        To rename output layer name in the postprocessing step.
+        """
+        def __init__(self, layer_name):
+            self.name = layer_name
+            super().__init__()
+            
+        def postProcessLayer(self, layer, context, feedback):
+            layer.setName(self.name)
 
     def name(self):
         """
