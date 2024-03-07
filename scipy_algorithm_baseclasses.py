@@ -34,6 +34,7 @@ from osgeo import gdal
 from scipy import ndimage
 import numpy as np
 import json
+import enum
 from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import (QgsProcessing,
                        QgsProcessingAlgorithm,
@@ -83,6 +84,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
+    DIMENSION = 'DIMENSION'
     
     # The following constants are supposed to be overwritten
     _name = 'name, short, lowercase without spaces'
@@ -92,9 +94,30 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     _help = """
             Help
             """
+
     # Return the function to be called, to be overwritten
     def get_fct(self):
         return ndimage.laplace
+
+    
+    # Dimensions the algorithm is working on. 
+    # The numbers match the index in the list of GUI strings (below).
+    # Default during init is nD (for algorithms based on scipy.ndimage),
+    # giving users a choice (and calling from a script without setting 
+    # DIMENSIONS defaults to 2D in this case). This allows to write filters
+    # that are not working in n dimensions.
+    # Calling from a script, DIMENSION must be in (0,1,2) and match the 
+    # values of the enum!
+    class Dimensions(enum.Enum):
+        nD = 2         # users can decide between 1D, 2D, 3D
+        twoD = 0       # Seperate for each band
+        threeD = 1     # 3D filter in data cube
+
+    _dimension = Dimensions.nD
+
+    # Strings for the GUI
+    _dimension_options = ['2D (Separate for each band)',
+                          '3D (All bands as a 3D data cube)']
 
     # Function to insert Parameters (overwrite in inherited classes)
     def insert_parameters(self, config):
@@ -118,6 +141,16 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             )
         )
 
+        if self._dimension == self.Dimensions.nD:
+            # Algorithms based on scipy.ndimage can have any number of dimensions
+            self.addParameter(QgsProcessingParameterEnum(
+                self.DIMENSION,
+                self.tr('Dimension'),
+                self._dimension_options,
+                defaultValue=0,
+                optional=False,)) 
+
+
         # Insert Parameters 
         self.insert_parameters(config)
 
@@ -133,7 +166,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         """
         Factoring this out of processAlgorithm allows to add Parameters
         in classes inheriting form this base class by overwriting this
-        function. 
+        function. But always call kwargs = super().get_parameters(...)
+        first!
 
         Returns kwargs dictionary and sets variables self.variable for 
         non-keyword arguments.
@@ -142,6 +176,14 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         """
         self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
+
+        if self._dimension == self.Dimensions.nD:
+            dimension = self.parameterAsInt(parameters, self.DIMENSION, context)
+            if dimension == 1:
+                self._dimension = self.Dimensions.threeD
+            else:
+                # Default to 2D
+                self._dimension = self.Dimensions.twoD
 
         return {}
 
@@ -201,38 +243,78 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         driver = gdal.GetDriverByName('GTiff')
         self.out_ds = driver.CreateCopy(self.output_raster, self.ds, strict=0)
 
-        # Iterate over bands and calculate 
-        for i in range(1, self.bandcount + 1):
-            a = self.ds.GetRasterBand(i).ReadAsArray()
+        if feedback.isCanceled():
+            return {}
+        
+        feedback.setProgress(0)
+
+        # Start the actual work
+
+        if self._dimension == self.Dimensions.twoD:
+            # Iterate over bands and calculate 
+            for i in range(1, self.bandcount + 1):
+                a = self.ds.GetRasterBand(i).ReadAsArray()
+
+                # The actual function
+                filtered = self.fct(a, **kwargs)
+
+                self.out_ds.GetRasterBand(i).WriteArray(filtered)
+
+                feedback.setProgress(i * 100 / self.bandcount)
+                if feedback.isCanceled():
+                    return {}
+                
+        elif self._dimension == self.Dimensions.threeD:
+            a = self.ds.ReadAsArray()
+
             # The actual function
             filtered = self.fct(a, **kwargs)
 
-            self.out_ds.GetRasterBand(i).WriteArray(filtered)
+            self.out_ds.WriteArray(filtered)            
 
-            feedback.setProgress(i * 100 / self.bandcount)
-            if feedback.isCanceled():
-                return {}
 
         # Close the dataset to write file to disk
         self.out_ds = None 
 
+        feedback.setProgress(100)
+
         return {self.OUTPUT: self.output_raster}
+
 
     def str_to_array(self, s):
         try:
             decoded = json.loads(s)
             a = np.array(decoded, dtype=np.float32)
         except (json.decoder.JSONDecodeError, ValueError, TypeError):
-            raise QgsProcessingException(self.tr('Can not parse custom structure string!'))
-        return a
+            raise QgsProcessingException(self.tr('Can not parse string to array!'))
+
+        # Array must have same number of dims as the filter input,
+        # but for 3D input and 2D structure I automatically add one axis
+        dims = 2
+
+        if self._dimension == self.Dimensions.threeD:
+            dims = 3
+
+        if dims == a.ndim:
+            return a
+        if a.ndim == 2 and dims == 3:
+            a = a[np.newaxis,:]
+            return a
+        raise QgsProcessingException(self.tr('Array has wrong number of dimensions!'))
 
 
-    def check_structure(self, s):
+    def check_structure(self, s, dims=2):
         try:
             decoded = json.loads(s)
-            _ = np.array(decoded, dtype=np.float32)
+            a = np.array(decoded, dtype=np.float32)
         except (json.decoder.JSONDecodeError, ValueError, TypeError):
-            return (False, self.tr('Can not parse custom structure string'))
+            return (False, self.tr('Can not parse string to array'))
+
+        # Array must have same number of dims as the filter input,
+        # but for 3D input and 2D structure I automatically add one axis
+        if not (a.ndim == 2 or a.ndim == dims):
+            return (False, self.tr('Array has wrong number of dimensions'))
+
         return (True, "")
 
 
@@ -285,6 +367,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
     def tr(self, string):
         return QCoreApplication.translate('Processing', string)
+
 
 
 class SciPyAlgorithmWithMode(SciPyAlgorithm):
