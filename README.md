@@ -25,7 +25,7 @@ by giving a corresponding array as kernel/footprint/structure (note that "bands"
 [[1]]]
 ```
 
-Python users can generate a kernel with numpy and copy the output of str(numpy_array) into the text field. Note that these arrays should have the same number of dimensions as the input (2D or 3D). However you can pass a 2D array to a 3D calculation, the plugin automatically adds a new axis as first axis (the result is the same as using the same kernel in 2D).
+Python users can generate a kernel with numpy and copy the relevant part inside the braces of np.array(...) into the text field. Note that these arrays should have the same number of dimensions as the input (2D or 3D). However you can pass a 2D array to a 3D calculation, the plugin automatically adds a new axis as first axis (the result is the same as using the same kernel in 2D).
 
 For more information, see the help in the window of the respective processing tool.
 
