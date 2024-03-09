@@ -35,7 +35,12 @@ import sys
 import inspect
 
 from qgis.core import QgsProcessingAlgorithm, QgsApplication
-from .scipy_filters_provider import SciPyFiltersProvider
+
+try:
+    from .scipy_filters_provider import SciPyFiltersProvider
+except ModuleNotFoundError:
+    # If scipy is not installed. We check below.
+    pass
 
 cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
 
@@ -50,11 +55,62 @@ class SciPyFiltersPlugin(object):
 
     def initProcessing(self):
         """Init Processing provider for QGIS >= 3.8."""
-        self.provider = SciPyFiltersProvider()
-        QgsApplication.processingRegistry().addProvider(self.provider)
+        try:
+            self.provider = SciPyFiltersProvider()
+            scipy_is_installed = True
+        except NameError:
+            scipy_is_installed = False
+
+        if not scipy_is_installed:
+            scipy_is_installed = self.install_scipy()
+
+        if scipy_is_installed:
+            print("is installed")
+            QgsApplication.processingRegistry().addProvider(self.provider)
+        else:
+            print("is not")
 
     def initGui(self):
         self.initProcessing()
 
     def unload(self):
         QgsApplication.processingRegistry().removeProvider(self.provider)
+
+
+    def install_scipy(self):
+        from qgis.PyQt.QtWidgets import QMessageBox
+        choice = QMessageBox.question(
+            None,
+            'SciPy Filters: SciPy is not installed',
+            'SciPy is not installed. Do you want to install it automatically (using pip)?',
+            QMessageBox.Yes | QMessageBox.No
+        )
+        if choice == QMessageBox.Yes:
+            msg = None
+            res = ""
+            import subprocess
+            import sys
+
+            try:
+                res = subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'scipy'])
+            except subprocess.CalledProcessError:
+                msg = 'Installing SciPy failed. This probably means that pip is not installed.'
+            
+
+            # Test if it worked
+            try:
+                import scipy
+            except ModuleNotFoundError:
+                msg = 'Installing SciPy failed.'
+
+            if not msg:
+                return True
+            
+            QMessageBox.warning(
+                None,
+                'SciPy Filters: Installing SciPy failed.',
+                msg + ' ' + res
+            )
+
+
+        return False
