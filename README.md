@@ -17,7 +17,7 @@ Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/refer
 These scipy.ndimage filters are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands. 
 
 You could also apply a convolution or median filter etc. across the bands for each pixel
-by giving the corresponding array as kernel/footprint/structure (note that "bands" is the first axis):
+by giving a corresponding array as kernel/footprint/structure (note that "bands" is the first axis), for example:
 
 ```
 [[[1]],
@@ -34,3 +34,11 @@ The plugin requires [SciPy](https://scipy.org/), wich can be installed with pip:
 ```
 pip install scipy
 ```
+
+## Changelog
+
+### Git Main
+- Catch exception of SciPy is not installed and offer to install it automatically (with pip)
+
+### 0.1 (03/2024)
+Initial Release
