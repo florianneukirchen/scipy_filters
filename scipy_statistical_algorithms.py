@@ -326,3 +326,69 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
         
     def createInstance(self):
         return SciPyRankAlgorithm() 
+    
+
+
+
+class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
+    """
+    Uniform filter (i.e. mean filter)
+
+    """
+
+    SIZE = 'SIZE'
+
+    # Overwrite constants of base class
+    _name = 'uniform'
+    _displayname = 'Uniform filter (mean filter)'
+    _outputname = 'Uniform filter' 
+    _groupid = "statistic" 
+    _help = """
+            Uniform filter (i.e. mean filter). \
+            Calculated with uniform_filter from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Size</b> Size of filter.
+
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return ndimage.uniform_filter
+    
+    def initAlgorithm(self, config):
+        # Call the super function first
+        # (otherwise input is not the first parameter in the GUI)
+        super().initAlgorithm(config)
+
+        self.addParameter(QgsProcessingParameterNumber(
+            self.SIZE,
+            self.tr('Size of flat structuring element (either size or footprint must be given, with footprint, size is ignored)'),
+            QgsProcessingParameterNumber.Type.Integer,
+            defaultValue=3, 
+            optional=False, 
+            minValue=2, 
+            # maxValue=20, 
+            ))      
+        
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
+
+        kwargs['size'] = self.parameterAsInt(parameters, self.SIZE, context)
+
+        return kwargs
+
+   
+
+    def createInstance(self):
+        return SciPyUniformAlgorithm()

@@ -54,7 +54,8 @@ from .scipy_statistical_algorithms import (SciPyMedianAlgorithm,
                                       SciPyMaximumAlgorithm,
                                       SciPyMinimumAlgorithm,
                                       SciPyPercentileAlgorithm,
-                                      SciPyRankAlgorithm)
+                                      SciPyRankAlgorithm,
+                                      SciPyUniformAlgorithm)
 
 class SciPyFiltersProvider(QgsProcessingProvider):
 
@@ -92,6 +93,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyMinimumAlgorithm())
         self.addAlgorithm(SciPyPercentileAlgorithm())
         self.addAlgorithm(SciPyRankAlgorithm())
+        self.addAlgorithm(SciPyUniformAlgorithm())
 
 
 
