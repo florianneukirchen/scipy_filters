@@ -63,6 +63,9 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
+    NCOMPONENTS = 'NCOMPONENTS'
+    PERCENTVARIANCE = 'PERCENTVARIANCE'
+
     
     _name = 'pca'
     _displayname = 'Principal Component Analysis (PCA)'
@@ -89,6 +92,28 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             )
         )
 
+        self.addParameter(QgsProcessingParameterNumber(
+            self.NCOMPONENTS,
+            self.tr('Number of components to keep. Set to 0 for all components.'),
+            QgsProcessingParameterNumber.Type.Integer,
+            defaultValue=0, 
+            optional=True, 
+            minValue=0, 
+            # maxValue=100
+            ))      
+    
+
+        self.addParameter(QgsProcessingParameterNumber(
+            self.PERCENTVARIANCE,
+            self.tr('Percentage of Variance (if set and > 0: overwrites number of components)'),
+            QgsProcessingParameterNumber.Type.Double,
+            defaultValue=0, 
+            optional=True, 
+            minValue=0, 
+            maxValue=100
+            ))      
+    
+
         self.addParameter(
             QgsProcessingParameterRasterDestination(
                 self.OUTPUT,
@@ -104,6 +129,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
 
+        self.ncomponents = self.parameterAsInt(parameters, self.NCOMPONENTS,context)
+        self.percentvariance = self.parameterAsDouble(parameters, self.PERCENTVARIANCE,context)
         # Open Raster with GDAL
         self.ds = gdal.Open(self.inputlayer.source())
 
@@ -113,18 +140,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         self.bandcount = self.ds.RasterCount
         self.indatatype = self.ds.GetRasterBand(1).DataType
 
-        # Prepare output
-        etype = gdal.GDT_Float32
-
-        driver = gdal.GetDriverByName('GTiff')
-        self.out_ds = driver.Create(self.output_raster,
-                                    xsize=self.ds.RasterXSize,
-                                    ysize=self.ds.RasterYSize,
-                                    bands=self.bandcount,
-                                    eType=etype)
-
-        self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
-        self.out_ds.SetProjection(self.ds.GetProjection())
 
         if feedback.isCanceled():
             return {}
@@ -185,7 +200,32 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # Reshape to original shape
         new_array = new_array.T.reshape(orig_shape)
 
-        self.out_ds.WriteArray(new_array)    
+        # How many bands to keep?
+        bands = self.bandcount
+
+        if 0 < self.percentvariance <= 100:
+            fraction = self.percentvariance / 100
+            print(fraction)
+            # get index with at least fraction
+            bands = np.argmax(variance_explained_cumsum >= fraction) 
+            bands = int(bands)
+        elif 0 < self.ncomponents < self.bandcount:
+            bands = self.ncomponents 
+
+        # Prepare output and write file
+        etype = gdal.GDT_Float32
+
+        driver = gdal.GetDriverByName('GTiff')
+        self.out_ds = driver.Create(self.output_raster,
+                                    xsize=self.ds.RasterXSize,
+                                    ysize=self.ds.RasterYSize,
+                                    bands=bands,
+                                    eType=etype)
+
+        self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
+        self.out_ds.SetProjection(self.ds.GetProjection())
+
+        self.out_ds.WriteArray(new_array[0:bands,:,:])    
 
         # Close the dataset to write file to disk
         self.out_ds = None 
