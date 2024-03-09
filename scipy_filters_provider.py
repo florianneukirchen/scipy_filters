@@ -46,7 +46,7 @@ from .scipy_gaussian_algorithm import (SciPyGaussianAlgorithm,
                                        SciPyGaussianLaplaceAlgorithm,
                                        SciPyGaussianGradientMagnitudeAlgorithm)
 
-from .scipy_simple_algorithms import (SciPyLaplaceAlgorithm,
+from .scipy_edge_algorithms import (SciPyLaplaceAlgorithm,
                                       SciPySobelAlgorithm,
                                       SciPyPrewittAlgorithm,
                                       SciPyMedianAlgorithm,
