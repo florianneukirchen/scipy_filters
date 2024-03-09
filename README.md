@@ -38,7 +38,7 @@ pip install scipy
 ## Changelog
 
 ### Git Main
-- Catch exception of SciPy is not installed and offer to install it automatically (with pip)
+- Catch exception if SciPy is not installed and offer to install it automatically (with pip)
 
 ### 0.1 (03/2024)
 Initial Release
