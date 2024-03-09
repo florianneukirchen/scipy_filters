@@ -90,7 +90,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyMaximumAlgorithm())
         self.addAlgorithm(SciPyMinimumAlgorithm())
         self.addAlgorithm(SciPyPercentileAlgorithm())
-        # self.addAlgorithm(SciPyRankAlgorithm())
+        self.addAlgorithm(SciPyRankAlgorithm())
 
 
 

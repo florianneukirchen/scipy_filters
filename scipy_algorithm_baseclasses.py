@@ -310,7 +310,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             
         return super().checkParameterValues(parameters, context)
     
-    def str_to_array(self, s):
+    def str_to_array(self, s, dims=None):
         try:
             decoded = json.loads(s)
             a = np.array(decoded, dtype=np.float32)
@@ -319,10 +319,13 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         # Array must have same number of dims as the filter input,
         # but for 3D input and 2D structure I automatically add one axis
-        dims = 2
+        # When getting the parameter, self._dimension is already set
+        # but in checkParameters we need to pass them to this function
 
-        if self._dimension == self.Dimensions.threeD:
-            dims = 3
+        if not dims:
+            dims = 2 
+            if self._dimension == self.Dimensions.threeD:
+                dims = 3
 
         if dims == a.ndim:
             return a
@@ -513,9 +516,9 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             self.SIZE,
             self.tr('Size of flat structuring element (either size or footprint must be given, with footprint, size is ignored)'),
             QgsProcessingParameterNumber.Type.Integer,
-            defaultValue=0, 
+            defaultValue=1, 
             optional=True, 
-            minValue=0, 
+            minValue=1, 
             maxValue=20, # Large sizes are really slow
             ))    
         
@@ -539,17 +542,34 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
     def checkParameterValues(self, parameters, context): 
         footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
-        if footprintbool and not footprint.strip() == "":
-            dims = 2
-            if self._dimension == self.Dimensions.nD:
-                dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
-                if dim_option == 1:
-                    dims = 3
 
+        dims = 2
+        if self._dimension == self.Dimensions.nD:
+            dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
+            if dim_option == 1:
+                dims = 3
+
+        if footprintbool and not footprint.strip() == "":
             ok, _ = self.check_structure(footprint, dims)
             if not ok:
                 return (ok, self.tr('Can not parse footprint string or dimensions are wrong'))
-        
+
+        # Extra check for rank_filter: rank must be < as footprint size
+        # It is easier to do it here as we already have the footprint checked
+            
+        from .scipy_simple_algorithms import SciPyRankAlgorithm 
+
+        if isinstance(self, SciPyRankAlgorithm):
+            rank = self.parameterAsInt(parameters, self.RANK, context)
+            if footprintbool and footprint:
+                footprint = self.str_to_array(footprint, dims=dims)
+                footprintsize = footprint.size
+            else:
+                size = self.parameterAsInt(parameters, self.SIZE, context)
+                footprintsize = np.power(size, dims)
+            if rank >= footprintsize:
+                return (False, self.tr('Rank must be smaller than the size of the footprint'))
+            
         return super().checkParameterValues(parameters, context)
     
 

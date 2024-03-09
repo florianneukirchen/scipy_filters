@@ -39,6 +39,7 @@ pip install scipy
 
 ### Git Main
 - Catch exception if SciPy is not installed and offer to install it automatically (with pip)
+- finish and enable rank filter
 
 ### 0.1 (03/2024)
 Initial Release

@@ -191,7 +191,10 @@ class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Size</b> Size of filter if no footprint is given.
+            <b>Size</b> Size of filter if no footprint is given. Equivalent \
+            to a footprint array of shape size × size [× size in 3D] \
+            filled with ones.
+            
             <b>Footprint</b> String representation of array, specifiying \
             the kernel of the filter. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
@@ -231,7 +234,10 @@ class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Size</b> Size of filter if no footprint is given.
+            <b>Size</b> Size of filter if no footprint is given. Equivalent \
+            to a footprint array of shape size × size [× size in 3D] \
+            filled with ones.
+
             <b>Footprint</b> String representation of array, specifiying \
             the kernel of the filter. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
@@ -271,7 +277,10 @@ class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Size</b> Size of filter if no footprint is given.
+            <b>Size</b> Size of filter if no footprint is given. Equivalent \
+            to a footprint array of shape size × size [× size in 3D] \
+            filled with ones.
+
             <b>Footprint</b> String representation of array, specifiying \
             the kernel of the filter. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
@@ -317,7 +326,10 @@ class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
             <b>Percentile</b> Percentile from 0 to 100. Negative values: \
             use 100 - given value as percentile.
 
-            <b>Size</b> Size of filter if no footprint is given.
+            <b>Size</b> Size of filter if no footprint is given. Equivalent \
+            to a footprint array of shape size × size [× size in 3D] \
+            filled with ones.
+
             <b>Footprint</b> String representation of array, specifiying \
             the kernel of the filter. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
@@ -379,13 +391,28 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
             Calculated with rank_filter from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+            The filter calculates a histogram for the neighborhood \
+            (specified by footprint or size) and returns the value \
+            at the position of <i>rank</i>. 
+            
+            Note: a median filter is a special case with rank = 0.5 * size of the footprint.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Rank</b> The rank parameter may be less than zero, i.e., rank = -1 indicates the largest element.
+            <b>Rank</b> Index of the element in the array of the local histogram \
+            to be returned. Ranges from 0 (smallest element) to \
+            the size of the footprint minus one. \
+            If using size instead of footprint, the resulting footprint size \
+            is size raised by the power of the number of dimensions. \
+            The rank parameter may be less than zero: \
+            rank = -1 indicates the largest element, etc.
 
-            <b>Size</b> Size of filter if no footprint is given.
+            <b>Size</b> Size of filter if no footprint is given. Equivalent \
+            to a footprint array of shape size × size [× size in 3D] \
+            filled with ones.
+
             <b>Footprint</b> String representation of array, specifiying \
             the kernel of the filter. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
