@@ -48,8 +48,9 @@ from .scipy_gaussian_algorithm import (SciPyGaussianAlgorithm,
 
 from .scipy_edge_algorithms import (SciPyLaplaceAlgorithm,
                                       SciPySobelAlgorithm,
-                                      SciPyPrewittAlgorithm,
-                                      SciPyMedianAlgorithm,
+                                      SciPyPrewittAlgorithm,)
+
+from .scipy_statistical_algorithms import (SciPyMedianAlgorithm,
                                       SciPyMaximumAlgorithm,
                                       SciPyMinimumAlgorithm,
                                       SciPyPercentileAlgorithm,

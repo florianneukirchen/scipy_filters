@@ -557,7 +557,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
         # Extra check for rank_filter: rank must be < as footprint size
         # It is easier to do it here as we already have the footprint checked
             
-        from .scipy_simple_algorithms import SciPyRankAlgorithm 
+        from .scipy_statistical_algorithms import SciPyRankAlgorithm 
 
         if isinstance(self, SciPyRankAlgorithm):
             rank = self.parameterAsInt(parameters, self.RANK, context)
