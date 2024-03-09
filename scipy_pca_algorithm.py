@@ -144,9 +144,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # substract mean
 
         col_mean = flattened.mean(axis=0)
-        col_mean = col_mean[np.newaxis, :]
 
-        centered = flattened - col_mean
+        centered = flattened - col_mean[np.newaxis, :]
 
         n_pixels = flattened.shape[0]
 
@@ -193,7 +192,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         encoded = json.dumps({'loadings': loadings.tolist(),
                 'variance explained': variance_explained.tolist(),
-                'variance explained cumsum': variance_explained_cumsum.tolist()})
+                'variance explained cumsum': variance_explained_cumsum.tolist(),
+                'band mean': col_mean.tolist()})
 
         # Save loadings etc as json in the metadata abstract of the layer
         global updatemetadata
@@ -204,6 +204,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 'loadings': loadings,
                 'variance explained': variance_explained,
                 'variance explained cumsum': variance_explained_cumsum,
+                'band mean': col_mean,
                 'json': encoded}
 
 
