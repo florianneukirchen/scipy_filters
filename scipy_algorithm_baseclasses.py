@@ -75,6 +75,7 @@ groups = {
     'convolution': 'Convolution',
     'enhance': 'Enhance',
     'pixel': 'Pixel Statistics'
+    'pca': 'PCA'
 }
 
 
