@@ -40,8 +40,12 @@ pip install scipy
 ### Git Main
 - Catch exception if SciPy is not installed and offer to install it automatically (with pip)
 - Calculate and write band statistics (min, max, mean, std) into the metadata of the output file, enables QGIS to render correctly with min/max streching
-- Finish and enable rank filter
-- Add uniform (i.e. mean) filter
+- New filters:
+    - rank filter
+    - uniform (i.e. mean) filter
+    - fourier gaussian
+    - fourier ellipsoid
+    - FFT convolve
 
 ### 0.1 (03/2024)
 Initial Release
