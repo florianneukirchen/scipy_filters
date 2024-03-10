@@ -249,6 +249,12 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         self.out_ds.WriteArray(new_array[0:bands,:,:])    
 
+        # Calculate and write band statistics (min, max, mean, std)
+        for b in range(1, bands + 1):
+            band = self.out_ds.GetRasterBand(b)
+            stats = band.GetStatistics(0,1)
+            band.SetStatistics(*stats)
+
         # Close the dataset to write file to disk
         self.out_ds = None 
 
