@@ -55,6 +55,8 @@ groups = {
     'edges': 'Edges',
     'morphological': "Morphological Filters",
     'statistic': 'Statistical Filters',
+    'blur': 'Blur',
+    'convolution': 'Convolution',
 }
 
 

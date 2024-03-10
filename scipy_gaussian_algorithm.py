@@ -125,7 +125,7 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
     _name = 'gaussian'
     _displayname = 'Gaussian filter (blur)'
     _outputname = 'Gaussian' 
-    _groupid = "" 
+    _groupid = "blur" 
     _help = """
             Gaussian filter (blur with a gaussian kernel). \
             Calculated with gaussian_filter from \

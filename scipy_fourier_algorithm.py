@@ -56,7 +56,7 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
     _name = 'gaussian_fourier'
     _displayname = 'Gaussian Fourier'
     _outputname = None # If set to None, the displayname is used 
-    _groupid = "" 
+    _groupid = "blur" 
     _help = """
             Gaussian filter calculated by multiplication in the frequency domain. \
             This is faster with large kernels (large sigma).

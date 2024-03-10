@@ -60,7 +60,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
     _name = 'convolve'
     _displayname = 'Convolve'
     _outputname = None # If set to None, the displayname is used 
-    _groupid = ''
+    _groupid = 'convolution'
     _help = """
             Convolve raster with given kernel. \
             Calculated with convolve from \
