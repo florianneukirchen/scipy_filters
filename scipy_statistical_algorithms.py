@@ -332,7 +332,7 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
 
 class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
     """
-    Uniform filter (i.e. mean filter)
+    Uniform filter (i.e. box filter)
 
     """
 
@@ -340,11 +340,11 @@ class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
 
     # Overwrite constants of base class
     _name = 'uniform'
-    _displayname = 'Uniform filter (mean filter)'
+    _displayname = 'Uniform filter (box filter)'
     _outputname = 'Uniform filter' 
-    _groupid = "statistic" 
+    _groupid = "blur" 
     _help = """
-            Uniform filter (i.e. mean filter). \
+            Uniform filter (a.k.a. box filter or mean filter). \
             Calculated with uniform_filter from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
