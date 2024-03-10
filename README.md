@@ -43,8 +43,9 @@ pip install scipy
 - New filters:
     - rank filter
     - uniform (i.e. mean) filter
-    - fourier gaussian
-    - fourier ellipsoid
+    - fourier gaussian filter
+    - fourier ellipsoid filter
+    - fourier uniform filter
     - FFT convolve
 
 ### 0.1 (03/2024)
