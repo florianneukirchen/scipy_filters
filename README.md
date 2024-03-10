@@ -46,6 +46,7 @@ pip install scipy
     - fourier gaussian filter
     - fourier ellipsoid filter
     - fourier uniform filter
+    - Wiener filter
     - FFT convolve
 
 ### 0.1 (03/2024)
