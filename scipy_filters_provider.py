@@ -57,6 +57,8 @@ from .scipy_statistical_algorithms import (SciPyMedianAlgorithm,
                                       SciPyRankAlgorithm,
                                       SciPyUniformAlgorithm)
 
+from .scipy_fourier_algorithm import (SciPyFourierGaussianAlgorithm)
+
 class SciPyFiltersProvider(QgsProcessingProvider):
 
     def __init__(self):
@@ -94,6 +96,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyPercentileAlgorithm())
         self.addAlgorithm(SciPyRankAlgorithm())
         self.addAlgorithm(SciPyUniformAlgorithm())
+        self.addAlgorithm(SciPyFourierGaussianAlgorithm())
 
 
 
