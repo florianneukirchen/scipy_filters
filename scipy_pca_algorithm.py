@@ -169,10 +169,18 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # For info on relation of SVD and PCA see:
         # https://stats.stackexchange.com/a/134283
         # https://scentellegher.github.io/machine-learning/2020/01/27/pca-loadings-sklearn.html
+        # https://stats.stackexchange.com/a/141755
+
+        # Note: U, S, VT = svd(X) followed by S = S * constant
+        # is identical to U, S, VT = svd(x * constant)
+        # U and VT do not change.
+        # The constant used for normalization in PCA is: 1 / sqrt(n_samples)
 
         U, S, VT = linalg.svd(centered,full_matrices=False)
 
-        loadings = VT.T @ np.diag(S) / np.sqrt(n_pixels - 1)
+        S_norm = S / np.sqrt(n_pixels - 1)
+
+        loadings = VT.T @ np.diag(S_norm)
 
         # variance_explained = eigenvalues
         # and they can be calculated from the singular values (S)
@@ -191,6 +199,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         for i in range(loadings.shape[1]):
             if loadings[:,i].sum() < 0:
                 loadings[:,i] = loadings[:,i] * -1
+                VT.T[:,i] = VT.T[:,i] * -1
 
         # Give feedback
         
@@ -206,11 +215,10 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         if feedback.isCanceled():
             return {}
 
-        # Transform the data using the loadings
-        # (before rotating the loadings, this would have been
-        # the same as: centered @ VT.T)
+        # Get the scores, i.e. the data in principal components
                 
-        new_array = centered @ loadings
+        new_array = centered @ VT.T
+
 
         # Reshape to original shape
         new_array = new_array.T.reshape(orig_shape)
@@ -220,7 +228,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         if 0 < self.percentvariance <= 100:
             fraction = self.percentvariance / 100
-            print(fraction)
             # get index with at least fraction
             bands = np.argmax(variance_explained_cumsum >= fraction) 
             bands = int(bands)
@@ -286,7 +293,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         def postProcessLayer(self, layer, context, feedback):
             meta = layer.metadata()
             meta.setAbstract(self.abstract)
-            print(self.abstract)
             layer.setMetadata(meta)
     
 
