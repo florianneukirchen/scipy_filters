@@ -74,7 +74,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     _outputname = 'PCA'
     _groupid = "pca" 
     _help = """
-            Help
+
             """
     
     # Init Algorithm
@@ -187,7 +187,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # See point 3 in https://stats.stackexchange.com/a/134283
 
         variance_explained = S * S / (n_pixels - 1)
-        variance_explained_cumsum = variance_explained.cumsum()
+        variance_ratio = variance_explained / variance_explained.sum()
+        variance_explained_cumsum = variance_ratio.cumsum()
 
 
         if feedback.isCanceled():
@@ -206,6 +207,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         feedback.pushInfo("Singular values (of SVD):")
         feedback.pushInfo(str(S))
         feedback.pushInfo("Variance explained (Eigenvalues):")
+        feedback.pushInfo(str(variance_explained))
+        feedback.pushInfo("Ratio of variance explained:")
         feedback.pushInfo(str(variance_explained))
         feedback.pushInfo("Cumulated sum of variance explained:")
         feedback.pushInfo(str(variance_explained_cumsum))
@@ -226,11 +229,11 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # How many bands to keep?
         bands = self.bandcount
 
-        if 0 < self.percentvariance <= 100:
+        if 0 < self.percentvariance < 100:
             fraction = self.percentvariance / 100
-            # get index with at least fraction
-            bands = np.argmax(variance_explained_cumsum >= fraction) 
-            bands = int(bands)
+            # get index with >= fraction and add 1 (bands is not zero indexed)
+            bands = np.argmax(variance_explained_cumsum >= fraction) + 1
+            bands = int(bands) # np.argmax returns np.int64
         elif 0 < self.ncomponents < self.bandcount:
             bands = self.ncomponents 
 
@@ -262,6 +265,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 'singular values': S.tolist(),
                 'loadings': loadings.tolist(),
                 'variance explained': variance_explained.tolist(),
+                'variance_ratio': variance_ratio.tolist(),
                 'variance explained cumsum': variance_explained_cumsum.tolist(),
                 'band mean': col_mean.tolist(),
                 })
@@ -275,6 +279,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 'singular values': S,
                 'loadings': loadings,
                 'variance explained': variance_explained,
+                'variance_ratio': variance_ratio,
                 'variance explained cumsum': variance_explained_cumsum,
                 'band mean': col_mean,
                 'json': encoded}
