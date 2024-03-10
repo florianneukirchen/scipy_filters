@@ -40,6 +40,7 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterBand,
+                       QgsProcessingParameterString
                         )
 
 from .scipy_algorithm_baseclasses import SciPyAlgorithm
@@ -63,7 +64,7 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
 
             The input band is transformed with fast fourier transform (FFT) \
             using fft2 (for 2D) or fftn (for 3D) from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.ndimage</a>.
+            <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.fft</a>.
             The multiplication with the fourier transform of a gaussian kernel \
             is calculated with fourier_gaussian from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>. \
@@ -80,10 +81,6 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
     
     SIGMA = 'SIGMA'
 
-    # def initAlgorithm(self, config):
-    #     # Set dimensions to 2
-    #     self._dimension = self.Dimensions.twoD
-    #     super().initAlgorithm(config)
 
     def insert_parameters(self, config):
 
@@ -126,3 +123,114 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
 
     def createInstance(self):
         return SciPyFourierGaussianAlgorithm()
+    
+
+
+
+class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
+    """
+    Convolve raster band(s) with custom kernel using FFT
+
+    
+    """
+
+    KERNEL = 'KERNEL'
+    NORMALIZATION = 'NORMALIZATION'
+
+    # Overwrite constants of base class
+    _name = 'fft_convolve'
+    _displayname = 'FFT Convolve'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "convolution" 
+    _help = """
+            Convolve raster band(s) with custom kernel using FFT. This is faster for large kernels. \
+            Both, raster band(s) and kernel are transformed into the frequency domain \
+            with fast fourier transform (FFT), the results are multiplied and the product \
+            is converted back using FFT.
+
+            Calculated using fftconvolve from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
+
+            <b>Kernel</b> String representation of array. \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
+            <b>Normalization</b> Normalize the kernel by dividing through given value; set to 0 to devide through the sum of kernel values.
+            """
+    
+
+    def initAlgorithm(self, config):
+        # Set dimensions to 2
+        self._dimension = self.Dimensions.twoD
+
+        # Set modes 
+        self.modes = ['full', 'valid', 'same']
+
+        super().initAlgorithm(config)
+
+
+    def insert_parameters(self, config):
+
+        default_kernel = "[[1, 2, 1],\n[2, 4, 2],\n[1, 2, 1]]"
+
+        self.addParameter(QgsProcessingParameterString(
+            self.KERNEL,
+            self.tr('Kernel'),
+            defaultValue=default_kernel,
+            multiLine=True,
+            ))
+        
+        self.addParameter(QgsProcessingParameterNumber(
+            self.NORMALIZATION,
+            self.tr('Normalization (devide kernel values by number). Set to 0 to devide by sum of kernel values.'),
+            QgsProcessingParameterNumber.Type.Double,
+            defaultValue=0, 
+            optional=True, 
+            minValue=0, 
+            # maxValue=100
+            )) 
+
+        
+        super().insert_parameters(config)
+
+    
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
+
+        kernel = self.parameterAsString(parameters, self.KERNEL, context)
+        kernel = self.str_to_array(kernel)
+
+        normalization = self.parameterAsDouble(parameters, self.NORMALIZATION, context)
+
+        if normalization == 0:
+            kernel = kernel / kernel.sum()
+        else:
+            kernel = kernel / normalization
+
+        kwargs['in2'] = kernel
+        kwargs['mode'] = 'same' # size must be the same as input raster
+
+        return kwargs
+    
+    def checkParameterValues(self, parameters, context): 
+
+        structure = self.parameterAsString(parameters, self.KERNEL, context)
+
+        dims = 2
+
+        ok, s = self.check_structure(structure, dims)
+        if not ok:
+            return (ok, s)
+        
+        return super().checkParameterValues(parameters, context)
+    
+
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return signal.fftconvolve
+
+
+    def createInstance(self):
+        return SciPyFFTConvolveAlgorithm()
