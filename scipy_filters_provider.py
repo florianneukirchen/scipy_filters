@@ -61,6 +61,9 @@ from .scipy_fourier_algorithm import (SciPyFourierGaussianAlgorithm,
                                       SciPyFourierEllipsoidAlgorithm,
                                       SciPyFourierUniformAlgorithm,)
 
+from .scipy_enhance_algorithms import (SciPyWienerAlgorithm)
+
+
 class SciPyFiltersProvider(QgsProcessingProvider):
 
     def __init__(self):
@@ -102,6 +105,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyFFTConvolveAlgorithm())
         self.addAlgorithm(SciPyFourierEllipsoidAlgorithm())
         self.addAlgorithm(SciPyFourierUniformAlgorithm())
+        self.addAlgorithm(SciPyWienerAlgorithm())
 
 
 
