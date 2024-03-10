@@ -165,28 +165,43 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         n_pixels = flattened.shape[0]
 
         # Get loadings with SVD
+
+        # For info on relation of SVD and PCA see:
+        # https://stats.stackexchange.com/a/134283
+        # https://scentellegher.github.io/machine-learning/2020/01/27/pca-loadings-sklearn.html
+
         U, S, VT = linalg.svd(centered,full_matrices=False)
 
         loadings = VT.T @ np.diag(S) / np.sqrt(n_pixels - 1)
 
-        variance_explained = S / np.sum(S)
+        # variance_explained = eigenvalues
+        # and they can be calculated from the singular values (S)
+        # See point 3 in https://stats.stackexchange.com/a/134283
+
+        variance_explained = S * S / (n_pixels - 1)
         variance_explained_cumsum = variance_explained.cumsum()
 
-        feedback.pushInfo("Variance explained:")
-        feedback.pushInfo(str(variance_explained))
-        feedback.pushInfo("Variance explained (Cumsum):")
-        feedback.pushInfo(str(variance_explained_cumsum))
-        feedback.pushInfo("Loadings:")
-        feedback.pushInfo(str(loadings))
 
         if feedback.isCanceled():
             return {}
 
-        # Rotate components by 180° if sum of loadings is < 0
+        # Rotate component vectors by 180° if sum of loadings is < 0
         # Otherwise dark will be bright, and vica versa
+
         for i in range(loadings.shape[1]):
             if loadings[:,i].sum() < 0:
                 loadings[:,i] = loadings[:,i] * -1
+
+        # Give feedback
+        
+        feedback.pushInfo("Singular values (of SVD):")
+        feedback.pushInfo(str(S))
+        feedback.pushInfo("Variance explained (Eigenvalues):")
+        feedback.pushInfo(str(variance_explained))
+        feedback.pushInfo("Cumulated sum of variance explained:")
+        feedback.pushInfo(str(variance_explained_cumsum))
+        feedback.pushInfo("Loadings:")
+        feedback.pushInfo(str(loadings))
 
         if feedback.isCanceled():
             return {}
