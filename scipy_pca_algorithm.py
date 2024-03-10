@@ -74,7 +74,29 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     _outputname = 'PCA'
     _groupid = "pca" 
     _help = """
+            Principal Component Analysis (PCA), \
+            calculated using Singular Value Decomposition (SVD) using svd from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/linalg.html">scipy.linalg</a>.
 
+            With default parameters, all components are kept. Optionally, either the \
+            <i>number of components</i> to keep or the <i>percentage of variance</i> \
+            explained by the kept components can be set. 
+            
+            <b>Number of components</b> is only used if the value is greater than 0 and \
+            smaller than the count of original bands and if percentage of variance is \
+            not set.
+
+            <b>Percentage of variance</b> is only used if it is greater than 0 \
+            (typical values would be in the range between 90 and 100).
+
+            <b>Output</b> The output raster contains \
+            the data projected into the principal components (i.e. the scores).
+
+            The following values / vectors are avaible a) in the log tab of \
+            the processing window, b) in JSON format in the "Abstract" field \
+            of the metadata of the output raster layer, eventually to be used \
+            by subsequent transformations, and c) in the output dictionary if \
+            the tool has been called from the python console or a script.
             """
     
     # Init Algorithm
