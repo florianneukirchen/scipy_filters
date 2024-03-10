@@ -59,7 +59,8 @@ from .scipy_statistical_algorithms import (SciPyMedianAlgorithm,
 
 from .scipy_fourier_algorithm import (SciPyFourierGaussianAlgorithm,
                                       SciPyFFTConvolveAlgorithm,
-                                      SciPyFourierEllipsoidAlgorithm)
+                                      SciPyFourierEllipsoidAlgorithm,
+                                      SciPyFourierUniformAlgorithm,)
 
 class SciPyFiltersProvider(QgsProcessingProvider):
 
@@ -101,6 +102,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyFourierGaussianAlgorithm())
         self.addAlgorithm(SciPyFFTConvolveAlgorithm())
         self.addAlgorithm(SciPyFourierEllipsoidAlgorithm())
+        self.addAlgorithm(SciPyFourierUniformAlgorithm())
 
 
 

@@ -137,11 +137,11 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'fourier_ellipsoid'
-    _displayname = 'Fourier ellipsoid (box filter)'
+    _displayname = 'Fourier ellipsoid'
     _outputname = 'Gaussian ellipsoid' # If set to None, the displayname is used 
     _groupid = "blur" 
     _help = """
-            Box filter calculated by multiplication \
+            Ellipsoidal box filter calculated by multiplication \
             with a circular or ellipsoidal kernel in the frequency domain. \
 
             The input band is transformed with fast fourier transform (FFT) \
@@ -206,6 +206,86 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
     def createInstance(self):
         return SciPyFourierEllipsoidAlgorithm()
     
+
+
+
+class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
+    """
+    Ellipsoid uniform (i.e. mean) filter 
+
+
+    """
+
+    # Overwrite constants of base class
+    _name = 'fourier_uniform'
+    _displayname = 'Fourier uniform (box filter)'
+    _outputname = 'Fourier uniform' # If set to None, the displayname is used 
+    _groupid = "blur" 
+    _help = """
+            Uniform filter calculated by multiplication \
+            with a box kernel in the frequency domain. \
+
+            The input band is transformed with fast fourier transform (FFT) \
+            using fft2 (for 2D) or fftn (for 3D) from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.fft</a>.
+            The multiplication with the fourier transform of a gaussian kernel \
+            is calculated with fourier_uniform from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>. \
+            The product is transformed back with ifft2 or ifftn, respectively. \
+            Only the real part of the resulting complex \
+            numbers is returned.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+        
+            <b>Size</b> Size of the box.
+            """
+    
+    SIZE = 'SIZE' # can be float or int or tuple of int but not tuple of float
+
+
+    def insert_parameters(self, config):
+
+        self.addParameter(QgsProcessingParameterNumber(
+            self.SIZE,
+            self.tr('Size'),
+            QgsProcessingParameterNumber.Type.Double,
+            defaultValue=5, 
+            optional=False, 
+            minValue=0, 
+            # maxValue=100
+            ))
+        
+        super().insert_parameters(config)
+
+    
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
+        kwargs['size'] = self.parameterAsDouble(parameters, self.SIZE, context)
+        return kwargs
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        if self._dimension == self.Dimensions.threeD:
+            return self.my_fct_3D
+        else:
+            return self.my_fct_2D
+
+    def my_fct_2D(self, input_raster, **kwargs):
+        input_fft = fft.fft2(input_raster)
+        result = ndimage.fourier_uniform(input_fft, **kwargs)
+        result = fft.ifft2(result)
+        return result.real
+
+    def my_fct_3D(self, input_raster, **kwargs):
+        input_fft = fft.fftn(input_raster)
+        result = ndimage.fourier_uniform(input_fft, **kwargs)
+        result = fft.ifftn(result)
+        return result.real
+
+    def createInstance(self):
+        return SciPyFourierUniformAlgorithm()
 
 
 
