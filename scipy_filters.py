@@ -65,10 +65,7 @@ class SciPyFiltersPlugin(object):
             scipy_is_installed = self.install_scipy()
 
         if scipy_is_installed:
-            print("is installed")
             QgsApplication.processingRegistry().addProvider(self.provider)
-        else:
-            print("is not")
 
     def initGui(self):
         self.initProcessing()
