@@ -49,6 +49,9 @@ from .scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           QgsProcessingParameterString)
 
 
+from .scipy_gaussian_algorithm import SciPyAlgorithmWithSigma
+
+
 
 class SciPyWienerAlgorithm(SciPyAlgorithm):
     """
@@ -148,3 +151,75 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
 
     def createInstance(self):
         return SciPyWienerAlgorithm()
+    
+
+
+class SciPyUnsharpMaskAlgorithm(SciPyAlgorithmWithSigma):
+    """
+    Unsharp mask based on scipy.ndimage.gaussian
+
+    """
+
+    AMOUNT = 'AMOUNT'
+
+    # Overwrite constants of base class
+    _name = 'unsharp_mask'
+    _displayname = 'Unsharp mask'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "enhance" 
+    _help = """
+            Sharpen the image with an unsharp mask filter. 
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Sigma</b> Radius of the filter (standard deviation of the gaussian filter).
+
+            <b>Amount</b> Amplification factor.
+
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    def insert_parameters(self, config):
+        
+        self.addParameter(QgsProcessingParameterNumber(
+            self.AMOUNT,
+            self.tr('Amount'),
+            QgsProcessingParameterNumber.Type.Double,
+            defaultValue=1.0, 
+            optional=False, 
+            ))   
+        
+        super().insert_parameters(config)
+
+
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
+
+        kwargs['amount'] = self.parameterAsDouble(parameters, self.AMOUNT, context) 
+       
+        return kwargs
+    
+
+
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.unsharpmask
+    
+    def unsharpmask(self, raster, **kwargs):
+        # most likely raster is of dtype uint, but we need negative values
+        dtype = raster.dtype
+        raster = raster.astype("float64")
+        blurred = ndimage.gaussian_filter(raster, sigma=kwargs['sigma'])
+        out = raster + (raster - blurred) * kwargs['amount']
+        return out.astype(dtype)
+
+
+    def createInstance(self):
+        return SciPyUnsharpMaskAlgorithm()

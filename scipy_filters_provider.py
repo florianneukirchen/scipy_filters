@@ -61,7 +61,8 @@ from .scipy_fourier_algorithm import (SciPyFourierGaussianAlgorithm,
                                       SciPyFourierEllipsoidAlgorithm,
                                       SciPyFourierUniformAlgorithm,)
 
-from .scipy_enhance_algorithms import (SciPyWienerAlgorithm)
+from .scipy_enhance_algorithms import (SciPyWienerAlgorithm,
+                                       SciPyUnsharpMaskAlgorithm)
 
 
 class SciPyFiltersProvider(QgsProcessingProvider):
@@ -106,6 +107,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyFourierEllipsoidAlgorithm())
         self.addAlgorithm(SciPyFourierUniformAlgorithm())
         self.addAlgorithm(SciPyWienerAlgorithm())
+        self.addAlgorithm(SciPyUnsharpMaskAlgorithm())
 
 
 
