@@ -144,7 +144,7 @@ class SciPyStdAlgorithm(SciPyStatisticalAlgorithm):
 
     # Overwrite constants of base class
     _name = 'std'
-    _displayname = 'Local standard deviation'
+    _displayname = 'Local standard deviation (very slow)'
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
     _help = """
