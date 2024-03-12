@@ -26,7 +26,13 @@ by giving a corresponding array as kernel/footprint/structure (note that "bands"
 [[1]]]
 ```
 
-Python users can generate a kernel with numpy and copy the relevant part inside the braces of np.array(...) into the text field. Note that these arrays should have the same number of dimensions as the input (2D or 3D). However you can pass a 2D array to a 3D calculation, the plugin automatically adds a new axis as first axis (the result is the same as using the same kernel in 2D).
+Python users can generate a kernel with numpy and copy the relevant part inside the braces of np.array(...) into the text field. The QGIS processing API does not allow to pass numpy arrays directly when calling from the console or a script, but you can convert it to a string using:
+
+```python
+str(numpyarray.tolist())
+```
+
+Note that these arrays should have the same number of dimensions as the input (2D or 3D). However you can pass a 2D array to a 3D calculation, the plugin automatically adds a new axis as first axis (the result is the same as using the same kernel in 2D).
 
 For more information, see the help in the window of the respective processing tool.
 

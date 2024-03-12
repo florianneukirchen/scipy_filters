@@ -344,6 +344,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
 
     def check_structure(self, s, dims=2):
+        print(s)
+        print(type(s))
         try:
             decoded = json.loads(s)
             a = np.array(decoded, dtype=np.float32)
