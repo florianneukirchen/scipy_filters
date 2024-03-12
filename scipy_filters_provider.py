@@ -55,7 +55,7 @@ from .scipy_statistical_algorithms import (SciPyMedianAlgorithm,
                                       SciPyPercentileAlgorithm,
                                       SciPyRankAlgorithm,
                                       SciPyUniformAlgorithm,
-                                      )
+                                      SciPyRangeAlgorithm)
 
 from .scipy_fourier_algorithm import (SciPyFourierGaussianAlgorithm,
                                       SciPyFFTConvolveAlgorithm,
@@ -67,8 +67,8 @@ from .scipy_enhance_algorithms import (SciPyWienerAlgorithm,
 
 
 from .scipy_local_variance_algorithm import (SciPyEstimateVarianceAlgorithm,
-                                             SciPyEstimateStdAlgorithm,
-                                             SciPyStdAlgorithm)
+                                            SciPyEstimateStdAlgorithm,
+                                            SciPyStdAlgorithm)
 
 class SciPyFiltersProvider(QgsProcessingProvider):
 
@@ -90,23 +90,29 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         Loads all algorithms belonging to this provider.
         """
         self.addAlgorithm(SciPyGaussianAlgorithm())
+
         self.addAlgorithm(SciPyConvolveAlgorithm())
+
         self.addAlgorithm(SciPyBinaryMorphologicalAlgorithm())
         self.addAlgorithm(SciPyGreyMorphologicalAlgorithm())  
         self.addAlgorithm(SciPyTophatAlgorithm())      
         self.addAlgorithm(SciPyBinaryFillHolesAlgorithm())   
         self.addAlgorithm(SciPyBinaryHitMissAlgorithm()) 
+
         self.addAlgorithm(SciPyGaussianGradientMagnitudeAlgorithm()) 
         self.addAlgorithm(SciPyGaussianLaplaceAlgorithm()) 
         self.addAlgorithm(SciPyLaplaceAlgorithm()) 
         self.addAlgorithm(SciPySobelAlgorithm()) 
         self.addAlgorithm(SciPyPrewittAlgorithm()) 
+
         self.addAlgorithm(SciPyMedianAlgorithm()) 
         self.addAlgorithm(SciPyMaximumAlgorithm())
         self.addAlgorithm(SciPyMinimumAlgorithm())
         self.addAlgorithm(SciPyPercentileAlgorithm())
         self.addAlgorithm(SciPyRankAlgorithm())
         self.addAlgorithm(SciPyUniformAlgorithm())
+        self.addAlgorithm(SciPyRangeAlgorithm())
+
         self.addAlgorithm(SciPyFourierGaussianAlgorithm())
         self.addAlgorithm(SciPyFFTConvolveAlgorithm())
         self.addAlgorithm(SciPyFourierEllipsoidAlgorithm())
