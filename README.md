@@ -43,9 +43,10 @@ pip install scipy
 - New filters:
     - unsharp mask
     - rank filter
-    - uniform (i.e. mean) filter
+    - uniform  filter (a.k.a. mean filter, box filter)
     - estimate local variance
     - estimate local standard deviation
+    - range filter 
     - fourier gaussian filter
     - fourier ellipsoid filter
     - fourier uniform filter
