@@ -6,11 +6,11 @@ Experimental QGIS plugin that gives access to [SciPy](https://scipy.org/) filter
 
 ## About
 Includes raster filters such as:
+- Convolution with a custom kernel
 - Morphological filters (binary or grey dilation, erosion, closing, opening; tophat etc.)
 - Statistical filters (median, minimum, percentile etc.)
-- Gaussian blur
 - Edge detection (sobel, laplace etc.)
-- Convolution with a custom kernel
+
 
 Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html), a library to filter images (or arrays, rasters) in n dimensions. For more information, see the SciPy tutorial on [Multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html).
 
@@ -39,8 +39,9 @@ pip install scipy
 
 ### Git Main
 - Catch exception if SciPy is not installed and offer to install it automatically (with pip)
-- Calculate and write band statistics (min, max, mean, std) into the metadata of the output file, enables QGIS to render correctly with min/max streching
+- Calculate and write band statistics (min, max, mean, std) into the metadata of the output file; enables QGIS to render correctly with min/max stretching
 - New filters:
+    - unsharp mask
     - rank filter
     - uniform (i.e. mean) filter
     - fourier gaussian filter

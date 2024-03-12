@@ -333,7 +333,7 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
 class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
     """
     Uniform filter (i.e. box filter)
-
+    (does not have footprint)
     """
 
     SIZE = 'SIZE'
@@ -389,6 +389,84 @@ class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
         return kwargs
 
    
-
     def createInstance(self):
         return SciPyUniformAlgorithm()
+    
+
+class SciPyStdAlgorithm(SciPyStatisticalAlgorithm):
+
+    DDOF = 'DDOF'
+
+    # Overwrite constants of base class
+    _name = 'std'
+    _displayname = 'Local standard deviation'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "statistic" 
+    _help = """
+            Local standard deviation.\
+            Calculated with generic_filter from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a> \
+            and numpy.std.
+
+            Warning: Very slow! 
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Delta degrees of freedom</b> of the standard deviation \
+            (ddof in numpy). With ddof=0, the std is calculated with \
+            1/N, with ddof=1 with 1/(N-1).
+
+            <b>Size</b> Size of filter if no footprint is given. Equivalent \
+            to a footprint array of shape size × size [× size in 3D] \
+            filled with ones.
+            
+            <b>Footprint</b> String representation of array, specifiying \
+            the kernel of the filter. \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
+
+            <b>Border mode</b> determines how input is extended around \
+            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
+            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
+            <i>Nearest</i> (extend by replicating the nearest pixel), \
+            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
+            <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            """
+    
+    def insert_parameters(self, config):
+        
+        self.addParameter(QgsProcessingParameterNumber(
+            self.DDOF,
+            self.tr('Delta degrees of freedom (ddof)'),
+            QgsProcessingParameterNumber.Type.Integer,
+            optional=False, 
+            defaultValue=1,
+            minValue=0,
+            maxValue=1,
+            ))   
+        
+        super().insert_parameters(config)
+
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
+
+        ddof = self.parameterAsInt(parameters, self.DDOF, context) 
+
+        kwargs["function"] = np.std
+        kwargs["extra_keywords"] = {"ddof": ddof}
+
+        return kwargs
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        # np.std is passed in get_parameters as kwarg
+        return ndimage.generic_filter
+    
+        
+    def createInstance(self):
+        return SciPyStdAlgorithm()  
