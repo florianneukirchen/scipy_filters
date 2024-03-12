@@ -67,6 +67,7 @@ from .scipy_enhance_algorithms import (SciPyWienerAlgorithm,
 
 
 from .scipy_local_variance_algorithm import (SciPyEstimateVarianceAlgorithm,
+                                             SciPyEstimateStdAlgorithm,
                                              SciPyStdAlgorithm)
 
 class SciPyFiltersProvider(QgsProcessingProvider):
@@ -104,7 +105,6 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyMaximumAlgorithm())
         self.addAlgorithm(SciPyMinimumAlgorithm())
         self.addAlgorithm(SciPyPercentileAlgorithm())
-        self.addAlgorithm(SciPyStdAlgorithm())
         self.addAlgorithm(SciPyRankAlgorithm())
         self.addAlgorithm(SciPyUniformAlgorithm())
         self.addAlgorithm(SciPyFourierGaussianAlgorithm())
@@ -113,7 +113,10 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyFourierUniformAlgorithm())
         self.addAlgorithm(SciPyWienerAlgorithm())
         self.addAlgorithm(SciPyUnsharpMaskAlgorithm())
+
         self.addAlgorithm(SciPyEstimateVarianceAlgorithm())
+        self.addAlgorithm(SciPyEstimateStdAlgorithm())
+        # self.addAlgorithm(SciPyStdAlgorithm())  # VERY slow!
 
 
     def id(self):

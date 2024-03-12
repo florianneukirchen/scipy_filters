@@ -136,6 +136,43 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
 
 
 
+class SciPyEstimateStdAlgorithm(SciPyEstimateVarianceAlgorithm):
+    # Overwrite constants of base class
+    _name = 'estimate_std'
+    _displayname = 'Estimate local standard deviation'
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "statistic" 
+    _help = """
+            Estimate local variance. Implementation based on the \
+            <a href="https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615">source code of scipy.signal.wiener</a> \
+            using correlate from <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
+
+            <b>Dimension</b> Calculate for each band separately (2D) \
+            or use all bands as a 3D datacube and perform filter in 3D. \
+            Note: bands will be the first axis of the datacube.
+
+            <b>Size</b> Size of filter window.
+            
+            """
+    
+
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.estimate_local_std
+    
+
+    def estimate_local_std(self, raster, size):
+        local_variance = estimate_local_variance(raster, size)
+        return np.sqrt(local_variance)
+        
+        
+    def createInstance(self):
+        return SciPyEstimateStdAlgorithm()  
+    
+
+
+
 # Very slow calculation of Std:
     
 class SciPyStdAlgorithm(SciPyStatisticalAlgorithm):
