@@ -1,6 +1,7 @@
 # SciPy filter pack for QGIS
 Experimental QGIS plugin that gives access to [SciPy](https://scipy.org/) filters via the processing toolbox.
 
+- QGIS Plugin Repository: [https://plugins.qgis.org/plugins/scipy_filters/](https://plugins.qgis.org/plugins/scipy_filters/)
 - Source code: [https://github.com/florianneukirchen/scipy_filters/](https://github.com/florianneukirchen/scipy_filters/)
 - Bug tracker: [https://github.com/florianneukirchen/scipy_filters/issues](https://github.com/florianneukirchen/scipy_filters/issues)
 
@@ -43,9 +44,10 @@ pip install scipy
 - New filters:
     - unsharp mask
     - rank filter
-    - uniform (i.e. mean) filter
+    - uniform  filter (a.k.a. mean filter, box filter)
     - estimate local variance
     - estimate local standard deviation
+    - range filter 
     - fourier gaussian filter
     - fourier ellipsoid filter
     - fourier uniform filter
