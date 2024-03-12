@@ -66,6 +66,8 @@ from .scipy_enhance_algorithms import (SciPyWienerAlgorithm,
                                        SciPyUnsharpMaskAlgorithm)
 
 
+from .scipy_local_variance_algorithm import (SciPyEstimateVarianceAlgorithm)
+
 class SciPyFiltersProvider(QgsProcessingProvider):
 
     def __init__(self):
@@ -110,7 +112,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyFourierUniformAlgorithm())
         self.addAlgorithm(SciPyWienerAlgorithm())
         self.addAlgorithm(SciPyUnsharpMaskAlgorithm())
-
+        self.addAlgorithm(SciPyEstimateVarianceAlgorithm())
 
 
     def id(self):
