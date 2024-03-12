@@ -44,6 +44,8 @@ pip install scipy
     - unsharp mask
     - rank filter
     - uniform (i.e. mean) filter
+    - estimate local variance
+    - estimate local standard deviation
     - fourier gaussian filter
     - fourier ellipsoid filter
     - fourier uniform filter
