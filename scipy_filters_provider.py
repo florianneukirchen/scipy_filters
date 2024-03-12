@@ -55,7 +55,7 @@ from .scipy_statistical_algorithms import (SciPyMedianAlgorithm,
                                       SciPyPercentileAlgorithm,
                                       SciPyRankAlgorithm,
                                       SciPyUniformAlgorithm,
-                                      SciPyStdAlgorithm)
+                                      )
 
 from .scipy_fourier_algorithm import (SciPyFourierGaussianAlgorithm,
                                       SciPyFFTConvolveAlgorithm,
@@ -66,7 +66,8 @@ from .scipy_enhance_algorithms import (SciPyWienerAlgorithm,
                                        SciPyUnsharpMaskAlgorithm)
 
 
-from .scipy_local_variance_algorithm import (SciPyEstimateVarianceAlgorithm)
+from .scipy_local_variance_algorithm import (SciPyEstimateVarianceAlgorithm,
+                                             SciPyStdAlgorithm)
 
 class SciPyFiltersProvider(QgsProcessingProvider):
 
