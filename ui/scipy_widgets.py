@@ -30,6 +30,8 @@ class SciPyParameterSizes(QgsProcessingParameterString):
 
 
 class SizesWidget(BASE, WIDGET):
+
+
     def __init__(self, odd=False):
         self.odd = odd # Used by Wiener
         self.context = dataobjects.createContext()
@@ -69,6 +71,11 @@ class SizesWidget(BASE, WIDGET):
             self.ndim = 2
             self.mSizeBandsQgsSpinBox.setDisabled(True)
 
+    def setDim(self, dims):
+        self.ndim = dims
+        self.mSizeBandsQgsSpinBox.setDisabled(dims == 2)
+        print(self.ndim)
+
     def sizeAllChanged(self):
         size = self.mSizeQgsSpinBox.value()
         self.mSizeRowsQgsSpinBox.setValue(size)
@@ -89,6 +96,7 @@ class SizesWidget(BASE, WIDGET):
 
 
 class SizesWidgetWrapper(WidgetWrapper):
+    dimensionwrapper = None
 
     def postInitialize(self, wrappers):
 
@@ -96,6 +104,11 @@ class SizesWidgetWrapper(WidgetWrapper):
             if wrapper.parameterDefinition().name() == "INPUT":
                 self.parentLayerChanged(wrapper)
                 wrapper.widgetValueHasChanged.connect(self.parentLayerChanged)
+            if wrapper.parameterDefinition().name() == "DIMENSION":
+                self.dimensionwrapper = wrapper
+                self.dimensionChanged(wrapper)
+                wrapper.widgetValueHasChanged.connect(self.dimensionChanged)
+            
 
     def createWidget(self):
         return SizesWidget()
@@ -103,8 +116,17 @@ class SizesWidgetWrapper(WidgetWrapper):
     def parentLayerChanged(self, wrapper):
         source = wrapper.parameterValue()
         self.widget.setParentLayer(source)
+        if self.dimensionwrapper: # does not yet exist during init
+            self.dimensionChanged(self.dimensionwrapper)
 
-   
+    def dimensionChanged(self, wrapper):
+        dim_option = wrapper.parameterValue()
+        if dim_option == 1: # 3D; see enum im basclass
+            self.widget.setDim(3)
+        else:
+            self.widget.setDim(2)
+
+
     def value(self):
         return self.widget.value()
 

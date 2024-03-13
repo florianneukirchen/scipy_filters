@@ -46,9 +46,12 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterString,
                        QgsProcessingLayerPostProcessorInterface,
                        QgsProcessingParameterBoolean,
+                       QgsProcessingParameterDefinition,
                        QgsProcessingException,
                         )
 
+from .ui.scipy_widgets import (SciPyParameterSizes, 
+                               SizesWidgetWrapper)
 
 # Group IDs and group names
 groups = {
@@ -318,6 +321,14 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             
         return super().checkParameterValues(parameters, context)
     
+    @property
+    def dims(self):
+        d = 2
+        if self._dimension == self.Dimensions.threeD:
+            d = 3
+        return d
+
+
     def str_to_array(self, s, dims=None):
         try:
             decoded = json.loads(s)
@@ -344,8 +355,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
 
     def check_structure(self, s, dims=2):
-        print(s)
-        print(type(s))
         try:
             decoded = json.loads(s)
             a = np.array(decoded, dtype=np.float32)
@@ -542,13 +551,14 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
     Base class for median, minimum etc.
     """
     SIZE = 'SIZE'
+    SIZES = 'SIZES'
     FOOTPRINT = 'FOOTPRINT'
     BOOLFOOTPRINT = 'BOOLFOOTPRINT'
 
     def initAlgorithm(self, config):
         super().initAlgorithm(config)
 
-        self.addParameter(QgsProcessingParameterNumber(
+        size_param = QgsProcessingParameterNumber(
             self.SIZE,
             self.tr('Size of flat structuring element (either size or footprint must be given, with footprint, size is ignored)'),
             QgsProcessingParameterNumber.Type.Integer,
@@ -556,8 +566,28 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             optional=True, 
             minValue=1, 
             maxValue=20, # Large sizes are really slow
-            ))    
+            )
         
+        size_param.setFlags(size_param.flags() | QgsProcessingParameterDefinition.Flag.FlagHidden)
+
+        self.addParameter(size_param)
+
+
+        sizes_param = SciPyParameterSizes(
+            self.SIZES,
+            self.tr('Size'),
+            defaultValue="", 
+            optional=True, 
+            )
+        
+        sizes_param.setMetadata({
+            'widget_wrapper': {
+                'class': SizesWidgetWrapper
+            }
+        })
+
+        self.addParameter(sizes_param)
+
        
         self.addParameter(QgsProcessingParameterBoolean(
             self.BOOLFOOTPRINT,
@@ -612,9 +642,18 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
 
-        size = self.parameterAsInt(parameters, self.SIZE, context)
-        if size:
-            kwargs['size'] = size
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        if sizes:
+            size = self.str_to_int_or_list(sizes)
+        else:
+            size = self.parameterAsInt(parameters, self.SIZE, context)
+        if not size:
+            # Just in case it is called from python and neither size or sizes or footprint is set
+            size = 3
+        kwargs['size'] = size
+        print(size, type(size))
+
+
         footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
         if footprintbool and footprint:
