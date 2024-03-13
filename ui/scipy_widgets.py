@@ -39,6 +39,11 @@ class SizesWidget(BASE, WIDGET):
         self.setupUi(self)
 
         self.mSizeQgsSpinBox.setValue(self.clearvalue)
+        self.mSizeRowsQgsSpinBox.setValue(self.clearvalue)
+        self.mSizeColsQgsSpinBox.setValue(self.clearvalue)
+        self.mSizeBandsQgsSpinBox.setValue(self.clearvalue)
+
+
         self.mSizeQgsSpinBox.setClearValue(self.clearvalue)
         self.mSizeRowsQgsSpinBox.setClearValue(self.clearvalue)
         self.mSizeColsQgsSpinBox.setClearValue(self.clearvalue)
