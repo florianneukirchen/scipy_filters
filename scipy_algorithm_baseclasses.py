@@ -51,8 +51,14 @@ from qgis.core import (QgsProcessing,
                         )
 
 from .ui.sizes_widget import (SizesWidgetWrapper)
-
 from .ui.dim_widget import (DimsWidgetWrapper, SciPyParameterDims)
+from .ui.structure_widget import (StructureWidgetWrapper, 
+                                  SciPyParameterStructure,
+                                  footprintexamples)
+
+
+
+# from .helpers import array_to_str
 
 # Group IDs and group names
 groups = {
@@ -607,13 +613,24 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             )) 
         
 
-        self.addParameter(QgsProcessingParameterString(
+
+        footprint_param = SciPyParameterStructure(
             self.FOOTPRINT,
             self.tr('Footprint array'),
-            defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
+            defaultValue="",
+            examples=footprintexamples,
             multiLine=True,
             optional=True,
-            ))
+            )
+                
+        footprint_param.setMetadata({
+            'widget_wrapper': {
+                'class': StructureWidgetWrapper
+            }
+        })
+
+        self.addParameter(footprint_param)
+
 
     def checkParameterValues(self, parameters, context): 
         footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)

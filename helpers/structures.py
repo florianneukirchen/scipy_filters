@@ -27,3 +27,10 @@ def str_to_int_or_list(s):
         raise ValueError('Wrong dimensions!')
     
     return a.tolist()
+
+
+
+def array_to_str(a):
+    s = str(a.tolist())
+    s = s.replace('], [', '],\n[')
+    return s

@@ -85,14 +85,14 @@ class SizesWidget(BASE, WIDGET):
 
 
 class SizesWidgetWrapper(WidgetWrapper):
-    dimensionwrapper = None
+    # dimensionwrapper = None
 
     def postInitialize(self, wrappers):
 
         for wrapper in wrappers:
             if wrapper.parameterDefinition().name() == "DIMENSION":
                 self.dimensionwrapper = wrapper
-                self.dimensionChanged(wrapper)
+                # self.dimensionChanged(wrapper)
                 wrapper.valueChanged.connect(self.dimensionChanged)
             
 
