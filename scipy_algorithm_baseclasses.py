@@ -569,7 +569,6 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
     SIZE = 'SIZE'
     SIZES = 'SIZES'
     FOOTPRINT = 'FOOTPRINT'
-    BOOLFOOTPRINT = 'BOOLFOOTPRINT'
 
     def initAlgorithm(self, config):
         super().initAlgorithm(config)
@@ -602,17 +601,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             }
         })
 
-        self.addParameter(sizes_param)
-
-       
-        self.addParameter(QgsProcessingParameterBoolean(
-            self.BOOLFOOTPRINT,
-            self.tr('Use footprint array'),
-            defaultValue=True, 
-            optional=True
-            )) 
-        
-
+        self.addParameter(sizes_param)   
 
         footprint_param = SciPyParameterStructure(
             self.FOOTPRINT,
@@ -633,7 +622,6 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
 
 
     def checkParameterValues(self, parameters, context): 
-        footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
 
         dims = 2
@@ -642,7 +630,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             if dim_option == 1:
                 dims = 3
 
-        if footprintbool and not footprint.strip() == "":
+        if not footprint.strip() == "":
             ok, _ = self.check_structure(footprint, dims)
             if not ok:
                 return (ok, self.tr('Can not parse footprint string or dimensions are wrong'))
@@ -678,12 +666,10 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             # Just in case it is called from python and neither size or sizes or footprint is set
             size = 3
         kwargs['size'] = size
-        print(size, type(size))
 
 
-        footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
-        if footprintbool and footprint:
+        if footprint:
             kwargs['footprint'] = self.str_to_array(footprint)
         else:
             if not size:
