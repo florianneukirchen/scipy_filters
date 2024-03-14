@@ -10,7 +10,7 @@ from qgis.core import *
 
 from .dim_widget import DimsWidgetWrapper
 
-from ..helpers import array_to_str
+from ..helpers import array_to_str, check_structure
 
 
 uipath = os.path.dirname(__file__)
@@ -44,10 +44,12 @@ class StructureWidget(BASE, WIDGET):
         super().__init__(None)
         self.examples = examples
         self.to_int = to_int
+        self.ndim = 2
+        self.ok_txt = "OK"
         self.setupUi(self)
 
         self.toolButton.setPopupMode(QToolButton.InstantPopup) 
-        self.toolButton.setText('...')
+        self.toolButton.setText('Load')
 
         tool_btn_menu = QMenu(self)
 
@@ -66,6 +68,10 @@ class StructureWidget(BASE, WIDGET):
         tool_btn_menu.triggered.connect(self.menu_triggered)
 
         self.toolButton.setMenu(tool_btn_menu)
+        self.statusLabel.setWordWrap(True)
+        self.statusLabel.setText(self.ok_txt)
+
+        self.plainTextEdit.textChanged.connect(self.checknow)
 
 
     def menu_triggered(self, checked):
@@ -74,8 +80,35 @@ class StructureWidget(BASE, WIDGET):
     def value(self):
         return self.plainTextEdit.toPlainText()
 
+    def setDim(self, dims):
+        self.ndim = dims
+        self.checknow()
+
+    def checknow(self):
+        print("now")
+        text = self.plainTextEdit.toPlainText()
+        ok, s = check_structure(text, dims=self.ndim)
+        if ok:
+            self.statusLabel.setText(self.ok_txt)
+        else:
+            self.statusLabel.setText(s)
+        
+
 
 class StructureWidgetWrapper(WidgetWrapper):
+
+    def postInitialize(self, wrappers):
+
+        for wrapper in wrappers:
+            if wrapper.parameterDefinition().name() == "DIMENSION":
+                self.dimensionwrapper = wrapper
+                wrapper.valueChanged.connect(self.dimensionChanged)
+
+    def dimensionChanged(self, dim_option):
+        if dim_option == 1: # 3D; see enum im basclass
+            self.widget.setDim(3)
+        else:
+            self.widget.setDim(2)
 
     def createWidget(self):
         examples = self.param.examples
@@ -83,7 +116,7 @@ class StructureWidgetWrapper(WidgetWrapper):
             to_int = self.param.to_int
         except AttributeError:
             to_int=None
-            print("error")
+
         widget = StructureWidget(examples, to_int)
         return widget
 

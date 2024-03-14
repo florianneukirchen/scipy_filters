@@ -33,7 +33,9 @@ def str_to_array(s, dims=2, to_int=False):
     raise QgsProcessingException('Array has wrong number of dimensions!')
 
 
-def check_structure(s, dims=2, odd=False):
+def check_structure(s, dims=2, odd=False, optional=True):
+    if optional and not s:
+        return (True, "")
     try:
         decoded = json.loads(s)
         a = np.array(decoded, dtype=np.float32)
