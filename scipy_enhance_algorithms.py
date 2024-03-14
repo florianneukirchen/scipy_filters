@@ -40,18 +40,17 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterNumber,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterEnum,
-                       QgsProcessingParameterBand,
-                        )
+                       QgsProcessingParameterBand,)
+                        
 from .scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           SciPyAlgorithmWithMode,
                                           SciPyAlgorithmWithModeAxis,
                                           SciPyStatisticalAlgorithm,
                                           QgsProcessingParameterString)
 
-
 from .scipy_gaussian_algorithm import SciPyAlgorithmWithSigma
 
-
+from .ui.sizes_widget import (OddSizesWidgetWrapper)
 
 class SciPyWienerAlgorithm(SciPyAlgorithm):
     """
@@ -59,7 +58,7 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
 
     """
 
-    SIZE = 'SIZE'
+    SIZES = 'SIZES'
     NOISE = 'NOISE'
 
     # Overwrite constants of base class
@@ -94,16 +93,25 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
         # (otherwise input is not the first parameter in the GUI)
         super().initAlgorithm(config)
 
-        self.addParameter(QgsProcessingParameterString(
-            self.SIZE,
+        sizes_param = QgsProcessingParameterString(
+            self.SIZES,
             self.tr('Size: integer (odd) or array of odd integers with sizes for every dimension'),
             defaultValue="5", 
             optional=False, 
-            ))  
+            )
+
+        sizes_param.setMetadata({
+            'widget_wrapper': {
+                'class': OddSizesWidgetWrapper
+            }
+        })
+
+        self.addParameter(sizes_param)
+
 
         self.addParameter(QgsProcessingParameterNumber(
             self.NOISE,
-            self.tr('Size'),
+            self.tr('Noise'),
             QgsProcessingParameterNumber.Type.Double,
             # defaultValue=5, 
             optional=True, 
@@ -113,10 +121,10 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
 
-        size = self.parameterAsInt(parameters, self.SIZE, context)
-        size = self.str_to_int_or_list(size)
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        sizes = self.str_to_int_or_list(sizes)
         
-        kwargs['mysize'] = size
+        kwargs['mysize'] = sizes
         kwargs['noise'] = self.parameterAsDouble(parameters, self.NOISE, context)
 
         return kwargs
@@ -124,7 +132,7 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
 
     def checkParameterValues(self, parameters, context): 
 
-        size = self.parameterAsString(parameters, self.SIZE, context)
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
 
         dims = 2
         if self._dimension == self.Dimensions.nD:
@@ -134,16 +142,16 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
 
         
         try:
-            size = self.str_to_int_or_list(size)
+            sizes = self.str_to_int_or_list(sizes)
         except ValueError:
             return (False, self.tr("Can not parse size."))
         
-        size = np.array(size)
+        sizes = np.array(sizes)
 
-        if not (size.size == 1 or size.size == dims):
+        if not (sizes.size == 1 or sizes.size == dims):
             return (False, self.tr('Number of elements in array must match the number of dimensions'))
         
-        if np.any(size % 2 == 0):
+        if np.any(sizes % 2 == 0):
             return (False, self.tr('Every element in size must be odd.'))
 
         return super().checkParameterValues(parameters, context)
