@@ -610,6 +610,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             examples=footprintexamples,
             multiLine=True,
             optional=True,
+            to_int=True,
             )
                 
         footprint_param.setMetadata({

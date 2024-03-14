@@ -21,22 +21,29 @@ WIDGET, BASE = uic.loadUiType(
 
 
 class SciPyParameterStructure(QgsProcessingParameterString):
-    def __init__(self, name, description="", defaultValue=None, multiLine=False, optional=False, examples=None):
+    def __init__(self, name, description="", defaultValue=None, multiLine=False, optional=False, examples=None, to_int=False):
         self.examples = examples
         self.isoptional = optional
+        self.to_int = to_int
 
         super().__init__(name, description, defaultValue, multiLine, optional)
 
     def clone(self):
-        return SciPyParameterStructure(self.name, self.description, self.defaultValue, self.multiLine, self.isoptional, self.examples)
-
+        return SciPyParameterStructure(self.name, 
+                                       self.description, 
+                                       self.defaultValue, 
+                                       self.multiLine, 
+                                       self.isoptional, 
+                                       self.examples, 
+                                       self.to_int)
 
 
 class StructureWidget(BASE, WIDGET):
 
-    def __init__(self, examples):
+    def __init__(self, examples, to_int=False):
         super().__init__(None)
         self.examples = examples
+        self.to_int = to_int
         self.setupUi(self)
 
         self.toolButton.setPopupMode(QToolButton.InstantPopup) 
@@ -47,7 +54,11 @@ class StructureWidget(BASE, WIDGET):
         for k, v in self.examples.items():
             action = QAction(k, self)
             if isinstance(v, np.ndarray):
-                v = array_to_str(v.astype("int"))
+                if self.to_int:
+                    v = array_to_str(v.astype("int"))
+                else:
+                    v = array_to_str(v)
+                
             action.setData(v)
             tool_btn_menu.addAction(action)
 
@@ -68,7 +79,12 @@ class StructureWidgetWrapper(WidgetWrapper):
 
     def createWidget(self):
         examples = self.param.examples
-        widget = StructureWidget(examples)
+        try:
+            to_int = self.param.to_int
+        except AttributeError:
+            to_int=None
+            print("error")
+        widget = StructureWidget(examples, to_int)
         return widget
 
     def value(self):
