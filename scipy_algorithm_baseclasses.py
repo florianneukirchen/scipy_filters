@@ -50,8 +50,10 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingException,
                         )
 
-from .ui.scipy_widgets import (SciPyParameterSizes, 
+from .ui.sizes_widget import (SciPyParameterSizes, 
                                SizesWidgetWrapper)
+
+from .ui.dim_widget import (DimsWidgetWrapper, SciPyParameterDims)
 
 # Group IDs and group names
 groups = {
@@ -158,12 +160,20 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         if self._dimension == self.Dimensions.nD:
             # Algorithms based on scipy.ndimage can have any number of dimensions
-            self.addParameter(QgsProcessingParameterEnum(
+            dim_param = SciPyParameterDims(
                 self.DIMENSION,
                 self.tr('Dimension'),
                 self._dimension_options,
                 defaultValue=0,
-                optional=False,)) 
+                optional=False,)
+
+            dim_param.setMetadata({
+                'widget_wrapper': {
+                    'class': DimsWidgetWrapper
+                }
+            })
+
+            self.addParameter(dim_param)
 
 
         # Insert Parameters 
