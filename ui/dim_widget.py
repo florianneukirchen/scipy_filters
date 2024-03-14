@@ -3,6 +3,7 @@ import os
 from processing.gui.wrappers import WidgetWrapper
 from processing.tools import dataobjects
 from qgis.PyQt.QtWidgets import QComboBox
+from qgis.PyQt.QtCore import pyqtSignal
 
 from qgis.core import *
 
@@ -23,23 +24,25 @@ class DimsWidgetWrapper(WidgetWrapper):
     def __init__(self,  param, dialog, row=0, col=0, **kwargs):
         self.context = dataobjects.createContext()
         self.parentLayer = None
+
         super().__init__(param, dialog, row=0, col=0, **kwargs)
 
 
 
     def postInitialize(self, wrappers):
 
-        for o in self.param.options():
-            print(o)
+        self.valueChanged = self.widget.currentIndexChanged
 
         for wrapper in wrappers:
             if wrapper.parameterDefinition().name() == "INPUT":
                 self.parentLayerChanged(wrapper)
                 wrapper.widgetValueHasChanged.connect(self.parentLayerChanged)
 
+    
+
+
     def parentLayerChanged(self, wrapper):
         source = wrapper.parameterValue()
-        print(source)
         self.parent_layer = QgsProcessingUtils.mapLayerFromString(source, self.context)
         if self.parent_layer.bandCount() > 1:
             self.widget.model().item(1).setEnabled(True)
@@ -51,7 +54,7 @@ class DimsWidgetWrapper(WidgetWrapper):
 
 
     def value(self):
-        return self.widget.value()
+        return self.widget.currentIndex()
 
     def createWidget(self):
         options = self.param.options()

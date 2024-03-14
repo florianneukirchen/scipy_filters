@@ -50,8 +50,7 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingException,
                         )
 
-from .ui.sizes_widget import (SciPyParameterSizes, 
-                               SizesWidgetWrapper)
+from .ui.sizes_widget import (SizesWidgetWrapper)
 
 from .ui.dim_widget import (DimsWidgetWrapper, SciPyParameterDims)
 
@@ -220,6 +219,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         # Get Parameters
         kwargs = self.get_parameters(parameters, context)
+        print("kwargs\n", kwargs)
 
         self.fct = self.get_fct()
 
@@ -583,7 +583,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
         self.addParameter(size_param)
 
 
-        sizes_param = SciPyParameterSizes(
+        sizes_param = QgsProcessingParameterString(
             self.SIZES,
             self.tr('Size'),
             defaultValue="", 

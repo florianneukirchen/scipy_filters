@@ -8,23 +8,12 @@ from qgis.PyQt import uic
 
 from qgis.core import *
 
+from .dim_widget import DimsWidgetWrapper
 
 uipath = os.path.dirname(__file__)
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(uipath, 'SizesWidget.ui'))
-
-
-
-class SciPyParameterSizes(QgsProcessingParameterString):
-    def __init__(self, name, description="", defaultValue=None, multiLine=False, optional=False, parent_layer=None):
-        self.parent_layer = parent_layer
-        self.isoptional = optional
-
-        super().__init__(name, description, defaultValue, multiLine, optional)
-
-    def clone(self):
-        return SciPyParameterSizes(self.name, self.description, self.defaultValue, self.multiLine, self.isoptional, self.parent_layer)
 
 
 
@@ -34,7 +23,7 @@ class SizesWidget(BASE, WIDGET):
     def __init__(self, odd=False):
         self.odd = odd # Used by Wiener
         self.context = dataobjects.createContext()
-        self.ndim = 3
+        self.ndim = None
         self.clearvalue = 3
         super().__init__(None)
         self.setupUi(self)
@@ -72,8 +61,9 @@ class SizesWidget(BASE, WIDGET):
 
     def setDim(self, dims):
         self.ndim = dims
+        # Disable bands axis if dims == 2, otherwise enable
         self.mSizeBandsQgsSpinBox.setDisabled(dims == 2)
-        print(self.ndim)
+        self.sizeBandsLabel.setDisabled(dims == 2)
 
     def sizeAllChanged(self):
         size = self.mSizeQgsSpinBox.value()
@@ -100,26 +90,17 @@ class SizesWidgetWrapper(WidgetWrapper):
     def postInitialize(self, wrappers):
 
         for wrapper in wrappers:
-            if wrapper.parameterDefinition().name() == "INPUT":
-                self.parentLayerChanged(wrapper)
-                wrapper.widgetValueHasChanged.connect(self.parentLayerChanged)
             if wrapper.parameterDefinition().name() == "DIMENSION":
                 self.dimensionwrapper = wrapper
                 self.dimensionChanged(wrapper)
-                wrapper.widgetValueHasChanged.connect(self.dimensionChanged)
+                wrapper.valueChanged.connect(self.dimensionChanged)
             
 
     def createWidget(self):
         return SizesWidget()
     
-    def parentLayerChanged(self, wrapper):
-        source = wrapper.parameterValue()
-        self.widget.setParentLayer(source)
-        if self.dimensionwrapper: # does not yet exist during init
-            self.dimensionChanged(self.dimensionwrapper)
 
-    def dimensionChanged(self, wrapper):
-        dim_option = wrapper.parameterValue()
+    def dimensionChanged(self, dim_option):
         if dim_option == 1: # 3D; see enum im basclass
             self.widget.setDim(3)
         else:
