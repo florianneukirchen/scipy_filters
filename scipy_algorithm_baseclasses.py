@@ -58,7 +58,7 @@ from .ui.structure_widget import (StructureWidgetWrapper,
 
 
 
-# from .helpers import array_to_str
+from .helpers import array_to_str, str_to_int_or_list
 
 # Group IDs and group names
 groups = {
@@ -344,7 +344,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             d = 3
         return d
 
-
+    # TODO remove
     def str_to_array(self, s, dims=None):
         try:
             decoded = json.loads(s)
@@ -369,7 +369,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             return a
         raise QgsProcessingException(self.tr('Array has wrong number of dimensions!'))
 
-
+    # TODO remove
     def check_structure(self, s, dims=2):
         try:
             decoded = json.loads(s)
@@ -384,6 +384,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         return (True, "")
 
+    # TODO remove
     def str_to_int_or_list(self, s):
         """
         Allow to have parameters for axes (one or several) or size (for all or each dimension)
