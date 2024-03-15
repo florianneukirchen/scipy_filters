@@ -52,6 +52,9 @@ from .scipy_gaussian_algorithm import SciPyAlgorithmWithSigma
 
 from .ui.sizes_widget import (OddSizesWidgetWrapper)
 
+
+from .helpers import str_to_int_or_list
+
 class SciPyWienerAlgorithm(SciPyAlgorithm):
     """
     Wiener filter 
@@ -122,7 +125,7 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
         kwargs = super().get_parameters(parameters, context)
 
         sizes = self.parameterAsString(parameters, self.SIZES, context)
-        sizes = self.str_to_int_or_list(sizes)
+        sizes = str_to_int_or_list(sizes)
         
         kwargs['mysize'] = sizes
         kwargs['noise'] = self.parameterAsDouble(parameters, self.NOISE, context)
@@ -142,7 +145,7 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
 
         
         try:
-            sizes = self.str_to_int_or_list(sizes)
+            sizes = str_to_int_or_list(sizes)
         except ValueError:
             return (False, self.tr("Can not parse size."))
         
