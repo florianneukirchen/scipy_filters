@@ -2,9 +2,10 @@ import os
 import json
 import numpy as np
 from qgis.core import QgsProcessingException
+from collections import OrderedDict
 
 
-def str_to_array(s, dims=2, to_int=False):
+def str_to_array(s, dims=2, to_int=True):
     s = s.strip()
     if not s:
         return None
@@ -27,8 +28,11 @@ def str_to_array(s, dims=2, to_int=False):
 
 
 def check_structure(s, dims=2, odd=False, optional=True):
-    if optional and not s.strip():
+    s = s.strip()
+    if optional and not s:
         return (True, "")
+    if s == "" and not optional:
+        return (False, "Argument is not optional")
     try:
         decoded = json.loads(s)
         a = np.array(decoded, dtype=np.float32)
@@ -79,3 +83,22 @@ def array_to_str(a):
     s = str(a.tolist())
     s = s.replace('], [', '],\n[')
     return s
+
+
+
+
+
+
+footprintexamples = OrderedDict([
+    ("3 × 3 Square", np.ones((3,3))),
+    ("5 × 5 Square", np.ones((5,5))),
+
+])
+
+
+kernelexamples = OrderedDict([
+    ("3 × 3 Gaussian", "[[1, 2, 1],\n[2, 4, 2],\n[1, 2, 1]]"),
+    ("3 × 3 Square", np.ones((3,3))),
+    ("5 × 5 Square", np.ones((5,5))),
+
+])
