@@ -110,6 +110,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
             examples=kernelexamples,
             multiLine=True,
             to_int=False,
+            optional=False,
             )
         
         kernel_param.setMetadata({

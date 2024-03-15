@@ -21,7 +21,7 @@ WIDGET, BASE = uic.loadUiType(
 
 
 class SciPyParameterStructure(QgsProcessingParameterString):
-    def __init__(self, name, description="", defaultValue=None, multiLine=False, optional=False, examples=None, to_int=False):
+    def __init__(self, name, description="", defaultValue=None, multiLine=False, optional=True, examples=None, to_int=False):
         self.examples = examples
         self.isoptional = optional
         self.to_int = to_int
@@ -40,9 +40,10 @@ class SciPyParameterStructure(QgsProcessingParameterString):
 
 class StructureWidget(BASE, WIDGET):
 
-    def __init__(self, examples, to_int=False, defaultValue=""):
+    def __init__(self, examples, to_int=False, defaultValue="", isoptional=True):
         super().__init__(None)
         self.examples = examples
+        self.isoptional = isoptional
         self.to_int = to_int
         self.ndim = 2
         self.ok_txt = "OK"
@@ -88,7 +89,7 @@ class StructureWidget(BASE, WIDGET):
 
     def checknow(self):
         text = self.plainTextEdit.toPlainText()
-        ok, s = check_structure(text, dims=self.ndim)
+        ok, s = check_structure(text, dims=self.ndim, optional=self.isoptional)
         if ok:
             self.statusLabel.setText(self.ok_txt)
         else:
@@ -118,7 +119,9 @@ class StructureWidgetWrapper(WidgetWrapper):
         except AttributeError:
             to_int=None
         defaultValue = self.param.defaultValue()
-        widget = StructureWidget(examples, to_int, defaultValue=defaultValue)
+
+        optional = self.param.isoptional
+        widget = StructureWidget(examples, to_int, defaultValue=defaultValue, isoptional=optional)
         return widget
 
     def value(self):
