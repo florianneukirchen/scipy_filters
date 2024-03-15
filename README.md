@@ -46,6 +46,7 @@ pip install scipy
 
 ### Git Main
 - Catch exception if SciPy is not installed and offer to install it automatically (with pip)
+- Improved user interface with custom widgets, making it more intuitive and allowing for far better parameters (see breaking changes if you already used version 0.1 in a script or model).
 - Calculate and write band statistics (min, max, mean, std) into the metadata of the output file; enables QGIS to render correctly with min/max stretching
 - New filters:
     - unsharp mask
@@ -62,7 +63,7 @@ pip install scipy
 - Breaking changes to the parameters:
     - FOOTPRINTBOOL has been removed, if a footprint is given it is always used.
     - STRUCTURE always takes the actual structure as string, not an int (was index of combobox, the combobox has been replaced by the load button). CUSTOMSTRUCTURE has been removed.
-    - Convolve: ORIGIN has been removed.
+    - Convolve: ORIGIN has been removed. (An improved version is on the todo list)
 
 ### 0.1 (03/2024)
 Initial Release
