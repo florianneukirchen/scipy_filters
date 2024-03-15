@@ -40,13 +40,15 @@ class SciPyParameterStructure(QgsProcessingParameterString):
 
 class StructureWidget(BASE, WIDGET):
 
-    def __init__(self, examples, to_int=False):
+    def __init__(self, examples, to_int=False, defaultValue=""):
         super().__init__(None)
         self.examples = examples
         self.to_int = to_int
         self.ndim = 2
         self.ok_txt = "OK"
         self.setupUi(self)
+
+        self.plainTextEdit.setPlainText(defaultValue)
 
         self.toolButton.setPopupMode(QToolButton.InstantPopup) 
         self.toolButton.setText('Load')
@@ -85,7 +87,6 @@ class StructureWidget(BASE, WIDGET):
         self.checknow()
 
     def checknow(self):
-        print("now")
         text = self.plainTextEdit.toPlainText()
         ok, s = check_structure(text, dims=self.ndim)
         if ok:
@@ -116,8 +117,8 @@ class StructureWidgetWrapper(WidgetWrapper):
             to_int = self.param.to_int
         except AttributeError:
             to_int=None
-
-        widget = StructureWidget(examples, to_int)
+        defaultValue = self.param.defaultValue()
+        widget = StructureWidget(examples, to_int, defaultValue=defaultValue)
         return widget
 
     def value(self):
@@ -128,7 +129,3 @@ class StructureWidgetWrapper(WidgetWrapper):
 
 
 
-footprintexamples = {
-    "3 × 3 Square": np.ones((3,3)),
-    "5 × 5 Square": np.ones((5,5)),
-}
