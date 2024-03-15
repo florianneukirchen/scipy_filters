@@ -68,7 +68,7 @@ Since version 0.2, the plugin offers an automatic installation of SciPy (using p
     - FFT convolve
 - Breaking changes to the parameters:
     - FOOTPRINTBOOL has been removed, if a footprint is given it is always used.
-    - STRUCTURE always takes the actual structure as string, not an int (was index of combobox, the combobox has been replaced by the load button). CUSTOMSTRUCTURE has been removed.
+    - STRUCTURE always takes the actual structure as string (as CUSTOMSTRUCTURE in version 0.1), not an int (was index of combobox, the combobox has been replaced by the load button). CUSTOMSTRUCTURE has been removed.
     - Convolve: ORIGIN has been removed. (An improved version is on the todo list)
 
 ### 0.1 (03/2024)
