@@ -115,8 +115,6 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
         return kwargs
 
     def checkParameterValues(self, parameters, context): 
-        structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
-
         dims = self.getDimsForCheck(parameters, context)
 
         structure = self.parameterAsString(parameters, self.STRUCTURE, context)
