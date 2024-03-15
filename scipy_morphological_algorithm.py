@@ -48,6 +48,15 @@ from qgis.core import (QgsProcessing,
 
 from .scipy_algorithm_baseclasses import SciPyAlgorithm
 
+from .ui.structure_widget import (StructureWidgetWrapper, 
+                                  SciPyParameterStructure,)
+
+from .helpers import (array_to_str, 
+                      str_to_int_or_list, 
+                      check_structure, 
+                      str_to_array, 
+                      morphostructexamples,
+                      footprintexamples)
 
 class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
     """
@@ -56,7 +65,6 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
 
     ALGORITHM = 'ALGORITHM' 
     STRUCTURE = 'STRUCTURE'
-    CUSTOMSTRUCTURE = 'CUSTOMSTRUCTURE'
 
     _groupid = 'morphological'
 
@@ -75,19 +83,23 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
             defaultValue=0)) 
         
 
-        self.addParameter(QgsProcessingParameterEnum(
+        struct_param = SciPyParameterStructure(
             self.STRUCTURE,
             self.tr('Structure'),
-            ["Cross", "Square (2D) / Ball (3D)", "Cube (only 3D)", "Custom"],
-            defaultValue=1)) 
-
-        self.addParameter(QgsProcessingParameterString(
-            self.CUSTOMSTRUCTURE,
-            self.tr('Custom structure (array), ignored if structure is set to cross or square'),
-            defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
+            defaultValue="[[0, 1, 0],\n[1, 1, 1],\n[0, 1, 0]]",
+            examples=morphostructexamples,
             multiLine=True,
+            to_int=True,
             optional=True,
-            ))
+            )
+        
+        struct_param.setMetadata({
+            'widget_wrapper': {
+                'class': StructureWidgetWrapper
+            }
+        })
+
+        self.addParameter(struct_param)
         
         super().insert_parameters(config)
 
@@ -96,47 +108,21 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
         kwargs = super().get_parameters(parameters, context)
 
         self.alg = self.parameterAsInt(parameters, self.ALGORITHM, context)
-
-        structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
-
-        dims = 2
-
-        if self._dimension == self.Dimensions.threeD:
-            dims = 3
-        
-        if structure in (0,1):
-            kwargs['structure'] = ndimage.generate_binary_structure(dims, structure + 1)
-        elif structure == 2:
-            # Cube only in 3D
-            if dims == 2:
-                raise Exception(self.tr("Cube only for 3D"))
-            else:
-                kwargs['structure'] = ndimage.generate_binary_structure(3,3)
-
-        else:
-            structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
-            kwargs['structure'] = self.str_to_array(structure)
+     
+        structure = self.parameterAsString(parameters, self.STRUCTURE, context)
+        kwargs['structure'] = str_to_array(structure, self._ndim)
 
         return kwargs
 
     def checkParameterValues(self, parameters, context): 
         structure = self.parameterAsInt(parameters, self.STRUCTURE, context)
 
-        dims = 2
-        if self._dimension == self.Dimensions.nD:
-            dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
-            if dim_option == 1:
-                dims = 3
+        dims = self.getDimsForCheck(parameters, context)
 
-        if structure == 2 and dims == 2:
-            # No Cube in 2D
-            return (False, "No cube in 2D.")
-
-        if structure == 3:
-            structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE, context)
-            ok, s = self.check_structure(structure, dims)
-            if not ok:
-                return (ok, s)
+        structure = self.parameterAsString(parameters, self.STRUCTURE, context)
+        ok, s = check_structure(structure, dims)
+        if not ok:
+            return (ok, s)
         
         return super().checkParameterValues(parameters, context)
 
@@ -250,7 +236,6 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     MODE = 'MODE'
     CVAL = 'CVAL'
     FOOTPRINT = 'FOOTPRINT'
-    BOOLFOOTPRINT = 'BOOLFOOTPRINT'
 
     # Overwrite constants of base class
     _name = 'grey_morphology'
@@ -306,7 +291,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
         self.addParameter(QgsProcessingParameterNumber(
             self.SIZE,
-            self.tr('Size of flat structuring element (Optional if footprint or structure provided, 0 for no size)'),
+            self.tr('Size of flat structuring element (Ignored if footprint or structure provided, 0 for no size)'),
             QgsProcessingParameterNumber.Type.Integer,
             defaultValue=0, 
             optional=True, 
@@ -328,37 +313,36 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             optional=True, 
             minValue=0, 
             # maxValue=100
-            ))      
+            ))          
         
-        self.addParameter(QgsProcessingParameterBoolean(
-            self.BOOLFOOTPRINT,
-            self.tr('Use footprint array'),
-            defaultValue=False, 
-            optional=True
-            )) 
-        
-
-        self.addParameter(QgsProcessingParameterString(
+        struct_param = SciPyParameterStructure(
             self.FOOTPRINT,
             self.tr('Footprint array'),
             defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
+            examples=footprintexamples,
             multiLine=True,
+            to_int=True,
             optional=True,
-            ))
+            )
+        
+        struct_param.setMetadata({
+            'widget_wrapper': {
+                'class': StructureWidgetWrapper
+            }
+        })
+
+        self.addParameter(struct_param)
+
+
 
     def checkParameterValues(self, parameters, context): 
-        footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
-        if footprintbool and not footprint.strip() == "":
-            dims = 2
-            if self._dimension == self.Dimensions.nD:
-                dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
-                if dim_option == 1:
-                    dims = 3
+        if footprint:
+            dims = self.getDimsForCheck(parameters, context)
 
-            ok, _ = self.check_structure(footprint, dims)
+            ok, s = check_structure(footprint, dims)
             if not ok:
-                return (ok, self.tr('Can not parse footprint string or dimensions are wrong'))
+                return (ok, self.tr('Footprint: ' + s))
         
         return super().checkParameterValues(parameters, context)
     
@@ -369,10 +353,9 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         size = self.parameterAsInt(parameters, self.SIZE, context)
         if size:
             kwargs['size'] = size
-        footprintbool = self.parameterAsBool(parameters, self.BOOLFOOTPRINT, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
-        if footprintbool and footprint:
-            kwargs['footprint'] = self.str_to_array(footprint)
+        if footprint.strip() != "":
+            kwargs['footprint'] = str_to_array(footprint, self._ndim)
         else:
             if not size:
                 # Either size or footprint must be set

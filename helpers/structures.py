@@ -125,3 +125,13 @@ kernelexamples = OrderedDict([
     ("5 × 5 Square", np.ones((5,5))),
 
 ])
+
+morphostructexamples =  OrderedDict([
+    ("Cross", ndimage.generate_binary_structure(2, 1)),
+    ("Square", ndimage.generate_binary_structure(2, 2)),
+    ("Cross 3D", ndimage.generate_binary_structure(3, 1)),
+    ("Ball 3D", ndimage.generate_binary_structure(3, 2)),
+    ("Cube 3D", ndimage.generate_binary_structure(3, 3)),
+    ("5 × 5 Square", np.ones((5,5))),
+
+])
