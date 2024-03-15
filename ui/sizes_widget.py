@@ -1,3 +1,25 @@
+"""
+/***************************************************************************
+ SciPyFilters
+                                 A QGIS plugin
+ Filter collection implemented with SciPy
+                              -------------------
+        begin                : 2024-03-03
+        copyright            : (C) 2024 by Florian Neukirchen
+        email                : mail@riannek.de
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+"""
+
+# Helpful example on how to use widget wrapper:
 # https://github.com/qgis/QGIS/blob/master/python/plugins/processing/algs/qgis/ui/HeatmapWidgets.py
 
 import os
