@@ -83,7 +83,6 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
             axis and the result is the same as calculating each band \
             seperately).
             <b>Normalization</b> Normalize the kernel by dividing through given value; set to 0 to devide through the sum of kernel values.
-            <b>Origin</b> Shift the filter
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \

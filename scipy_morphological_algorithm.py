@@ -150,15 +150,16 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             <b>Closing</b> Perform dilation and then erosion. Fills small holes, large shapes are preserved.
             <b>Opening</b> Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
             
-            <b>Structure</b> Structuring element of filter, can be cross, square or custom in 2D; \
-            or cross, ball or cube in 3D. 
 
-            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom". \
+            <b>Structure</b> String representation of array. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \
             but a 2D array is also excepted (a new axis is added as first \
             axis and the result is the same as calculating each band \
-            seperately).
+            seperately). Examples can be loaded with the load button. \
+            For convenience (i.e. when calling from a script), \
+            the following shortcuts are accepted as well: \
+            "square", "cross", "cross3D", "ball", "cube".
 
             <b>Iterations</b> Each step of filter is repeated this number of times.
             <b>Border value</b> Valute at border of output array, defaults to 0. 
@@ -289,7 +290,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
         self.addParameter(QgsProcessingParameterNumber(
             self.SIZE,
-            self.tr('Size of flat structuring element (Ignored if footprint or structure provided, 0 for no size)'),
+            self.tr('Size of flat structuring element (Ignored if footprint or structure provided)'),
             QgsProcessingParameterNumber.Type.Integer,
             defaultValue=0, 
             optional=True, 
@@ -399,14 +400,15 @@ class SciPyTophatAlgorithm(SciPyGreyMorphologicalAlgorithm):
             <b>Morphological gradient</b> Difference between dilation and erosion.
             <b>Morphological laplace</b> Difference between internal and external gradient.
 
-            <b>Structure</b> Structuring element of filter, can be cross, square or custom in 2D; \
-            or cross, ball or cube in 3D. 
-            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom". \
+            <b>Structure</b> String representation of array. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \
             but a 2D array is also excepted (a new axis is added as first \
             axis and the result is the same as calculating each band \
-            seperately).
+            seperately). Examples can be loaded with the load button. \
+            For convenience (i.e. when calling from a script), \
+            the following shortcuts are accepted as well: \
+            "square", "cross", "cross3D", "ball", "cube".
 
             <b>Size</b> Size of flat and full structuring element, optional if footprint or structure is provided.
             <b>Border mode</b> determines how input is extended around \
@@ -415,7 +417,17 @@ class SciPyTophatAlgorithm(SciPyGreyMorphologicalAlgorithm):
             <i>Nearest</i> (extend by replicating the nearest pixel), \
             <i>Mirror</i> (extend by reflecting about the center of last pixel), \
             <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            <b>Footprint</b> Positions of elements of a flat structuring element used for the filter (string representation of array, only used if checkbox is checked).
+            
+            <b>Footprint</b> Positions of elements of a flat structuring element \
+            used for the filter (as string representation of array). \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately). Examples can be loaded with the load button. \
+            For convenience (i.e. when calling from a script), \
+            the following shortcuts are accepted as well: \
+            "square", "cross", "cross3D", "ball", "cube".
             """
     
     def getAlgs(self):

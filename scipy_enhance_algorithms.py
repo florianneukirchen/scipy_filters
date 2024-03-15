@@ -78,12 +78,10 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Size</b> Size of filter. Can be integer \
-            (same size for all dimensions) or a list of integers \
-            with a value for every dimension. In both cases, all values must \
+            <b>Size</b> Size of filter in pixels. All values must \
             be odd.
 
-            <b>noise</b> The noise-power to use. If not set, estimate noise from \
+            <b>Noise</b> The noise-power to use. If not set, estimate noise from \
             local variance.
             """
     

@@ -75,16 +75,16 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
-
-            <b>Structure</b> Structuring element of filter, can be cross, square or custom in 2D; \
-            or cross, ball or cube in 3D. 
-
-            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom". \
+            
+            <b>Structure</b> String representation of array. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \
             but a 2D array is also excepted (a new axis is added as first \
             axis and the result is the same as calculating each band \
-            seperately).
+            seperately). Examples can be loaded with the load button. \
+            For convenience (i.e. when calling from a script), \
+            the following shortcuts are accepted as well: \
+            "square", "cross", "cross3D", "ball", "cube".
             """
     
     # The function to be called

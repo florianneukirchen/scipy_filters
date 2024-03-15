@@ -70,8 +70,9 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Structure 1</b>  String representation of array.
-            <b>Structure 2</b> String representation of array, disjoint to structure 1.
+            <b>Structure 1</b> String representation of array. 
+            <b>Structure 2</b> String representation of array, disjoint to structure 1. \
+             If no value is provided, the complementary of structure1 is taken.
 
             Both structures must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \

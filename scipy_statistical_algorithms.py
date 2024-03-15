@@ -64,17 +64,21 @@ class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Size</b> Size of filter if no footprint is given. Equivalent \
-            to a footprint array of shape size × size [× size in 3D] \
+            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
+            to a footprint array of shape size_rows × size_cols (in 2D) or \
+            size_bands × size_rows × size_cols (in 3D) \
             filled with ones.
             
-            <b>Footprint</b> String representation of array, specifiying \
-            the kernel of the filter. \
+            <b>Footprint</b> Positions of elements of a flat structuring element \
+            used for the filter (as string representation of array). \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \
             but a 2D array is also excepted (a new axis is added as first \
             axis and the result is the same as calculating each band \
-            seperately).
+            seperately). Examples can be loaded with the load button. \
+            For convenience (i.e. when calling from a script), \
+            the following shortcuts are accepted as well: \
+            "square", "cross", "cross3D", "ball", "cube".
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
@@ -107,17 +111,21 @@ class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Size</b> Size of filter if no footprint is given. Equivalent \
-            to a footprint array of shape size × size [× size in 3D] \
+            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
+            to a footprint array of shape size_rows × size_cols (in 2D) or \
+            size_bands × size_rows × size_cols (in 3D) \
             filled with ones.
 
-            <b>Footprint</b> String representation of array, specifiying \
-            the kernel of the filter. \
+            <b>Footprint</b> Positions of elements of a flat structuring element \
+            used for the filter (as string representation of array). \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \
             but a 2D array is also excepted (a new axis is added as first \
             axis and the result is the same as calculating each band \
-            seperately).
+            seperately). Examples can be loaded with the load button. \
+            For convenience (i.e. when calling from a script), \
+            the following shortcuts are accepted as well: \
+            "square", "cross", "cross3D", "ball", "cube".
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
@@ -150,17 +158,21 @@ class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Size</b> Size of filter if no footprint is given. Equivalent \
-            to a footprint array of shape size × size [× size in 3D] \
+            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
+            to a footprint array of shape size_rows × size_cols (in 2D) or \
+            size_bands × size_rows × size_cols (in 3D) \
             filled with ones.
 
-            <b>Footprint</b> String representation of array, specifiying \
-            the kernel of the filter. \
+            <b>Footprint</b> Positions of elements of a flat structuring element \
+            used for the filter (as string representation of array). \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \
             but a 2D array is also excepted (a new axis is added as first \
             axis and the result is the same as calculating each band \
-            seperately).
+            seperately). Examples can be loaded with the load button. \
+            For convenience (i.e. when calling from a script), \
+            the following shortcuts are accepted as well: \
+            "square", "cross", "cross3D", "ball", "cube".
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
@@ -194,17 +206,21 @@ class SciPyRangeAlgorithm(SciPyStatisticalAlgorithm):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Size</b> Size of filter if no footprint is given. Equivalent \
-            to a footprint array of shape size × size [× size in 3D] \
+            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
+            to a footprint array of shape size_rows × size_cols (in 2D) or \
+            size_bands × size_rows × size_cols (in 3D) \
             filled with ones.
 
-            <b>Footprint</b> String representation of array, specifiying \
-            the kernel of the filter. \
+            <b>Footprint</b> Positions of elements of a flat structuring element \
+            used for the filter (as string representation of array). \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \
             but a 2D array is also excepted (a new axis is added as first \
             axis and the result is the same as calculating each band \
-            seperately).
+            seperately). Examples can be loaded with the load button. \
+            For convenience (i.e. when calling from a script), \
+            the following shortcuts are accepted as well: \
+            "square", "cross", "cross3D", "ball", "cube".
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
@@ -250,17 +266,21 @@ class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
             <b>Percentile</b> Percentile from 0 to 100. Negative values: \
             use 100 - given value as percentile.
 
-            <b>Size</b> Size of filter if no footprint is given. Equivalent \
-            to a footprint array of shape size × size [× size in 3D] \
+            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
+            to a footprint array of shape size_rows × size_cols (in 2D) or \
+            size_bands × size_rows × size_cols (in 3D) \
             filled with ones.
 
-            <b>Footprint</b> String representation of array, specifiying \
-            the kernel of the filter. \
+            <b>Footprint</b> Positions of elements of a flat structuring element \
+            used for the filter (as string representation of array). \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \
             but a 2D array is also excepted (a new axis is added as first \
             axis and the result is the same as calculating each band \
-            seperately).
+            seperately). Examples can be loaded with the load button. \
+            For convenience (i.e. when calling from a script), \
+            the following shortcuts are accepted as well: \
+            "square", "cross", "cross3D", "ball", "cube".
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
@@ -333,17 +353,21 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
             The rank parameter may be less than zero: \
             rank = -1 indicates the largest element, etc.
 
-            <b>Size</b> Size of filter if no footprint is given. Equivalent \
-            to a footprint array of shape size × size [× size in 3D] \
+            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
+            to a footprint array of shape size_rows × size_cols (in 2D) or \
+            size_bands × size_rows × size_cols (in 3D) \
             filled with ones.
 
-            <b>Footprint</b> String representation of array, specifiying \
-            the kernel of the filter. \
+            <b>Footprint</b> Positions of elements of a flat structuring element \
+            used for the filter (as string representation of array). \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \
             but a 2D array is also excepted (a new axis is added as first \
             axis and the result is the same as calculating each band \
-            seperately).
+            seperately). Examples can be loaded with the load button. \
+            For convenience (i.e. when calling from a script), \
+            the following shortcuts are accepted as well: \
+            "square", "cross", "cross3D", "ball", "cube".
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
@@ -403,7 +427,10 @@ class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Size</b> Size of filter.
+            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
+            to a footprint array of shape size_rows × size_cols (in 2D) or \
+            size_bands × size_rows × size_cols (in 3D) \
+            filled with ones.
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
