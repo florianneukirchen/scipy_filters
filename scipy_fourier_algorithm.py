@@ -44,7 +44,9 @@ from qgis.core import (QgsProcessing,
                         )
 
 from .scipy_algorithm_baseclasses import SciPyAlgorithm
-
+from .helpers import check_structure, str_to_array, kernelexamples
+from .ui.structure_widget import (StructureWidgetWrapper, 
+                                  SciPyParameterStructure,)
 
 class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
     """
@@ -337,12 +339,23 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
         default_kernel = "[[1, 2, 1],\n[2, 4, 2],\n[1, 2, 1]]"
 
-        self.addParameter(QgsProcessingParameterString(
+        kernel_param = SciPyParameterStructure(
             self.KERNEL,
             self.tr('Kernel'),
             defaultValue=default_kernel,
+            examples=kernelexamples,
             multiLine=True,
-            ))
+            to_int=False,
+            optional=False
+            )
+        
+        kernel_param.setMetadata({
+            'widget_wrapper': {
+                'class': StructureWidgetWrapper
+            }
+        })
+
+        self.addParameter(kernel_param)
         
         self.addParameter(QgsProcessingParameterNumber(
             self.NORMALIZATION,
@@ -362,7 +375,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
         kwargs = super().get_parameters(parameters, context)
 
         kernel = self.parameterAsString(parameters, self.KERNEL, context)
-        kernel = self.str_to_array(kernel)
+        kernel = str_to_array(kernel, 2)
 
         normalization = self.parameterAsDouble(parameters, self.NORMALIZATION, context)
 
@@ -380,9 +393,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
         structure = self.parameterAsString(parameters, self.KERNEL, context)
 
-        dims = 2
-
-        ok, s = self.check_structure(structure, dims)
+        ok, s = check_structure(structure, 2)
         if not ok:
             return (ok, s)
         
