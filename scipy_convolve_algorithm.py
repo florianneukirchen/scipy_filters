@@ -49,6 +49,12 @@ from qgis.core import (QgsProcessing,
 
 from .scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
 
+from .ui.structure_widget import (StructureWidgetWrapper, 
+                                  SciPyParameterStructure,)
+from .helpers import (array_to_str, 
+                      str_to_int_or_list, 
+                      check_structure, str_to_array, 
+                      kernelexamples)
 
 class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
@@ -97,12 +103,23 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
         default_kernel = "[[1, 2, 1],\n[2, 4, 2],\n[1, 2, 1]]"
 
-        self.addParameter(QgsProcessingParameterString(
+        kernel_param = SciPyParameterStructure(
             self.KERNEL,
             self.tr('Kernel'),
             defaultValue=default_kernel,
+            examples=kernelexamples,
             multiLine=True,
-            ))
+            to_int=False,
+            )
+        
+        kernel_param.setMetadata({
+            'widget_wrapper': {
+                'class': StructureWidgetWrapper
+            }
+        })
+
+        self.addParameter(kernel_param)
+
         
         self.addParameter(QgsProcessingParameterNumber(
             self.NORMALIZATION,
@@ -114,20 +131,20 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
             # maxValue=100
             )) 
 
-        self.addParameter(QgsProcessingParameterNumber(
-            self.ORIGIN,
-            self.tr('Origin (shift the filter)'),
-            QgsProcessingParameterNumber.Type.Integer,
-            defaultValue=0, 
-            optional=True, 
-            ))    
+        # self.addParameter(QgsProcessingParameterNumber(
+        #     self.ORIGIN,
+        #     self.tr('Origin (shift the filter)'),
+        #     QgsProcessingParameterNumber.Type.Integer,
+        #     defaultValue=0, 
+        #     optional=True, 
+        #     ))    
 
 
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
 
         weights = self.parameterAsString(parameters, self.KERNEL, context)
-        weights = self.str_to_array(weights)
+        weights = str_to_array(weights, self._ndim)
 
         normalization = self.parameterAsDouble(parameters, self.NORMALIZATION, context)
 
@@ -138,9 +155,9 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
             
         kwargs['weights'] = weights
 
-        origin = self.parameterAsInt(parameters, self.ORIGIN, context)
-        if origin:
-            kwargs['origin'] = origin
+        # origin = self.parameterAsInt(parameters, self.ORIGIN, context)
+        # if origin:
+        #     kwargs['origin'] = origin
 
         return kwargs
     
@@ -148,14 +165,10 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
     def checkParameterValues(self, parameters, context): 
 
         structure = self.parameterAsString(parameters, self.KERNEL, context)
+        print(structure)
+        dims = self.getDimsForCheck(parameters, context)
 
-        dims = 2
-        if self._dimension == self.Dimensions.nD:
-            dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
-            if dim_option == 1:
-                dims = 3
-
-        ok, s = self.check_structure(structure, dims)
+        ok, s = check_structure(structure, dims, optional=False)
         if not ok:
             return (ok, s)
         
