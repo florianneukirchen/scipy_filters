@@ -47,6 +47,9 @@ Since version 0.2, the plugin offers an automatic installation of SciPy (using p
 
 ## Changelog
 
+### Git main
+- Unsharp mask: avoid overflow by clipping values according to min and max of input dtype.
+
 ### 0.2 (03/2024)
 - Catch exception if SciPy is not installed and offer to install it automatically (with pip)
 - Improved user interface with custom widgets, making it more intuitive and allowing for far better parameters (see breaking changes if you already used version 0.1 in a script or model).
