@@ -49,6 +49,7 @@ Since version 0.2, the plugin offers an automatic installation of SciPy (using p
 
 ### Git main
 - Unsharp mask: avoid overflow by clipping values according to min and max of input dtype.
+- Convolve: do not devide through sum of kernel if sum is 0
 
 ### 0.2 (03/2024)
 - Catch exception if SciPy is not installed and offer to install it automatically (with pip)

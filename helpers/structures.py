@@ -132,11 +132,11 @@ def array_to_str(a):
 
 
 
-
-
 footprintexamples = OrderedDict([
     ("3 × 3 Square", np.ones((3,3))),
     ("5 × 5 Square", np.ones((5,5))),
+    ("7 × 7 Square", np.ones((7,7))),
+    ("Cross", ndimage.generate_binary_structure(2, 1)),
 
 ])
 
@@ -145,6 +145,9 @@ kernelexamples = OrderedDict([
     ("3 × 3 Gaussian", "[[1, 2, 1],\n[2, 4, 2],\n[1, 2, 1]]"),
     ("3 × 3 Square", np.ones((3,3))),
     ("5 × 5 Square", np.ones((5,5))),
+    ("5 × 5 Gaussian", "[[0,1,2,1,0],\n[1,3,5,3,1],\n[2,5,9,5,2],\n[1,3,5,3,1],\n[0,1,2,1,0]]"),
+    ("5 × 5 Laplacian of Gaussian", "[[0,0,-1,0,0],\n[0,-1,-2,-1,0],\n[-1,-2,16,-2,-1],\n[0,-1,-2,-1,0],\n[0,0,-1,0,0]]"),
+    ("7 × 7 Square", np.ones((7,7))),
 
 ])
 

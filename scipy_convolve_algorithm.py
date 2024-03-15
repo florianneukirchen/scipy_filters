@@ -148,6 +148,9 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
         normalization = self.parameterAsDouble(parameters, self.NORMALIZATION, context)
 
+        if normalization == 0 and weights.sum() == 0:
+            normalization = 1
+
         if normalization == 0:
             weights = weights / weights.sum()
         else:
