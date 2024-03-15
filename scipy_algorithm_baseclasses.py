@@ -230,7 +230,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         # Get Parameters
         kwargs = self.get_parameters(parameters, context)
-        print("kwargs\n", kwargs)
+        # print("kwargs\n", kwargs)
 
         self.fct = self.get_fct()
 
