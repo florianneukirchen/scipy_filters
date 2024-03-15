@@ -58,7 +58,7 @@ from .ui.structure_widget import (StructureWidgetWrapper,
 
 
 
-from .helpers import array_to_str, str_to_int_or_list
+from .helpers import array_to_str, str_to_int_or_list, check_structure, str_to_array
 
 # Group IDs and group names
 groups = {
@@ -136,6 +136,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         threeD = 1     # 3D filter in data cube
 
     _dimension = Dimensions.nD
+    _ndim = None # to be set while getting parameters
 
     # Strings for the GUI
     _dimension_options = ['2D (Separate for each band)',
@@ -211,9 +212,11 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             dimension = self.parameterAsInt(parameters, self.DIMENSION, context)
             if dimension == 1:
                 self._dimension = self.Dimensions.threeD
+                self._ndim = 3
             else:
                 # Default to 2D
                 self._dimension = self.Dimensions.twoD
+                self._ndim = 2
 
         return {}
 
@@ -344,72 +347,81 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             d = 3
         return d
 
-    # TODO remove
-    def str_to_array(self, s, dims=None):
-        try:
-            decoded = json.loads(s)
-            a = np.array(decoded, dtype=np.float32)
-        except (json.decoder.JSONDecodeError, ValueError, TypeError):
-            raise QgsProcessingException(self.tr(f'Can not parse string to array!'))
-
-        # Array must have same number of dims as the filter input,
-        # but for 3D input and 2D structure I automatically add one axis
-        # When getting the parameter, self._dimension is already set
-        # but in checkParameters we need to pass them to this function
-
-        if not dims:
-            dims = 2 
-            if self._dimension == self.Dimensions.threeD:
+    def getDimsForCheck(self, parameters, context):
+        dims = 2
+        if self._dimension == self.Dimensions.nD:
+            dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
+            if dim_option == 1:
                 dims = 3
-
-        if dims == a.ndim:
-            return a
-        if a.ndim == 2 and dims == 3:
-            a = a[np.newaxis,:]
-            return a
-        raise QgsProcessingException(self.tr('Array has wrong number of dimensions!'))
+        return dims
 
     # TODO remove
-    def check_structure(self, s, dims=2):
-        try:
-            decoded = json.loads(s)
-            a = np.array(decoded, dtype=np.float32)
-        except (json.decoder.JSONDecodeError, ValueError, TypeError):
-            return (False, self.tr('Can not parse string to array'))
 
-        # Array must have same number of dims as the filter input,
-        # but for 3D input and 2D structure I automatically add one axis
-        if not (a.ndim == 2 or a.ndim == dims):
-            return (False, self.tr('Array has wrong number of dimensions'))
+    # def str_to_array(self, s, dims=None):
+    #     try:
+    #         decoded = json.loads(s)
+    #         a = np.array(decoded, dtype=np.float32)
+    #     except (json.decoder.JSONDecodeError, ValueError, TypeError):
+    #         raise QgsProcessingException(self.tr(f'Can not parse string to array!'))
 
-        return (True, "")
+    #     # Array must have same number of dims as the filter input,
+    #     # but for 3D input and 2D structure I automatically add one axis
+    #     # When getting the parameter, self._dimension is already set
+    #     # but in checkParameters we need to pass them to this function
 
-    # TODO remove
-    def str_to_int_or_list(self, s):
-        """
-        Allow to have parameters for axes (one or several) or size (for all or each dimension)
-        """
-        out = None
-        try:
-            out = int(s)
-        except ValueError:
-            pass
-        if out:
-            return out
+    #     if not dims:
+    #         dims = 2 
+    #         if self._dimension == self.Dimensions.threeD:
+    #             dims = 3
+
+    #     if dims == a.ndim:
+    #         return a
+    #     if a.ndim == 2 and dims == 3:
+    #         a = a[np.newaxis,:]
+    #         return a
+    #     raise QgsProcessingException(self.tr('Array has wrong number of dimensions!'))
+
+    # # TODO remove
+    # def check_structure(self, s, dims=2):
+    #     try:
+    #         decoded = json.loads(s)
+    #         a = np.array(decoded, dtype=np.float32)
+    #     except (json.decoder.JSONDecodeError, ValueError, TypeError):
+    #         return (False, self.tr('Can not parse string to array'))
+
+    #     # Array must have same number of dims as the filter input,
+    #     # but for 3D input and 2D structure I automatically add one axis
+    #     if not (a.ndim == 2 or a.ndim == dims):
+    #         return (False, self.tr('Array has wrong number of dimensions'))
+
+    #     return (True, "")
+
+    # # TODO remove
+    # def str_to_int_or_list(self, s):
+    #     """
+    #     Allow to have parameters for axes (one or several) or size (for all or each dimension)
+    #     """
+    #     out = None
+    #     try:
+    #         out = int(s)
+    #     except ValueError:
+    #         pass
+    #     if out:
+    #         return out
         
-        if not (s[0] == "[" and s[-1] == "]"):
-            s = "[" + s + "]"
+    #     if not (s[0] == "[" and s[-1] == "]"):
+    #         s = "[" + s + "]"
 
-        try:
-            decoded = json.loads(s)
-            a = np.array(decoded, dtype=np.int32)
-        except (json.decoder.JSONDecodeError, ValueError, TypeError):
-            raise ValueError('Can not parse string to array!')
+    #     try:
+    #         decoded = json.loads(s)
+    #         a = np.array(decoded, dtype=np.int32)
+    #     except (json.decoder.JSONDecodeError, ValueError, TypeError):
+    #         raise ValueError('Can not parse string to array!')
         
-        if a.ndim != 1:
-            raise ValueError('Wrong dimensions!')
+    #     if a.ndim != 1:
+    #         raise ValueError('Wrong dimensions!')
         
-        return a.tolist()
+    #     return a.tolist()
 
 
     class Renamer(QgsProcessingLayerPostProcessorInterface):
@@ -626,16 +638,13 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
     def checkParameterValues(self, parameters, context): 
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
 
-        dims = 2
-        if self._dimension == self.Dimensions.nD:
-            dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
-            if dim_option == 1:
-                dims = 3
+        dims = self.getDimsForCheck(parameters, context)
 
-        if not footprint.strip() == "":
-            ok, _ = self.check_structure(footprint, dims)
-            if not ok:
-                return (ok, self.tr('Can not parse footprint string or dimensions are wrong'))
+
+        ok, s = check_structure(footprint, dims)
+        if not ok:
+            s = 'Footprint: ' + s
+            return (ok, self.tr(s))
 
         # Extra check for rank_filter: rank must be < as footprint size
         # It is easier to do it here as we already have the footprint checked
@@ -644,8 +653,8 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
 
         if isinstance(self, SciPyRankAlgorithm):
             rank = self.parameterAsInt(parameters, self.RANK, context)
-            if footprintbool and footprint:
-                footprint = self.str_to_array(footprint, dims=dims)
+            if footprint:
+                footprint = str_to_array(footprint, dims=dims)
                 footprintsize = footprint.size
             else:
                 size = self.parameterAsInt(parameters, self.SIZE, context)
@@ -661,7 +670,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
 
         sizes = self.parameterAsString(parameters, self.SIZES, context)
         if sizes:
-            size = self.str_to_int_or_list(sizes)
+            size = str_to_int_or_list(sizes)
         else:
             size = self.parameterAsInt(parameters, self.SIZE, context)
         if not size:
@@ -672,7 +681,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
 
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
         if footprint:
-            kwargs['footprint'] = self.str_to_array(footprint)
+            kwargs['footprint'] = str_to_array(footprint, self._ndim)
         else:
             if not size:
                 # Either size or footprint must be set

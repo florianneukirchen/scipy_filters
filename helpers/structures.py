@@ -5,6 +5,10 @@ from qgis.core import QgsProcessingException
 
 
 def str_to_array(s, dims=2, to_int=False):
+    s = s.strip()
+    if not s:
+        return None
+    
     try:
         decoded = json.loads(s)
         if to_int:
@@ -13,17 +17,6 @@ def str_to_array(s, dims=2, to_int=False):
             a = np.array(decoded, dtype=np.float32)
     except (json.decoder.JSONDecodeError, ValueError, TypeError):
         raise QgsProcessingException('Can not parse string to array!')
-
-    # Array must have same number of dims as the filter input,
-    # but for 3D input and 2D structure I automatically add one axis
-    # When getting the parameter, self._dimension is already set
-    # but in checkParameters we need to pass them to this function
-
-    # if not dims:
-    #     dims = 2 
-    #     if self._dimension == self.Dimensions.threeD:
-    #         dims = 3
-    # TODO remove
 
     if dims == a.ndim:
         return a
@@ -34,7 +27,7 @@ def str_to_array(s, dims=2, to_int=False):
 
 
 def check_structure(s, dims=2, odd=False, optional=True):
-    if optional and not s:
+    if optional and not s.strip():
         return (True, "")
     try:
         decoded = json.loads(s)
