@@ -59,6 +59,10 @@ pip install scipy
     - fourier uniform filter
     - Wiener filter
     - FFT convolve
+- Breaking changes to the parameters:
+    - FOOTPRINTBOOL has been removed, if a footprint is given it is always used.
+    - STRUCTURE always takes the actual structure as string, not an int (was index of combobox, the combobox has been replaced by the load button). CUSTOMSTRUCTURE has been removed.
+    - Convolve: ORIGIN has been removed.
 
 ### 0.1 (03/2024)
 Initial Release
