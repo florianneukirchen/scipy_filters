@@ -47,12 +47,14 @@ from qgis.core import (QgsProcessing,
                         )
 from .scipy_algorithm_baseclasses import SciPyAlgorithm
 
+from .helpers import array_to_str, str_to_int_or_list, check_structure, str_to_array
+
 
 class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
 
-    CUSTOMSTRUCTURE1 = 'CUSTOMSTRUCTURE1'
-    CUSTOMSTRUCTURE2 = 'CUSTOMSTRUCTURE2'
+    STRUCTURE1 = 'STRUCTURE1'
+    STRUCTURE2 = 'STRUCTURE2'
 
     # Overwrite constants of base class
     _name = 'hit_or_miss'
@@ -87,7 +89,7 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
 
         self.addParameter(QgsProcessingParameterString(
-            self.CUSTOMSTRUCTURE1,
+            self.STRUCTURE1,
             self.tr('Structure 1: Custom structure (string representation of array)'),
             defaultValue="[[1, 0, 0],\n[0, 1, 1],\n[0, 1, 1]]",
             multiLine=True,
@@ -96,7 +98,7 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
         
 
         self.addParameter(QgsProcessingParameterString(
-            self.CUSTOMSTRUCTURE2,
+            self.STRUCTURE2,
             self.tr('Structure 2: Custom structure (string representation of array)'),
             defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
             multiLine=True,
@@ -106,31 +108,27 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
 
-        structure1 = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE1, context)
-        kwargs['structure1'] = self.str_to_array(structure1)
+        structure1 = self.parameterAsString(parameters, self.STRUCTURE1, context)
+        kwargs['structure1'] = str_to_array(structure1, self._ndim)
 
 
-        structure2 = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE2, context)
-        kwargs['structure2'] = self.str_to_array(structure2)
+        structure2 = self.parameterAsString(parameters, self.STRUCTURE2, context)
+        kwargs['structure2'] = str_to_array(structure2, self._ndim)
 
         return kwargs
     
     
     def checkParameterValues(self, parameters, context): 
-        dims = 2
-        if self._dimension == self.Dimensions.nD:
-            dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
-            if dim_option == 1:
-                dims = 3
+        dims = self.getDimsForCheck(parameters, context)
 
-        structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE1, context)
-        ok, s = self.check_structure(structure, dims)
+        structure = self.parameterAsString(parameters, self.STRUCTURE1, context)
+        ok, s = check_structure(structure, dims)
         if not ok:
             s = self.tr("Could not parse structure 1 or dimensions do not match")
             return (ok, s)
         
-        structure = self.parameterAsString(parameters, self.CUSTOMSTRUCTURE2, context)
-        ok, s = self.check_structure(structure, dims)
+        structure = self.parameterAsString(parameters, self.STRUCTURE2, context)
+        ok, s = check_structure(structure, dims)
         if not ok:
             s = self.tr("Could not parse structure 2 or dimensions do not match")
             return (ok, s)
