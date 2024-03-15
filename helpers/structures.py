@@ -1,6 +1,7 @@
 import os
 import json
 import numpy as np
+from scipy import ndimage
 from qgis.core import QgsProcessingException
 from collections import OrderedDict
 
@@ -10,14 +11,19 @@ def str_to_array(s, dims=2, to_int=True):
     if not s:
         return None
     
-    try:
-        decoded = json.loads(s)
-        if to_int:
-            a = np.array(decoded, dtype="int")
-        else:
-            a = np.array(decoded, dtype=np.float32)
-    except (json.decoder.JSONDecodeError, ValueError, TypeError):
-        raise QgsProcessingException('Can not parse string to array!')
+    if s in ["square", "cross", "cross3D", "ball", "cube"]:
+        (rank, connectivity) = generate_binary_structure_options[s]
+        a = ndimage.generate_binary_structure(rank, connectivity)
+        
+    else:
+        try:
+            decoded = json.loads(s)
+            if to_int:
+                a = np.array(decoded, dtype="int")
+            else:
+                a = np.array(decoded, dtype=np.float32)
+        except (json.decoder.JSONDecodeError, ValueError, TypeError):
+            raise QgsProcessingException('Can not parse string to array!')
 
     if dims == a.ndim:
         return a
@@ -27,12 +33,29 @@ def str_to_array(s, dims=2, to_int=True):
     raise QgsProcessingException('Array has wrong number of dimensions!')
 
 
+generate_binary_structure_options = {
+    "square": (2, 2), 
+    "cross": (2, 1), 
+    "cross3D": (3, 1), 
+    "ball": (3,2), 
+    "cube": (3,3), 
+}
+
 def check_structure(s, dims=2, odd=False, optional=True):
     s = s.strip()
     if optional and not s:
         return (True, "")
     if s == "" and not optional:
         return (False, "Argument is not optional")
+    if s in ["square", "cross"]:
+        return (True, "")
+    if s in ["cross3D", "ball", "cube"]:
+        if dims == 3:
+            return(True, "")
+        else:
+            return (False, f'{s} not possible in 2D')
+
+    # Get it as array
     try:
         decoded = json.loads(s)
         a = np.array(decoded, dtype=np.float32)
