@@ -53,12 +53,14 @@ from qgis.core import (QgsProcessing,
 from .ui.sizes_widget import (SizesWidgetWrapper)
 from .ui.dim_widget import (DimsWidgetWrapper, SciPyParameterDims)
 from .ui.structure_widget import (StructureWidgetWrapper, 
-                                  SciPyParameterStructure,
-                                  footprintexamples)
+                                  SciPyParameterStructure,)
 
 
 
-from .helpers import array_to_str, str_to_int_or_list, check_structure, str_to_array
+from .helpers import (array_to_str, 
+                      str_to_int_or_list, 
+                      check_structure, str_to_array, 
+                      footprintexamples)
 
 # Group IDs and group names
 groups = {
