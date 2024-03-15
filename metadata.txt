@@ -6,7 +6,7 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=0.1
+version=0.2
 author=Florian Neukirchen
 email=mail@riannek.de
 

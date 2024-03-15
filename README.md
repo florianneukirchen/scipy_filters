@@ -36,15 +36,18 @@ Note that these arrays should have the same number of dimensions as the input (2
 
 For more information, see the help in the window of the respective processing tool.
 
-## Requirements for installation
+## Installation
+The plugin can be installed with "manage and install plugins" in QGIS (in the settings of "install plugins", the checkbox "Show also experimental plugins" must be checked.)
+
 The plugin requires [SciPy](https://scipy.org/), wich can be installed with pip:
 ```
 pip install scipy
 ```
+Since version 0.2, the plugin offers an automatic installation of SciPy (using pip) if it is not yet installed in the python environment used by QGIS.
 
 ## Changelog
 
-### Git Main
+### 0.2 (03/2024)
 - Catch exception if SciPy is not installed and offer to install it automatically (with pip)
 - Improved user interface with custom widgets, making it more intuitive and allowing for far better parameters (see breaking changes if you already used version 0.1 in a script or model).
 - Calculate and write band statistics (min, max, mean, std) into the metadata of the output file; enables QGIS to render correctly with min/max stretching
