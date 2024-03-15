@@ -166,7 +166,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
     def checkParameterValues(self, parameters, context): 
 
         structure = self.parameterAsString(parameters, self.KERNEL, context)
-        print(structure)
+
         dims = self.getDimsForCheck(parameters, context)
 
         ok, s = check_structure(structure, dims, optional=False)
