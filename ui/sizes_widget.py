@@ -19,11 +19,12 @@ WIDGET, BASE = uic.loadUiType(
 
 class SizesWidget(BASE, WIDGET):
 
+    ndim = None
+
 
     def __init__(self, odd=False):
         self.odd = odd # Used by Wiener
         self.context = dataobjects.createContext()
-        self.ndim = None
         self.clearvalue = 3
         super().__init__(None)
         self.setupUi(self)
@@ -47,17 +48,8 @@ class SizesWidget(BASE, WIDGET):
             self.mSizeColsQgsSpinBox.setSingleStep(2)
             self.mSizeBandsQgsSpinBox.setSingleStep(2)
 
+        self.setDim(2)
 
-    def setParentLayer(self, source):
-        if not source:
-            return
-        self.parent_layer = QgsProcessingUtils.mapLayerFromString(source, self.context)
-        if self.parent_layer.bandCount() > 1:
-            self.ndim = 3
-            self.mSizeBandsQgsSpinBox.setDisabled(False)
-        else:
-            self.ndim = 2
-            self.mSizeBandsQgsSpinBox.setDisabled(True)
 
     def setDim(self, dims):
         self.ndim = dims
