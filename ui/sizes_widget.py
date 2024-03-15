@@ -83,9 +83,6 @@ class SizesWidgetWrapper(WidgetWrapper):
 
         for wrapper in wrappers:
             if wrapper.parameterDefinition().name() == "DIMENSION":
-                # TODO remove
-                # self.dimensionwrapper = wrapper
-                # self.dimensionChanged(wrapper)
                 wrapper.valueChanged.connect(self.dimensionChanged)
             
 
