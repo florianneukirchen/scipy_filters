@@ -122,7 +122,10 @@ class StructureWidget(BASE, WIDGET):
 class StructureWidgetWrapper(WidgetWrapper):
 
     def postInitialize(self, wrappers):
+        # Enable to connect from origin widget
+        self.valueChanged = self.widget.plainTextEdit.textChanged
 
+        # Watch dimension
         for wrapper in wrappers:
             if wrapper.parameterDefinition().name() == "DIMENSION":
                 self.dimensionwrapper = wrapper

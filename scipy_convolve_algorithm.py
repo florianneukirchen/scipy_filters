@@ -51,6 +51,10 @@ from .scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
 
 from .ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
+
+from .ui.origin_widget import (OriginWidgetWrapper, 
+                               SciPyParameterOrigin,)
+
 from .helpers import (array_to_str, 
                       str_to_int_or_list, 
                       check_structure, str_to_array, 
@@ -131,13 +135,22 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
             # maxValue=100
             )) 
 
-        # self.addParameter(QgsProcessingParameterNumber(
-        #     self.ORIGIN,
-        #     self.tr('Origin (shift the filter)'),
-        #     QgsProcessingParameterNumber.Type.Integer,
-        #     defaultValue=0, 
-        #     optional=True, 
-        #     ))    
+        
+        origin_param = SciPyParameterOrigin(
+            self.ORIGIN,
+            self.tr('Origin'),
+            defaultValue="0",
+            optional=False,
+            watch="KERNEL"
+            )
+        
+        origin_param.setMetadata({
+            'widget_wrapper': {
+                'class': OriginWidgetWrapper
+            }
+        })
+
+        self.addParameter(origin_param)
 
 
     def get_parameters(self, parameters, context):
@@ -158,9 +171,8 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
             
         kwargs['weights'] = weights
 
-        # origin = self.parameterAsInt(parameters, self.ORIGIN, context)
-        # if origin:
-        #     kwargs['origin'] = origin
+        origin = self.parameterAsString(parameters, self.ORIGIN, context)
+        kwargs['origin'] = str_to_int_or_list(origin)
 
         return kwargs
     
@@ -175,6 +187,19 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
         if not ok:
             return (ok, s)
         
+        origin = self.parameterAsString(parameters, self.ORIGIN, context)
+        origin = str_to_int_or_list(origin)
+
+        if isinstance(origin, list):
+            
+            if len(origin) != dims:
+                return (False, self.tr("Sizes does not match number of dimensions"))
+            
+            for i in range(dims):
+                if not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
+                    return (False, self.tr("Origin out of bounds of structure"))
+
+
         return super().checkParameterValues(parameters, context)
     
     def createInstance(self):

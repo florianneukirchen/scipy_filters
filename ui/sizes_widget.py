@@ -113,7 +113,7 @@ class SizesWidgetWrapper(WidgetWrapper):
     
 
     def dimensionChanged(self, dim_option):
-        if dim_option == 1: # 3D; see enum im basclass
+        if dim_option == 1: # 3D; see enum in baseclass
             self.widget.setDim(3)
         else:
             self.widget.setDim(2)

@@ -99,6 +99,9 @@ def check_structure(s, dims=2, odd=False, optional=True):
     if odd and np.any(a % 2 == 0):
         return (False, 'Every element in size must be odd.', None)
 
+    if a.ndim == 2 and dims == 3:
+        a = a[np.newaxis,:]
+
     return (True, "", a.shape)
 
 
