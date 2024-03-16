@@ -162,7 +162,7 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
         
-            <b>Size</b> Size of the box (for now only circular size).
+            <b>Size</b> Size of the circular or ellipsoidal box.
             """
     
     SIZE = 'SIZE' 
