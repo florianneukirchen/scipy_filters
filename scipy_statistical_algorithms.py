@@ -84,6 +84,9 @@ class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
             the following shortcuts are accepted as well: \
             "square", "cross", "cross3D", "ball", "cube".
 
+
+            <b>Origin</b> Shift the origin (hotspot) of the filter.
+
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
             <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
@@ -130,6 +133,8 @@ class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
             For convenience (i.e. when calling from a script), \
             the following shortcuts are accepted as well: \
             "square", "cross", "cross3D", "ball", "cube".
+
+            <b>Origin</b> Shift the origin (hotspot) of the filter.
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
@@ -178,6 +183,8 @@ class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
             the following shortcuts are accepted as well: \
             "square", "cross", "cross3D", "ball", "cube".
 
+            <b>Origin</b> Shift the origin (hotspot) of the filter.
+
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
             <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
@@ -225,6 +232,8 @@ class SciPyRangeAlgorithm(SciPyStatisticalAlgorithm):
             For convenience (i.e. when calling from a script), \
             the following shortcuts are accepted as well: \
             "square", "cross", "cross3D", "ball", "cube".
+
+            <b>Origin</b> Shift the origin (hotspot) of the filter.
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
@@ -285,6 +294,8 @@ class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
             For convenience (i.e. when calling from a script), \
             the following shortcuts are accepted as well: \
             "square", "cross", "cross3D", "ball", "cube".
+
+            <b>Origin</b> Shift the origin (hotspot) of the filter.
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
@@ -372,6 +383,8 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
             For convenience (i.e. when calling from a script), \
             the following shortcuts are accepted as well: \
             "square", "cross", "cross3D", "ball", "cube".
+
+            <b>Origin</b> Shift the origin (hotspot) of the filter.
 
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \

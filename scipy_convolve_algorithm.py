@@ -88,6 +88,8 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
             seperately).
             <b>Normalization</b> Normalize the kernel by dividing through given value; set to 0 to devide through the sum of kernel values.
 
+            <b>Origin</b> Shift the origin (hotspot) of the kernel.
+
             <b>Border mode</b> determines how input is extended around \
             the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
             <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
