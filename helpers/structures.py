@@ -64,36 +64,66 @@ generate_binary_structure_options = {
 }
 
 def check_structure(s, dims=2, odd=False, optional=True):
+    """
+    Check if structure is valid 
+    
+    Returns tuple: (ok: bool, message: str, shape: tuple | None)
+    Shape is required for origin
+    """
     s = s.strip()
     if optional and not s:
-        return (True, "")
+        return (True, "", (0,0))
     if s == "" and not optional:
-        return (False, "Argument is not optional")
+        return (False, "Argument is not optional", None)
     if s in ["square", "cross"]:
-        return (True, "")
+        return (True, "", (3,3))
     if s in ["cross3D", "ball", "cube"]:
         if dims == 3:
-            return(True, "")
+            return(True, "", (3, 3, 3))
         else:
-            return (False, f'{s} not possible in 2D')
+            return (False, f'{s} not possible in 2D', None)
 
     # Get it as array
     try:
         decoded = json.loads(s)
         a = np.array(decoded, dtype=np.float32)
     except (json.decoder.JSONDecodeError, ValueError, TypeError):
-        return (False, 'Can not parse string to array')
+        return (False, 'Can not parse string to array', None)
 
     # Array must have same number of dims as the filter input,
     # but for 3D input and 2D structure I automatically add one axis
     if not (a.ndim == 2 or a.ndim == dims):
-        return (False, 'Array has wrong number of dimensions')
+        return (False, 'Array has wrong number of dimensions', None)
 
     # Wiener filter: values must be odd
     if odd and np.any(a % 2 == 0):
-        return (False, 'Every element in size must be odd.')
+        return (False, 'Every element in size must be odd.', None)
 
-    return (True, "")
+    return (True, "", a.shape)
+
+
+def check_origin(s, shape):
+    try:
+        int_or_list = str_to_int_or_list(s)
+    except ValueError:
+        return (False, 'Invalid origin')
+    
+    if isinstance(int_or_list, int):
+        if (-(min(shape) // 2) <= int_or_list <= (min(shape) -1 ) // 2):
+            return (True, "")
+        else:
+            return (False, 'Invalid origin')
+    
+    if not len(shape) == len(int_or_list):
+        return (False, 'Invalid origin')
+
+    for i in range(len(shape)):
+        # origin must satisfy -(weights.shape[k] // 2) <= origin[k] <= (weights.shape[k]-1) // 2
+        if not (-(shape[i] // 2) <= int_or_list[i] <= (shape[i] - 1) // 2):
+            return (False, 'Invalid origin')
+
+    return (True, '')
+
 
 
 def str_to_int_or_list(s):
@@ -101,6 +131,7 @@ def str_to_int_or_list(s):
     Allow to have parameters for axes (one or several) or size (for all or each dimension)
     """
     out = None
+    s = s.strip()
     try:
         out = int(s)
     except ValueError:

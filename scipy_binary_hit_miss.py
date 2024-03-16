@@ -123,13 +123,13 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
         dims = self.getDimsForCheck(parameters, context)
 
         structure = self.parameterAsString(parameters, self.STRUCTURE1, context)
-        ok, s = check_structure(structure, dims)
+        ok, s, shape = check_structure(structure, dims)
         if not ok:
             s = self.tr("Could not parse structure 1 or dimensions do not match")
             return (ok, s)
         
         structure = self.parameterAsString(parameters, self.STRUCTURE2, context)
-        ok, s = check_structure(structure, dims)
+        ok, s, shape = check_structure(structure, dims)
         if not ok:
             s = self.tr("Could not parse structure 2 or dimensions do not match")
             return (ok, s)

@@ -118,7 +118,7 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
         dims = self.getDimsForCheck(parameters, context)
 
         structure = self.parameterAsString(parameters, self.STRUCTURE, context)
-        ok, s = check_structure(structure, dims)
+        ok, s, shape = check_structure(structure, dims)
         if not ok:
             return (ok, s)
         
@@ -339,7 +339,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         if footprint:
             dims = self.getDimsForCheck(parameters, context)
 
-            ok, s = check_structure(footprint, dims)
+            ok, s, shape = check_structure(footprint, dims)
             if not ok:
                 return (ok, self.tr('Footprint: ' + s))
         

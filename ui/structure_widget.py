@@ -111,7 +111,7 @@ class StructureWidget(BASE, WIDGET):
 
     def checknow(self):
         text = self.plainTextEdit.toPlainText()
-        ok, s = check_structure(text, dims=self.ndim, optional=self.isoptional)
+        ok, s, shape = check_structure(text, dims=self.ndim, optional=self.isoptional)
         if ok:
             self.statusLabel.setText(self.ok_txt)
         else:

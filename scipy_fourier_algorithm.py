@@ -393,7 +393,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
         structure = self.parameterAsString(parameters, self.KERNEL, context)
 
-        ok, s = check_structure(structure, 2)
+        ok, s, shape = check_structure(structure, 2)
         if not ok:
             return (ok, s)
         

@@ -127,7 +127,7 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
         dims = self.getDimsForCheck(parameters, context)
 
         structure = self.parameterAsString(parameters, self.STRUCTURE, context)
-        ok, s = check_structure(structure, dims)
+        ok, s, shape = check_structure(structure, dims)
         if not ok:
             return (ok, s)
             

@@ -171,7 +171,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
         dims = self.getDimsForCheck(parameters, context)
 
-        ok, s = check_structure(structure, dims, optional=False)
+        ok, s, shape = check_structure(structure, dims, optional=False)
         if not ok:
             return (ok, s)
         

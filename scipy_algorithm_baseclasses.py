@@ -575,7 +575,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
         dims = self.getDimsForCheck(parameters, context)
 
 
-        ok, s = check_structure(footprint, dims)
+        ok, s, shape = check_structure(footprint, dims)
         if not ok:
             s = 'Footprint: ' + s
             return (ok, self.tr(s))
