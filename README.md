@@ -51,7 +51,7 @@ Since version 0.2, the plugin offers an automatic installation of SciPy (using p
 - Unsharp mask: avoid overflow by clipping values according to min and max of input dtype.
 - Convolve: do not devide through sum of kernel if sum is 0
 - Use sizes widget in more filters
-- New origin widget and add origin as parameter
+- New origin widget and add origin as parameter to a couple of filters
 
 ### 0.2 (03/2024)
 - Catch exception if SciPy is not installed and offer to install it automatically (with pip)
