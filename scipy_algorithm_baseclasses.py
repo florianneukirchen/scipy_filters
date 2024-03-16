@@ -55,7 +55,8 @@ from .ui.dim_widget import (DimsWidgetWrapper, SciPyParameterDims)
 from .ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
 
-
+from .ui.origin_widget import (OriginWidgetWrapper, 
+                               SciPyParameterOrigin,)
 
 from .helpers import (array_to_str, 
                       str_to_int_or_list, 
@@ -516,6 +517,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
     SIZE = 'SIZE'
     SIZES = 'SIZES'
     FOOTPRINT = 'FOOTPRINT'
+    ORIGIN = 'ORIGIN'
 
     def initAlgorithm(self, config):
         super().initAlgorithm(config)
@@ -569,6 +571,24 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
         self.addParameter(footprint_param)
 
 
+        origin_param = SciPyParameterOrigin(
+            self.ORIGIN,
+            self.tr('Origin'),
+            defaultValue="0",
+            optional=False,
+            watch="FOOTPRINT"
+            )
+        
+        origin_param.setMetadata({
+            'widget_wrapper': {
+                'class': OriginWidgetWrapper
+            }
+        })
+
+        self.addParameter(origin_param)
+
+
+
     def checkParameterValues(self, parameters, context): 
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
 
@@ -585,6 +605,19 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
         if isinstance(sizes, list):
             if len(sizes) != dims:
                 return (False, self.tr("Sizes does not match number of dimensions"))
+
+        origin = self.parameterAsString(parameters, self.ORIGIN, context)
+        origin = str_to_int_or_list(origin)
+
+        print(shape)
+        if isinstance(origin, list):          
+            if len(origin) != dims:
+                return (False, self.tr("Origin does not match number of dimensions"))
+            
+            for i in range(dims):
+                if shape[i] != 0 and not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
+                    return (False, self.tr("Origin out of bounds of structure"))
+
 
         # Extra check for rank_filter: rank must be < as footprint size
         # It is easier to do it here as we already have the footprint checked
@@ -628,6 +661,10 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
                 kwargs['size'] = 1
 
         mode = self.parameterAsInt(parameters, self.MODE, context) 
+
+        origin = self.parameterAsString(parameters, self.ORIGIN, context)
+        kwargs['origin'] = str_to_int_or_list(origin)
+
         kwargs['mode'] = self.modes[mode]
 
         cval = self.parameterAsDouble(parameters, self.CVAL, context)
