@@ -54,6 +54,9 @@ from .ui.structure_widget import (StructureWidgetWrapper,
 
 from .ui.sizes_widget import (SizesWidgetWrapper)
 
+from .ui.origin_widget import (OriginWidgetWrapper, 
+                               SciPyParameterOrigin,)
+
 from .helpers import (array_to_str, 
                       str_to_int_or_list, 
                       check_structure, 
@@ -68,6 +71,7 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
 
     ALGORITHM = 'ALGORITHM' 
     STRUCTURE = 'STRUCTURE'
+    ORIGIN = 'ORIGIN'
 
     _groupid = 'morphological'
 
@@ -104,6 +108,22 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
 
         self.addParameter(struct_param)
         
+        origin_param = SciPyParameterOrigin(
+            self.ORIGIN,
+            self.tr('Origin'),
+            defaultValue="0",
+            optional=False,
+            watch="STRUCTURE"
+            )
+        
+        origin_param.setMetadata({
+            'widget_wrapper': {
+                'class': OriginWidgetWrapper
+            }
+        })
+
+        self.addParameter(origin_param)
+        
         super().insert_parameters(config)
 
            
@@ -115,6 +135,9 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
         structure = self.parameterAsString(parameters, self.STRUCTURE, context)
         kwargs['structure'] = str_to_array(structure, self._ndim)
 
+        origin = self.parameterAsString(parameters, self.ORIGIN, context)
+        kwargs['origin'] = str_to_int_or_list(origin)
+
         return kwargs
 
     def checkParameterValues(self, parameters, context): 
@@ -125,6 +148,17 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
         if not ok:
             return (ok, s)
         
+        origin = self.parameterAsString(parameters, self.ORIGIN, context)
+        origin = str_to_int_or_list(origin)
+
+        if isinstance(origin, list):          
+            if len(origin) != dims:
+                return (False, self.tr("Origin does not match number of dimensions"))
+            
+            for i in range(dims):
+                if not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
+                    return (False, self.tr("Origin out of bounds of structure"))
+
         return super().checkParameterValues(parameters, context)
 
 
