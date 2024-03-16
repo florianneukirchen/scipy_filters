@@ -50,6 +50,8 @@ from .helpers import check_structure, str_to_array, kernelexamples
 from .ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
 
+from .helpers import str_to_int_or_list
+
 class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
     """
     Gaussian fourier filter 
@@ -206,9 +208,32 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
     
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
-        kwargs['size'] = self.parameterAsDouble(parameters, self.SIZE, context)
+
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        if sizes:
+            size = str_to_int_or_list(sizes)
+        else:
+            size = self.parameterAsDouble(parameters, self.SIZE, context)
+        if not size:
+            # Just in case it is called from python and neither size or sizes or footprint is set
+            size = 3
+        kwargs['size'] = size
+
+
         return kwargs
     
+    def checkParameterValues(self, parameters, context): 
+        dims = self.getDimsForCheck(parameters, context)
+        
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        sizes = str_to_int_or_list(sizes)
+        if isinstance(sizes, list):
+            if len(sizes) != dims:
+                return (False, self.tr("Sizes does not match number of dimensions"))
+
+        return super().checkParameterValues(parameters, context)
+    
+
     # The function to be called, to be overwritten
     def get_fct(self):
         if self._dimension == self.Dimensions.threeD:
@@ -236,7 +261,7 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
 
 class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
     """
-    Ellipsoid uniform (i.e. mean) filter 
+    Fourier uniform (i.e. mean) filter 
 
 
     """
@@ -267,28 +292,72 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
             <b>Size</b> Size of the box.
             """
     
-    SIZE = 'SIZE' # can be float or int or tuple of int but not tuple of float
+    SIZE = 'SIZE' 
+    SIZES = 'SIZES'
 
 
     def insert_parameters(self, config):
 
-        self.addParameter(QgsProcessingParameterNumber(
+
+        size_param = QgsProcessingParameterNumber(
             self.SIZE,
             self.tr('Size'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=5, 
-            optional=False, 
+            optional=True, 
             minValue=0, 
-            # maxValue=100
-            ))
+            # maxValue=100, 
+            )
+        
+        size_param.setFlags(size_param.flags() | QgsProcessingParameterDefinition.Flag.FlagHidden)
+
+        self.addParameter(size_param)  
+
+        sizes_param = QgsProcessingParameterString(
+            self.SIZES,
+            self.tr('Size'),
+            defaultValue="", 
+            optional=True, 
+            )
+        
+        sizes_param.setMetadata({
+            'widget_wrapper': {
+                'class': SizesWidgetWrapper
+            }
+        })
+
+        self.addParameter(sizes_param)
         
         super().insert_parameters(config)
 
     
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
-        kwargs['size'] = self.parameterAsDouble(parameters, self.SIZE, context)
+
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        if sizes:
+            size = str_to_int_or_list(sizes)
+        else:
+            size = self.parameterAsDouble(parameters, self.SIZE, context)
+        if not size:
+            # Just in case it is called from python and neither size or sizes or footprint is set
+            size = 3
+        kwargs['size'] = size
+
+
         return kwargs
+    
+    def checkParameterValues(self, parameters, context): 
+        dims = self.getDimsForCheck(parameters, context)
+        
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        sizes = str_to_int_or_list(sizes)
+        if isinstance(sizes, list):
+            if len(sizes) != dims:
+                return (False, self.tr("Sizes does not match number of dimensions"))
+
+        return super().checkParameterValues(parameters, context)
+    
     
     # The function to be called, to be overwritten
     def get_fct(self):
