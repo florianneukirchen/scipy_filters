@@ -42,7 +42,6 @@ class SciPyParameterDims(QgsProcessingParameterEnum):
 
 
 
-
 class DimsWidgetWrapper(WidgetWrapper):
     def __init__(self,  param, dialog, row=0, col=0, **kwargs):
         self.context = dataobjects.createContext()
@@ -67,6 +66,10 @@ class DimsWidgetWrapper(WidgetWrapper):
     def parentLayerChanged(self, wrapper):
         source = wrapper.parameterValue()
         self.parent_layer = QgsProcessingUtils.mapLayerFromString(source, self.context)
+
+        if not self.parent_layer:
+            return
+        
         if self.parent_layer.bandCount() > 1:
             self.widget.model().item(1).setEnabled(True)
         else:
