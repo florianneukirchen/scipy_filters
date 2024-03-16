@@ -196,6 +196,8 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             the following shortcuts are accepted as well: \
             "square", "cross", "cross3D", "ball", "cube".
 
+            <b>Origin</b> Shift the origin (hotspot) of the filter.
+
             <b>Iterations</b> Each step of filter is repeated this number of times.
             <b>Border value</b> Valute at border of output array, defaults to 0. 
             <b>Mask</b> Optional mask layer.
@@ -296,6 +298,8 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             For convenience (i.e. when calling from a script), \
             the following shortcuts are accepted as well: \
             "square", "cross", "cross3D", "ball", "cube".
+
+            <b>Origin</b> Shift the origin (hotspot) of the filter.
 
             <b>Size</b> Size of flat and full structuring element, optional if footprint or structure is provided.
             <b>Border mode</b> determines how input is extended around \
@@ -472,6 +476,8 @@ class SciPyTophatAlgorithm(SciPyGreyMorphologicalAlgorithm):
             For convenience (i.e. when calling from a script), \
             the following shortcuts are accepted as well: \
             "square", "cross", "cross3D", "ball", "cube".
+
+            <b>Origin</b> Shift the origin (hotspot) of the filter.
 
             <b>Size</b> Size of flat and full structuring element, optional if footprint or structure is provided.
             <b>Border mode</b> determines how input is extended around \
