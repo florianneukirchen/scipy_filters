@@ -133,6 +133,8 @@ def str_to_int_or_list(s):
     """
     Allow to have parameters for axes (one or several) or size (for all or each dimension)
     """
+    if s == "0":
+        return 0
     out = None
     s = s.strip()
     try:
