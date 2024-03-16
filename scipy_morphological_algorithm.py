@@ -43,6 +43,7 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterString,
                        QgsProcessingParameterBoolean,
+                       QgsProcessingParameterDefinition,
                        QgsProcessingException,
                         )
 
@@ -50,6 +51,8 @@ from .scipy_algorithm_baseclasses import SciPyAlgorithm
 
 from .ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
+
+from .ui.sizes_widget import (SizesWidgetWrapper)
 
 from .helpers import (array_to_str, 
                       str_to_int_or_list, 
@@ -231,6 +234,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
     SIZE = 'SIZE'
+    SIZES = 'SIZES'
     MODE = 'MODE'
     CVAL = 'CVAL'
     FOOTPRINT = 'FOOTPRINT'
@@ -287,15 +291,34 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     def initAlgorithm(self, config):
         super().initAlgorithm(config)
 
-        self.addParameter(QgsProcessingParameterNumber(
+        size_param = QgsProcessingParameterNumber(
             self.SIZE,
             self.tr('Size of flat structuring element (Ignored if footprint or structure provided)'),
             QgsProcessingParameterNumber.Type.Integer,
-            defaultValue=0, 
+            defaultValue=1, 
             optional=True, 
-            minValue=0, 
-            # maxValue=100
-            ))    
+            minValue=1, 
+            maxValue=20, # Large sizes are really slow
+            )
+        
+        size_param.setFlags(size_param.flags() | QgsProcessingParameterDefinition.Flag.FlagHidden)
+
+        self.addParameter(size_param)  
+
+        sizes_param = QgsProcessingParameterString(
+            self.SIZES,
+            self.tr('Size'),
+            defaultValue="", 
+            optional=True, 
+            )
+        
+        sizes_param.setMetadata({
+            'widget_wrapper': {
+                'class': SizesWidgetWrapper
+            }
+        })
+
+        self.addParameter(sizes_param)  
         
         self.addParameter(QgsProcessingParameterEnum(
             self.MODE,
@@ -334,23 +357,31 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
 
     def checkParameterValues(self, parameters, context): 
+        dims = self.getDimsForCheck(parameters, context)
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
         if footprint:
-            dims = self.getDimsForCheck(parameters, context)
-
             ok, s, shape = check_structure(footprint, dims)
             if not ok:
                 return (ok, self.tr('Footprint: ' + s))
         
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        sizes = str_to_int_or_list(sizes)
+        if isinstance(sizes, list):
+            if len(sizes) != dims:
+                return (False, self.tr("Sizes does not match number of dimensions"))
+
         return super().checkParameterValues(parameters, context)
     
 
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
+     
+        size = self.parameterAsString(parameters, self.SIZES, context)
+        size = str_to_int_or_list(size)
+        if not size:
+            size = self.parameterAsInt(parameters, self.SIZE, context)
+        kwargs['size'] = size
 
-        size = self.parameterAsInt(parameters, self.SIZE, context)
-        if size:
-            kwargs['size'] = size
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
         if footprint.strip() != "":
             kwargs['footprint'] = str_to_array(footprint, self._ndim)
