@@ -231,7 +231,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         # Get Parameters
         kwargs = self.get_parameters(parameters, context)
-        print("kwargs\n", kwargs)
+        # print("kwargs\n", kwargs)
 
         self.fct = self.get_fct()
 
@@ -609,13 +609,10 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
         origin = self.parameterAsString(parameters, self.ORIGIN, context)
         origin = str_to_int_or_list(origin)
 
-        print(shape)
         if isinstance(origin, list):          
             if len(origin) != dims:
                 return (False, self.tr("Origin does not match number of dimensions"))
             
-            print("dim", dims)
-            print("sh", shape)
             for i in range(dims):
                 if shape[i] != 0 and not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
                     return (False, self.tr("Origin out of bounds of structure"))
