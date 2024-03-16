@@ -230,7 +230,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         # Get Parameters
         kwargs = self.get_parameters(parameters, context)
-        # print("kwargs\n", kwargs)
+        print("kwargs\n", kwargs)
 
         self.fct = self.get_fct()
 
@@ -579,6 +579,12 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
         if not ok:
             s = 'Footprint: ' + s
             return (ok, self.tr(s))
+
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        sizes = str_to_int_or_list(sizes)
+        if isinstance(sizes, list):
+            if len(sizes) != dims:
+                return (False, self.tr("Sizes does not match number of dimensions"))
 
         # Extra check for rank_filter: rank must be < as footprint size
         # It is easier to do it here as we already have the footprint checked
