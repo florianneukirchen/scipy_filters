@@ -198,6 +198,8 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
             }
         })
 
+        self.addParameter(sizes_param)
+
         
         super().insert_parameters(config)
 
