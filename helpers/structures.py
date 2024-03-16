@@ -72,7 +72,10 @@ def check_structure(s, dims=2, odd=False, optional=True):
     """
     s = s.strip()
     if optional and not s:
-        return (True, "", (0,0))
+        if dims == 2:
+            return (True, "", (0,0))
+        else:
+            return (True, "", (0,0,0))
     if s == "" and not optional:
         return (False, "Argument is not optional", None)
     if s in ["square", "cross"]:
@@ -98,7 +101,7 @@ def check_structure(s, dims=2, odd=False, optional=True):
     # Wiener filter: values must be odd
     if odd and np.any(a % 2 == 0):
         return (False, 'Every element in size must be odd.', None)
-
+    
     if a.ndim == 2 and dims == 3:
         a = a[np.newaxis,:]
 
