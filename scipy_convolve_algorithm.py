@@ -190,10 +190,9 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
         origin = self.parameterAsString(parameters, self.ORIGIN, context)
         origin = str_to_int_or_list(origin)
 
-        if isinstance(origin, list):
-            
+        if isinstance(origin, list):          
             if len(origin) != dims:
-                return (False, self.tr("Sizes does not match number of dimensions"))
+                return (False, self.tr("Origin does not match number of dimensions"))
             
             for i in range(dims):
                 if not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
