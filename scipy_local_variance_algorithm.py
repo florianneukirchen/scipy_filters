@@ -39,14 +39,20 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterRasterLayer,
                        QgsProcessingParameterNumber,
                        QgsProcessingParameterRasterDestination,
+                       QgsProcessingParameterString,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterBand,
+                       QgsProcessingParameterDefinition,
                         )
+
+from .helpers import str_to_int_or_list
+
 from .scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           SciPyAlgorithmWithMode,
                                           SciPyAlgorithmWithModeAxis,
                                           SciPyStatisticalAlgorithm)
 
+from .ui.sizes_widget import (GreaterZeroSizesWidgetWrapper)
 
 def estimate_local_variance(raster, size):
     """
@@ -106,24 +112,66 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
             """
     
     SIZE = 'SIZE'
+    SIZES = 'SIZES'
     
     def insert_parameters(self, config):
         
-        self.addParameter(QgsProcessingParameterNumber(
+       
+        size_param = QgsProcessingParameterNumber(
             self.SIZE,
-            self.tr('Size'),
+            self.tr('Size of filter'),
             QgsProcessingParameterNumber.Type.Integer,
             defaultValue=3, 
-            optional=False, 
-            ))   
+            optional=True, 
+            minValue=1, 
+            maxValue=20, # Large sizes are really slow
+            )
+        
+        size_param.setFlags(size_param.flags() | QgsProcessingParameterDefinition.Flag.FlagHidden)
+
+        self.addParameter(size_param)  
+
+        sizes_param = QgsProcessingParameterString(
+            self.SIZES,
+            self.tr('Size'),
+            defaultValue="", 
+            optional=True, 
+            )
+        
+        sizes_param.setMetadata({
+            'widget_wrapper': {
+                'class': GreaterZeroSizesWidgetWrapper
+            }
+        })
+
+        self.addParameter(sizes_param)  
         
         super().insert_parameters(config)
+    
+    def checkParameterValues(self, parameters, context): 
+        dims = self.getDimsForCheck(parameters, context)
+        
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        sizes = str_to_int_or_list(sizes)
+        if isinstance(sizes, list):
+            if len(sizes) != dims:
+                return (False, self.tr("Sizes does not match number of dimensions"))
 
+        return super().checkParameterValues(parameters, context)
     
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
 
-        kwargs["size"] = self.parameterAsInt(parameters, self.SIZE, context) 
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        if sizes:
+            size = str_to_int_or_list(sizes)
+        else:
+            size = self.parameterAsInt(parameters, self.SIZE, context)
+        if not size:
+            # Just in case it is called from python and neither size or sizes or footprint is set
+            size = 3
+
+        kwargs['size'] = size
 
         return kwargs
     

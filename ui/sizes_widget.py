@@ -44,8 +44,9 @@ class SizesWidget(BASE, WIDGET):
     ndim = None
 
 
-    def __init__(self, odd=False):
+    def __init__(self, odd=False, gtz=False):
         self.odd = odd # Used by Wiener
+        self.gtz = gtz # Used by estimate variance / std
         self.context = dataobjects.createContext()
         self.clearvalue = 3
         super().__init__(None)
@@ -61,6 +62,14 @@ class SizesWidget(BASE, WIDGET):
         self.mSizeRowsQgsSpinBox.setClearValue(self.clearvalue)
         self.mSizeColsQgsSpinBox.setClearValue(self.clearvalue)
         self.mSizeBandsQgsSpinBox.setClearValue(0)
+
+        if self.gtz:
+            self.mSizeBandsQgsSpinBox.setClearValue(1)
+            self.mSizeBandsQgsSpinBox.setMinimum(1)
+            self.mSizeRowsQgsSpinBox.setMinimum(1)
+            self.mSizeColsQgsSpinBox.setMinimum(1)
+            self.mSizeQgsSpinBox.setMinimum(1)
+
 
         self.mSizeQgsSpinBox.valueChanged.connect(self.sizeAllChanged)
 
@@ -125,7 +134,11 @@ class SizesWidgetWrapper(WidgetWrapper):
 
 class OddSizesWidgetWrapper(SizesWidgetWrapper):
     def createWidget(self):
-        return SizesWidget(odd=True)    
+        return SizesWidget(odd=True) 
 
 
+class GreaterZeroSizesWidgetWrapper(SizesWidgetWrapper):
+    """Sizes must be > 0 for estimate local variance / std"""
+    def createWidget(self):
+        return SizesWidget(gtz=True)   
 

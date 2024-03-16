@@ -40,9 +40,11 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterBand,
-                       QgsProcessingParameterString
+                       QgsProcessingParameterString,
+                       QgsProcessingParameterDefinition,
                         )
 
+from .ui.sizes_widget import (SizesWidgetWrapper)
 from .scipy_algorithm_baseclasses import SciPyAlgorithm
 from .helpers import check_structure, str_to_array, kernelexamples
 from .ui.structure_widget import (StructureWidgetWrapper, 
@@ -163,20 +165,39 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
             <b>Size</b> Size of the box (for now only circular size).
             """
     
-    SIZE = 'SIZE' # can be float or int or tuple of int but not tuple of float
+    SIZE = 'SIZE' 
+    SIZES = 'SIZES'
 
 
-    def insert_parameters(self, config):
+    def insert_parameters(self, config):       
 
-        self.addParameter(QgsProcessingParameterNumber(
+        size_param = QgsProcessingParameterNumber(
             self.SIZE,
             self.tr('Size'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=5, 
-            optional=False, 
+            optional=True, 
             minValue=0, 
-            # maxValue=100
-            ))
+            # maxValue=100, 
+            )
+        
+        size_param.setFlags(size_param.flags() | QgsProcessingParameterDefinition.Flag.FlagHidden)
+
+        self.addParameter(size_param)  
+
+        sizes_param = QgsProcessingParameterString(
+            self.SIZES,
+            self.tr('Size'),
+            defaultValue="", 
+            optional=True, 
+            )
+        
+        sizes_param.setMetadata({
+            'widget_wrapper': {
+                'class': SizesWidgetWrapper
+            }
+        })
+
         
         super().insert_parameters(config)
 
