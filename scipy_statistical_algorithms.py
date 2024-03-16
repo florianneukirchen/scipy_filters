@@ -38,16 +38,20 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingAlgorithm,
                        QgsProcessingParameterRasterLayer,
                        QgsProcessingParameterNumber,
+                       QgsProcessingParameterString,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterBand,
+                       QgsProcessingParameterDefinition
                         )
 from .scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           SciPyAlgorithmWithMode,
                                           SciPyAlgorithmWithModeAxis,
                                           SciPyStatisticalAlgorithm)
 
+from .ui.sizes_widget import (SizesWidgetWrapper)
 
+from .helpers import str_to_int_or_list
 
 class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
     # Overwrite constants of base class
@@ -412,6 +416,7 @@ class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
     """
 
     SIZE = 'SIZE'
+    SIZES = 'SIZES'
 
     # Overwrite constants of base class
     _name = 'uniform'
@@ -449,20 +454,64 @@ class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
         # (otherwise input is not the first parameter in the GUI)
         super().initAlgorithm(config)
 
-        self.addParameter(QgsProcessingParameterNumber(
+  
+        size_param = QgsProcessingParameterNumber(
             self.SIZE,
             self.tr('Size of flat structuring element (either size or footprint must be given, with footprint, size is ignored)'),
             QgsProcessingParameterNumber.Type.Integer,
-            defaultValue=3, 
-            optional=False, 
-            minValue=2, 
-            # maxValue=20, 
-            ))      
+            defaultValue=1, 
+            optional=True, 
+            minValue=1, 
+            maxValue=20, # Large sizes are really slow
+            )
+        
+        size_param.setFlags(size_param.flags() | QgsProcessingParameterDefinition.Flag.FlagHidden)
+
+        self.addParameter(size_param)
+
+
+        sizes_param = QgsProcessingParameterString(
+            self.SIZES,
+            self.tr('Size'),
+            defaultValue="", 
+            optional=True, 
+            )
+        
+        sizes_param.setMetadata({
+            'widget_wrapper': {
+                'class': SizesWidgetWrapper
+            }
+        })
+
+        self.addParameter(sizes_param)   
+
+
+
+    def checkParameterValues(self, parameters, context): 
+        dims = self.getDimsForCheck(parameters, context)
+        
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        sizes = str_to_int_or_list(sizes)
+        if isinstance(sizes, list):
+            if len(sizes) != dims:
+                return (False, self.tr("Sizes does not match number of dimensions"))
+
+        return super().checkParameterValues(parameters, context)
+    
         
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
 
-        kwargs['size'] = self.parameterAsInt(parameters, self.SIZE, context)
+
+        sizes = self.parameterAsString(parameters, self.SIZES, context)
+        if sizes:
+            size = str_to_int_or_list(sizes)
+        else:
+            size = self.parameterAsInt(parameters, self.SIZE, context)
+        if not size:
+            # Just in case it is called from python and neither size or sizes or footprint is set
+            size = 3
+        kwargs['size'] = size
 
         return kwargs
 
