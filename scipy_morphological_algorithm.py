@@ -149,7 +149,6 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             <b>Erosion</b> Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
             <b>Closing</b> Perform dilation and then erosion. Fills small holes, large shapes are preserved.
             <b>Opening</b> Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
-            
 
             <b>Structure</b> String representation of array. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
@@ -251,15 +250,15 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             <b>Closing</b> Perform dilation and then erosion. Fills small holes, large shapes are preserved.
             <b>Opening</b> Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
 
-            <b>Structure</b> Structuring element of filter, can be cross, square or custom in 2D; \
-            or cross, ball or cube in 3D. 
-
-            <b>Custom structure</b> String representation of array, only used if "Structure" is set to "Custom". \
+            <b>Structure</b> String representation of array. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \
             but a 2D array is also excepted (a new axis is added as first \
             axis and the result is the same as calculating each band \
-            seperately).
+            seperately). Examples can be loaded with the load button. \
+            For convenience (i.e. when calling from a script), \
+            the following shortcuts are accepted as well: \
+            "square", "cross", "cross3D", "ball", "cube".
 
             <b>Size</b> Size of flat and full structuring element, optional if footprint or structure is provided.
             <b>Border mode</b> determines how input is extended around \
