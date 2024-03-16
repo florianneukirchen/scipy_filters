@@ -112,11 +112,18 @@ class OriginWidget(BASE, WIDGET):
 
         self.mOriginRowsQgsSpinBox.setMinimum(-(shape[-2] // 2))
         self.mOriginRowsQgsSpinBox.setMaximum((shape[-2]-1) // 2)
+        # with 0, max and min is -1 instead of 0
+        if shape[-2] == 0:
+            self.mOriginRowsQgsSpinBox.setMaximum(0)
+            self.mOriginRowsQgsSpinBox.setMinimum(0)
 
         self.mOriginColsQgsSpinBox.setMinimum(-(shape[-1] // 2))
         self.mOriginColsQgsSpinBox.setMaximum((shape[-1]-1) // 2)
+        if shape[-1] == 0:
+            self.mOriginColsQgsSpinBox.setMaximum(0)
+            self.mOriginColsQgsSpinBox.setMinimum(0)
 
-        if self.ndim == 3 and len(shape) == 3:
+        if self.ndim == 3 and len(shape) == 3 and shape[1] != 0:
             self.mOriginBandsQgsSpinBox.setMinimum(-(shape[1] // 2))
             self.mOriginBandsQgsSpinBox.setMaximum((shape[1]-1) // 2)
         else:
