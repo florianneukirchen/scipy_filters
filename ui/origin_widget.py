@@ -176,6 +176,8 @@ class OriginWidgetWrapper(WidgetWrapper):
         return self.widget.value()
     
     def structureChanged(self):
+        if not self.structurewrapper:
+            return
         structure = self.structurewrapper.value()
 
         print("stru", structure)
