@@ -614,6 +614,8 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             if len(origin) != dims:
                 return (False, self.tr("Origin does not match number of dimensions"))
             
+            print("dim", dims)
+            print("sh", shape)
             for i in range(dims):
                 if shape[i] != 0 and not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
                     return (False, self.tr("Origin out of bounds of structure"))
