@@ -79,6 +79,10 @@ class StructureWidget(BASE, WIDGET):
         tool_btn_menu = QMenu(self)
 
         for k, v in self.examples.items():
+            if isinstance(v, str) and v == "---":
+                tool_btn_menu.addSeparator()
+                continue
+            
             action = QAction(k, self)
             if isinstance(v, np.ndarray):
                 if self.to_int:
