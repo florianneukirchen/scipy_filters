@@ -22,6 +22,7 @@
 
 import os
 import numpy as np
+import json
 
 from processing.gui.wrappers import WidgetWrapper
 from processing.tools import dataobjects
@@ -62,6 +63,7 @@ class SciPyParameterStructure(QgsProcessingParameterString):
 
 class StructureWidget(BASE, WIDGET):
 
+
     def __init__(self, examples, to_int=False, defaultValue="", isoptional=True):
         super().__init__(None)
         self.examples = examples
@@ -69,6 +71,7 @@ class StructureWidget(BASE, WIDGET):
         self.to_int = to_int
         self.ndim = 2
         self.ok_txt = "OK"
+        self.three_d_items = []
         self.setupUi(self)
 
         self.plainTextEdit.setPlainText(defaultValue)
@@ -82,7 +85,7 @@ class StructureWidget(BASE, WIDGET):
             if isinstance(v, str) and v == "---":
                 tool_btn_menu.addSeparator()
                 continue
-            
+
             action = QAction(k, self)
             if isinstance(v, np.ndarray):
                 if self.to_int:
@@ -91,16 +94,30 @@ class StructureWidget(BASE, WIDGET):
                     v = array_to_str(v)
                 
             action.setData(v)
+
+            if self.is3d(v):
+                self.three_d_items.append(action)
+
             tool_btn_menu.addAction(action)
 
 
         tool_btn_menu.triggered.connect(self.menu_triggered)
 
         self.toolButton.setMenu(tool_btn_menu)
+        self.threeDEnabled(False)
         self.statusLabel.setWordWrap(True)
         self.statusLabel.setText(self.ok_txt)
 
         self.plainTextEdit.textChanged.connect(self.checknow)
+
+    def is3d(self, check):
+        """check string or np.array, return bool"""
+        if isinstance(check, str):
+            check = json.loads(check)
+            a = np.array(check)
+        if a.ndim == 3:
+            return True
+        return False
 
 
     def menu_triggered(self, checked):
@@ -112,6 +129,7 @@ class StructureWidget(BASE, WIDGET):
     def setDim(self, dims):
         self.ndim = dims
         self.checknow()
+        self.threeDEnabled(dims == 3)
 
     def checknow(self):
         text = self.plainTextEdit.toPlainText()
@@ -121,7 +139,9 @@ class StructureWidget(BASE, WIDGET):
         else:
             self.statusLabel.setText(s)
         
-
+    def threeDEnabled(self, yes):
+        for action in self.three_d_items:
+            action.setEnabled(yes)
 
 class StructureWidgetWrapper(WidgetWrapper):
 
