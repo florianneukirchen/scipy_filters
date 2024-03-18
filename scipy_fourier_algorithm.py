@@ -32,6 +32,7 @@ __revision__ = '$Format:%H$'
 
 from osgeo import gdal
 from scipy import ndimage, fft, signal
+import numpy as np
 from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import (QgsProcessing,
                        QgsProcessingAlgorithm,
@@ -413,7 +414,9 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
             but a 2D array is also excepted (a new axis is added as first \
             axis and the result is the same as calculating each band \
             seperately).
-            <b>Normalization</b> Normalize the kernel by dividing through given value; set to 0 to devide through the sum of kernel values.
+            <b>Normalization</b> Normalize the kernel by dividing through \
+            given value; set to 0 to devide through the sum of the absolute \
+            values of the kernel.
             """
     
 
@@ -471,12 +474,8 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
         normalization = self.parameterAsDouble(parameters, self.NORMALIZATION, context)
 
-        # No normalization if sum of kernel is 0
-        if normalization == 0 and kernel.sum() == 0:
-            normalization = 1
-
         if normalization == 0:
-            kernel = kernel / kernel.sum()
+            kernel = kernel / np.abs(kernel).sum()
         else:
             kernel = kernel / normalization
 
