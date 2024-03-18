@@ -176,7 +176,10 @@ footprintexamples = OrderedDict([
     ("5 × 5 Square", np.ones((5,5))),
     ("7 × 7 Square", np.ones((7,7))),
     ("Cross", ndimage.generate_binary_structure(2, 1)),
-
+    ("sep1", "---"), 
+    ("3 × 3 × 3 Cube", np.ones((3,3,3))),
+    ("5 × 5 × 5 Cube", np.ones((5,5,5))),
+    ("7 × 7 × 7 Cube", np.ones((7,7,7))),
 ])
 
 
@@ -189,20 +192,27 @@ kernelexamples = OrderedDict([
     ("3 × 3 Gaussian", "[[1, 2, 1],\n[2, 4, 2],\n[1, 2, 1]]"),
     ("5 × 5 Gaussian", "[[0,1,2,1,0],\n[1,3,5,3,1],\n[2,5,9,5,2],\n[1,3,5,3,1],\n[0,1,2,1,0]]"),
     ("5 × 5 Laplacian of Gaussian", "[[0,0,-1,0,0],\n[0,-1,-2,-1,0],\n[-1,-2,16,-2,-1],\n[0,-1,-2,-1,0],\n[0,0,-1,0,0]]"),
+    ("3 × 3 Sobel horizontal edges", "[[1, 2, 1],\n[0, 0, 0],\n[-1, -2, -1]]"),
+    ("3 × 3 Sobel vertical edges", "[[1, 0, -1],\n[2, 0, -2],\n[1, 0, -1]]"),
     ("sep2", "---"), 
     ("3 × 3 × 3 Cube", np.ones((3,3,3))),
     ("5 × 5 × 5 Cube", np.ones((5,5,5))),
+    ("7 × 7 × 7 Cube", np.ones((7,7,7))),
     ("3 × 1 × 1 Across bands of pixel", np.ones((3,1,1)))
     
 
 ])
 
 morphostructexamples =  OrderedDict([
-    ("Cross", ndimage.generate_binary_structure(2, 1)),
-    ("Square", ndimage.generate_binary_structure(2, 2)),
+    ("Cross 2D", ndimage.generate_binary_structure(2, 1)),
+    ("Square 2D", ndimage.generate_binary_structure(2, 2)),
+    ("sep1", "---"), 
     ("Cross 3D", ndimage.generate_binary_structure(3, 1)),
     ("Ball 3D", ndimage.generate_binary_structure(3, 2)),
     ("Cube 3D", ndimage.generate_binary_structure(3, 3)),
+    ("sep1", "---"), 
     ("5 × 5 Square", np.ones((5,5))),
+    ("7 × 7 Square", np.ones((7,7))),
+    ("5 × 5 × 5 Cube", np.ones((5,5,5))),
 
 ])

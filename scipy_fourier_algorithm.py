@@ -471,6 +471,10 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
         normalization = self.parameterAsDouble(parameters, self.NORMALIZATION, context)
 
+        # No normalization if sum of kernel is 0
+        if normalization == 0 and kernel.sum() == 0:
+            normalization = 1
+
         if normalization == 0:
             kernel = kernel / kernel.sum()
         else:
