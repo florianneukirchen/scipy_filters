@@ -494,10 +494,21 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
         
         return super().checkParameterValues(parameters, context)
     
+    def my_fct(self, a, **kwargs):
+        dtype = kwargs.pop("output")
+
+        a = signal.fftconvolve(a, **kwargs)
+
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+            if a.min() < info.min or a.max() > info.max:
+                self.error = (f"Values ({a.min().round(1)}...{a.max().round(1)}) are out of bounds of new dtype, clipping to {info.min}...{info.max}", False)
+                a = np.clip(a, info.min, info.max)
+        return a
 
     # The function to be called, to be overwritten
     def get_fct(self):
-        return signal.fftconvolve
+        return self.my_fct
 
 
     def createInstance(self):

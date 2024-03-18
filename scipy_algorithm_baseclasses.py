@@ -168,6 +168,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         with some other properties.
         """
 
+        self.error = None
+
         # Some Algorithms will add a masklayer
         self.masklayer = None
 
@@ -364,6 +366,12 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
                 self.out_ds.GetRasterBand(i).WriteArray(filtered)
 
+                if self.error:
+                    msg, fatal = self.error
+                    msg = f"Band {i}: " + msg
+                    feedback.reportError(msg, fatal)
+                    self.error = None
+
                 feedback.setProgress(i * 100 / self.bandcount)
                 if feedback.isCanceled():
                     return {}
@@ -375,6 +383,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             filtered = self.fct(a, **kwargs)
 
             self.out_ds.WriteArray(filtered)
+
+            if self.error:
+                feedback.reportError(*self.error)
 
         # Calculate and write band statistics (min, max, mean, std)
         for b in range(1, self.bandcount + 1):

@@ -21,3 +21,4 @@ map_dtype = {
 
 def get_np_dtype(dt_opt):
     return np.dtype(map_dtype[dt_opt])
+   
