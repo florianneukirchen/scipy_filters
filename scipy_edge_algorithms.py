@@ -54,6 +54,9 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
     _displayname = 'Laplace'
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
+
+    _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
+
     _help = """
             Multidimensional Laplace filter based on approximate second derivatives.\
             Calculated with gaussian_laplace from \
@@ -69,6 +72,10 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
             <i>Nearest</i> (extend by replicating the nearest pixel), \
             <i>Mirror</i> (extend by reflecting about the center of last pixel), \
             <i>Wrap</i> (extend by wrapping around to the opposite edge).
+
+            <b>Dtype</b> Data type of output. Beware of clipping \
+            and potential overflow errors if min/max of output does \
+            not fit. Default is Float32.
             """
     
     # The function to be called, to be overwritten
@@ -85,6 +92,9 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
     _displayname = 'Sobel'
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
+
+    _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
+
     _help = """
             Sobel filter. \
             Calculated with sobel from \
@@ -103,6 +113,10 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
             <i>Nearest</i> (extend by replicating the nearest pixel), \
             <i>Mirror</i> (extend by reflecting about the center of last pixel), \
             <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            
+            <b>Dtype</b> Data type of output. Beware of clipping \
+            and potential overflow errors if min/max of output does \
+            not fit. Default is Float32.
             """
     
     # The function to be called, to be overwritten
@@ -132,6 +146,9 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
     _displayname = 'Prewitt'
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
+
+    _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
+
     _help = """
             Prewitt filter.\
             Calculated with prewitt from \
@@ -150,6 +167,10 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
             <i>Nearest</i> (extend by replicating the nearest pixel), \
             <i>Mirror</i> (extend by reflecting about the center of last pixel), \
             <i>Wrap</i> (extend by wrapping around to the opposite edge).
+            
+            <b>Dtype</b> Data type of output. Beware of clipping \
+            and potential overflow errors if min/max of output does \
+            not fit. Default is Float32.
             """
     
     # The function to be called, to be overwritten

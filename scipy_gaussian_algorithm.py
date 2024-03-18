@@ -85,6 +85,9 @@ class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
     _displayname = 'Gaussian Laplace'
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
+
+    _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
+
     _help = """
             Laplace filter using Gaussian second derivatives. \
             Calculated with gaussian_laplace from \
@@ -101,6 +104,10 @@ class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
             <i>Nearest</i> (extend by replicating the nearest pixel), \
             <i>Mirror</i> (extend by reflecting about the center of last pixel), \
             <i>Wrap</i> (extend by wrapping around to the opposite edge).
+
+            <b>Dtype</b> Data type of output. Beware of clipping \
+            and potential overflow errors if min/max of output does \
+            not fit. Default is Float32.
             """
     
     # The function to be called, to be overwritten
@@ -207,6 +214,9 @@ class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
     _displayname = 'Gaussian gradient magnitude'
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
+
+    _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
+    
     _help = """
             Gradient magnitude using Gaussian derivatives. \
             Calculated with gaussian_gradient_magnitude from \
@@ -223,6 +233,10 @@ class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
             <i>Nearest</i> (extend by replicating the nearest pixel), \
             <i>Mirror</i> (extend by reflecting about the center of last pixel), \
             <i>Wrap</i> (extend by wrapping around to the opposite edge).
+
+            <b>Dtype</b> Data type of output. Beware of clipping \
+            and potential overflow errors if min/max of output does \
+            not fit. Default is Float32.
             """
     
     # The function to be called, to be overwritten
