@@ -60,8 +60,11 @@ from .ui.origin_widget import (OriginWidgetWrapper,
 
 from .helpers import (array_to_str, 
                       str_to_int_or_list, 
-                      check_structure, str_to_array, 
-                      footprintexamples)
+                      check_structure,
+                      str_to_array, 
+                      footprintexamples,
+                      dtype_options,
+                      convert_dtype)
 
 # Group IDs and group names
 groups = {
@@ -105,6 +108,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
     DIMENSION = 'DIMENSION'
+    DTYPE = 'DTYPE'
     
     # The following constants are supposed to be overwritten
     _name = 'name, short, lowercase without spaces'
@@ -117,12 +121,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             Help
             """
     
+    _outbands = None # Optionally change the number of output bands
+    _outdtype = None # Optionally change default output dtype
 
     modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
-
-    # Return the function to be called, to be overwritten
-    def get_fct(self):
-        return ndimage.laplace
 
     
     # Dimensions the algorithm is working on. 
@@ -145,6 +147,11 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     _dimension_options = ['2D (Separate for each band)',
                           '3D (All bands as a 3D data cube)']
 
+
+    # Return the function to be called, to be overwritten
+    def get_fct(self):
+        return ndimage.laplace
+    
     # Function to insert Parameters (overwrite in inherited classes)
     def insert_parameters(self, config):
         return
@@ -188,6 +195,25 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         # Insert Parameters 
         self.insert_parameters(config)
 
+        
+        default_dtype = 0 # Same as input
+        if self._outdtype:
+            # Optionally overwrite, some filters should output signed or float
+            default_dtype = self._outdtype
+
+        dtype_param = QgsProcessingParameterEnum(
+            self.DTYPE,
+            self.tr('Output data type'),
+            dtype_options,
+            defaultValue=default_dtype,
+            optional=True)
+        
+        # Set as advanced parameter
+        dtype_param.setFlags(dtype_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+        self.addParameter(dtype_param)
+
+        # Output
+
         if not self._outputname:
             self._outputname = self._displayname
 
@@ -209,8 +235,18 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         This is the most basic base class and kwargs is empty {}.
         """
         self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
-        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
-
+        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
+ 
+        self._outdtype = self.parameterAsInt(parameters, self.DTYPE, context)
+        if not self._outdtype:
+            # 0 will be changed to dtype of input layer
+            self._outdtype = 0
+        
+        if self._outdtype >= 8:
+            # Gdal datatypes index 8 to 11 are complex 
+            # and are not offered in the combobox
+            self._outdtype = self._outdtype + 4
+        
         if self._dimension == self.Dimensions.nD:
             dimension = self.parameterAsInt(parameters, self.DIMENSION, context)
             if dimension == 1:
@@ -243,9 +279,14 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         
         self.bandcount = self.ds.RasterCount
 
+        self._indtype = self.ds.GetRasterBand(1).DataType
+        if self._indtype in (8,9,10,11):
+            feedback.reportError("Error: Complex is not supported", fatalError = True)
+            return {}
+
         # Set to 2D if layer has only one band
         if self.bandcount == 1:
-            _dimension = self.Dimensions.twoD
+            self._dimension = self.Dimensions.twoD
 
         # Eventually open mask layer 
         if self.masklayer:
@@ -282,7 +323,27 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         # Prepare output
         driver = gdal.GetDriverByName('GTiff')
-        self.out_ds = driver.CreateCopy(self.output_raster, self.ds, strict=0)
+
+        if not self._outbands:
+            self._outbands = self.bandcount
+
+        if self._outdtype == 0:
+            # Set to dtype of input dataset
+            self._outdtype = self._indtype
+            convert = False
+        else:
+            convert = True 
+
+
+        self.out_ds = driver.Create(
+            self.output_raster, 
+            xsize = self.ds.RasterXSize,
+            ysize = self.ds.RasterYSize,
+            bands = self._outbands,
+            eType = self._outdtype)
+        
+        self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
+        self.out_ds.SetProjection(self.ds.GetProjection())
 
         if feedback.isCanceled():
             return {}
@@ -296,6 +357,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             for i in range(1, self.bandcount + 1):
                 a = self.ds.GetRasterBand(i).ReadAsArray()
 
+                if convert:
+                    a = convert_dtype(a, self._outdtype, feedback, i)
+
                 # The actual function
                 filtered = self.fct(a, **kwargs)
 
@@ -307,6 +371,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 
         elif self._dimension == self.Dimensions.threeD:
             a = self.ds.ReadAsArray()
+
+            if convert:
+                a = convert_dtype(a, self._outdtype, feedback)
 
             # The actual function
             filtered = self.fct(a, **kwargs)
@@ -339,6 +406,11 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
 
     def checkParameterValues(self, parameters, context):
+
+        dtype_opt = self.parameterAsInt(parameters, self.DTYPE, context)
+        if not 0 <= dtype_opt <= 14:
+            return (False, self.tr("Invalid dtype"))
+        
         dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         # 3D only possible with more than 1 bands
