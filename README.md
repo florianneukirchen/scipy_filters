@@ -20,12 +20,6 @@ These scipy.ndimage filters are either applied on each layer seperately in 2D, o
 You could also apply a convolution or median filter etc. across the bands for each pixel
 by giving a corresponding array as kernel/footprint/structure (note that "bands" is the first axis), for example:
 
-```
-[[[1]],
-[[1]],
-[[1]]]
-```
-
 Python users can generate a kernel with numpy and copy the relevant part inside the braces of np.array(...) into the text field. The QGIS processing API does not allow to pass numpy arrays directly when calling from the console or a script, but you can convert it to a string using:
 
 ```python
@@ -49,10 +43,10 @@ Since version 0.2, the plugin offers an automatic installation of SciPy (using p
 
 ### Git main
 - Avoid overflow error in unsharp mask by calculating in float64
-- Advanced option to set the dtype of the output (default is dtype of input or float32, depending on filter)
-- Avoid overflow errors by setting default output dtype to float32 for some filters
-- Convolve: do not devide through sum of kernel if sum is 0
+- Advanced option to set the dtype of the output (default is dtype of input or float32 for some filters to avoid clipping and overflow errors)
+- Convolve: normalize with sum of absolute values of kernel as default, not simply the sum
 - Use sizes widget in more filters
+- More load options for kernel/structure/footprint
 - New origin widget and add origin as parameter to a couple of filters
 
 ### 0.2 (03/2024)
