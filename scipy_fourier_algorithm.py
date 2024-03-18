@@ -439,6 +439,9 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
     _displayname = 'FFT Convolve'
     _outputname = None # If set to None, the displayname is used 
     _groupid = "convolution" 
+
+    _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
+
     _help = """
             Convolve raster band(s) with custom kernel using FFT. This is faster for large kernels. \
             Both, raster band(s) and kernel are transformed into the frequency domain \
@@ -457,6 +460,10 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
             <b>Normalization</b> Normalize the kernel by dividing through \
             given value; set to 0 to devide through the sum of the absolute \
             values of the kernel.
+
+            <b>Dtype</b> Data type of output. Beware of clipping \
+            and potential overflow errors if min/max of output does \
+            not fit. Default is Float32.
             """
     
 

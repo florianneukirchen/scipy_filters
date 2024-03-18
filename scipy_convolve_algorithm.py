@@ -71,6 +71,9 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
     _displayname = 'Convolve'
     _outputname = None # If set to None, the displayname is used 
     _groupid = 'convolution'
+
+    _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
+    
     _help = """
             Convolve raster with given kernel. \
             Calculated with convolve from \
@@ -98,6 +101,10 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
             <i>Nearest</i> (extend by replicating the nearest pixel), \
             <i>Mirror</i> (extend by reflecting about the center of last pixel), \
             <i>Wrap</i> (extend by wrapping around to the opposite edge).
+
+            <b>Dtype</b> Data type of output. Beware of clipping \
+            and potential overflow errors if min/max of output does \
+            not fit. Default is Float32.
             """
     
     # The function to be called

@@ -127,7 +127,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     # to the kwargs. This works for ndimage filters,
     # otherwise it must be handled by the custom function
 
-    _outdtype = None # Optionally change default output dtype
+    _default_dtype = 0 # Optionally change default output dtype (value = idx of combobox)
 
     modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
 
@@ -203,16 +203,11 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         self.insert_parameters(config)
 
         
-        default_dtype = 0 # Same as input
-        if self._outdtype:
-            # Optionally overwrite, some filters should output signed or float
-            default_dtype = self._outdtype
-
         dtype_param = QgsProcessingParameterEnum(
             self.DTYPE,
             self.tr('Output data type'),
             dtype_options,
-            defaultValue=default_dtype,
+            defaultValue=self._default_dtype,
             optional=True)
         
         # Set as advanced parameter
