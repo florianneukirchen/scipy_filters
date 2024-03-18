@@ -52,8 +52,8 @@ from .scipy_gaussian_algorithm import SciPyAlgorithmWithSigma
 
 from .ui.sizes_widget import (OddSizesWidgetWrapper)
 
-
 from .helpers import str_to_int_or_list
+
 
 class SciPyPixelMinAlgorithm(SciPyAlgorithm):
     """
@@ -63,15 +63,15 @@ class SciPyPixelMinAlgorithm(SciPyAlgorithm):
 
 
     # Overwrite constants of base class
-    _name = 'pixel_minimum'
+    _name = 'pixel_min'
     _displayname = 'Pixel minimum filter'
-    _outputname = None
+    _outputname = 'Pixel minimum'
     _groupid = "pixel" 
     _outbands = 1
     _help = """
             Pixel minimum filter
 
-            Returns minimum of all bands
+            Returns minimum of all bands for each individual pixel
             """
     
     # The function to be called, to be overwritten
@@ -89,8 +89,242 @@ class SciPyPixelMinAlgorithm(SciPyAlgorithm):
         self._dimension = self.Dimensions.threeD
         super().initAlgorithm(config)
         
-
+    def checkParameterValues(self, parameters, context):
+        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        if layer.bandCount() == 1:
+            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+        return super().checkParameterValues(parameters, context)
+        
     def createInstance(self):
         return SciPyPixelMinAlgorithm()
     
 
+
+class SciPyPixelMaxAlgorithm(SciPyAlgorithm):
+    """
+    Pixel Statistics Maximum
+
+    """
+
+
+    # Overwrite constants of base class
+    _name = 'pixel_max'
+    _displayname = 'Pixel maximum filter'
+    _outputname = 'Pixel maximum'
+    _groupid = "pixel" 
+    _outbands = 1
+    _help = """
+            Pixel maximum filter
+
+            Returns maximum of all bands for each individual pixel
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.myfnct
+    
+    def myfnct(self, a, **kwargs):
+        kwargs["axis"] = 0
+        dtype = kwargs.pop("output")
+        return np.max(a, **kwargs).astype(dtype)
+    
+
+    def initAlgorithm(self, config):
+        # Set dimensions to 3
+        self._dimension = self.Dimensions.threeD
+        super().initAlgorithm(config)
+        
+
+    def checkParameterValues(self, parameters, context):
+        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        if layer.bandCount() == 1:
+            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+        return super().checkParameterValues(parameters, context)
+    
+    def createInstance(self):
+        return SciPyPixelMaxAlgorithm()
+    
+
+
+class SciPyPixelMeanAlgorithm(SciPyAlgorithm):
+    """
+    Pixel Statistics mean
+
+    """
+
+
+    # Overwrite constants of base class
+    _name = 'pixel_mean'
+    _displayname = 'Pixel mean filter'
+    _outputname = 'Pixel mean'
+    _groupid = "pixel" 
+    _outbands = 1
+    _help = """
+            Pixel mean filter
+
+            Returns mean of all bands for each individual pixel
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.myfnct
+    
+    def myfnct(self, a, **kwargs):
+        kwargs["axis"] = 0
+        dtype = kwargs.pop("output")
+        return np.mean(a, **kwargs).astype(dtype)
+    
+
+    def initAlgorithm(self, config):
+        # Set dimensions to 3
+        self._dimension = self.Dimensions.threeD
+        super().initAlgorithm(config)
+
+    def checkParameterValues(self, parameters, context):
+        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        if layer.bandCount() == 1:
+            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+        return super().checkParameterValues(parameters, context)        
+
+    def createInstance(self):
+        return SciPyPixelMeanAlgorithm()
+    
+
+class SciPyPixelMedianAlgorithm(SciPyAlgorithm):
+    """
+    Pixel Statistics median
+
+    """
+
+    # Overwrite constants of base class
+    _name = 'pixel_median'
+    _displayname = 'Pixel median filter'
+    _outputname = 'Pixel median'
+    _groupid = "pixel" 
+    _outbands = 1
+    _help = """
+            Pixel mean filter
+
+            Returns mean of all bands for each individual pixel
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.myfnct
+    
+    def myfnct(self, a, **kwargs):
+        kwargs["axis"] = 0
+        dtype = kwargs.pop("output")
+        return np.median(a, **kwargs).astype(dtype)
+    
+
+    def initAlgorithm(self, config):
+        # Set dimensions to 3
+        self._dimension = self.Dimensions.threeD
+        super().initAlgorithm(config)
+        
+    def checkParameterValues(self, parameters, context):
+        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        if layer.bandCount() == 1:
+            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+        return super().checkParameterValues(parameters, context)
+    
+    def createInstance(self):
+        return SciPyPixelMedianAlgorithm()
+    
+
+class SciPyPixelRangeAlgorithm(SciPyAlgorithm):
+    """
+    Pixel Statistics range
+
+    """
+
+    # Overwrite constants of base class
+    _name = 'pixel_range'
+    _displayname = 'Pixel range filter'
+    _outputname = 'Pixel range'
+    _groupid = "pixel" 
+    _outbands = 1
+    _help = """
+            Pixel range filter
+
+            Returns difference of max and min of all bands for each individual pixel
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.myfnct
+    
+    def myfnct(self, a, **kwargs):
+        kwargs["axis"] = 0
+        dtype = kwargs.pop("output")
+        minimum = np.min(a, **kwargs)
+        maximum = np.max(a, **kwargs)
+        return  (maximum - minimum).astype(dtype)
+    
+
+    def initAlgorithm(self, config):
+        # Set dimensions to 3
+        self._dimension = self.Dimensions.threeD
+        super().initAlgorithm(config)
+        
+    def checkParameterValues(self, parameters, context):
+        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        if layer.bandCount() == 1:
+            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+        return super().checkParameterValues(parameters, context)
+    
+    def createInstance(self):
+        return SciPyPixelRangeAlgorithm()
+    
+
+    
+class SciPyPixelMinMaxMeanAlgorithm(SciPyAlgorithm):
+    """
+    Pixel Statistics 
+
+    """
+
+    # Overwrite constants of base class
+    _name = 'pixel_all'
+    _displayname = 'Pixel min, max, mean, median'
+    _outputname = None
+    _groupid = "pixel" 
+    _outbands = 4
+    _help = """
+            Pixel range filter
+
+            Returns difference of max and min of all bands for each individual pixel
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.myfnct
+    
+    def myfnct(self, a, **kwargs):
+        kwargs["axis"] = 0
+        dtype = kwargs.pop("output")
+
+        out = np.zeros((4, a.shape[1], a.shape[2]), dtype)
+
+        out[0] = np.min(a, **kwargs)
+        out[1] = np.max(a, **kwargs)
+        out[2] = np.mean(a, **kwargs)
+        out[3] = np.median(a, **kwargs)
+        
+        return  out
+    
+
+    def initAlgorithm(self, config):
+        # Set dimensions to 3
+        self._dimension = self.Dimensions.threeD
+        super().initAlgorithm(config)
+        
+    def checkParameterValues(self, parameters, context):
+        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        if layer.bandCount() == 1:
+            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+        return super().checkParameterValues(parameters, context)
+    
+    def createInstance(self):
+        return SciPyPixelMinMaxMeanAlgorithm()
