@@ -48,7 +48,9 @@ Since version 0.2, the plugin offers an automatic installation of SciPy (using p
 ## Changelog
 
 ### Git main
-- Unsharp mask: avoid overflow by clipping values according to min and max of input dtype.
+- Avoid overflow error in unsharp mask by calculating in float64
+- Advanced option to set the dtype of the output (default is dtype of input or float32, depending on filter)
+- Avoid overflow errors by setting default output dtype to float32 for some filters
 - Convolve: do not devide through sum of kernel if sum is 0
 - Use sizes widget in more filters
 - New origin widget and add origin as parameter to a couple of filters
