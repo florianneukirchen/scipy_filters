@@ -7,10 +7,7 @@ dtype_options = ['Same as input',
                  'UInt32 (unsigned 32 bit integer)',
                  'Int32 (signed 32 bit integer)',
                  'Float32 (32 bit float)',
-                 'Float64 (64 bit float)',
-                 # Gdal datatypes index 8 to 11 are complex
-                 'UInt64',
-                 'Int8',]
+                 'Float64 (64 bit float)',]
 
 map_dtype = {
         1: "uint8",
@@ -20,14 +17,13 @@ map_dtype = {
         5: "int32",
         6: "float32",
         7: "float64",
-        12: "uint64",
-        13: "int64",
-        14: "int8",
 }
 
 def convert_dtype(a, dt_opt, feedback, band=None):
     if band:
-        band = f"Band {band}: "
+        bands = f"Band {band}: "
+    else:
+        bands=""
     feedback.pushInfo("{band}Convert input dataset to {dtype_options[dt_opt]}")
     new_dtype = np.dtype(map_dtype[dt_opt])
     # Clip values if integer

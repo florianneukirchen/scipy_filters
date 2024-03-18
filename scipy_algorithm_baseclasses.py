@@ -64,7 +64,7 @@ from .helpers import (array_to_str,
                       str_to_array, 
                       footprintexamples,
                       dtype_options,
-                      convert_dtype)
+                      convert_dtype,)
 
 # Group IDs and group names
 groups = {
@@ -242,11 +242,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             # 0 will be changed to dtype of input layer
             self._outdtype = 0
         
-        if self._outdtype >= 8:
-            # Gdal datatypes index 8 to 11 are complex 
-            # and are not offered in the combobox
-            self._outdtype = self._outdtype + 4
-        
         if self._dimension == self.Dimensions.nD:
             dimension = self.parameterAsInt(parameters, self.DIMENSION, context)
             if dimension == 1:
@@ -374,11 +369,12 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
             if convert:
                 a = convert_dtype(a, self._outdtype, feedback)
+                
 
             # The actual function
             filtered = self.fct(a, **kwargs)
 
-            self.out_ds.WriteArray(filtered)            
+            self.out_ds.WriteArray(filtered)
 
         # Calculate and write band statistics (min, max, mean, std)
         for b in range(1, self.bandcount + 1):
@@ -406,11 +402,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
 
     def checkParameterValues(self, parameters, context):
-
-        dtype_opt = self.parameterAsInt(parameters, self.DTYPE, context)
-        if not 0 <= dtype_opt <= 14:
-            return (False, self.tr("Invalid dtype"))
-        
+       
         dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         # 3D only possible with more than 1 bands
