@@ -69,6 +69,7 @@ from .scipy_enhance_algorithms import (SciPyWienerAlgorithm,
 from .scipy_local_variance_algorithm import (SciPyEstimateVarianceAlgorithm,
                                             SciPyEstimateStdAlgorithm,
                                             SciPyStdAlgorithm)
+from .scipy_pixel_statistic_algorithms import (SciPyPixelMinAlgorithm)
 
 class SciPyFiltersProvider(QgsProcessingProvider):
 
@@ -124,6 +125,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyEstimateStdAlgorithm())
         # self.addAlgorithm(SciPyStdAlgorithm())  # VERY slow!
 
+        self.addAlgorithm(SciPyPixelMinAlgorithm())
 
     def id(self):
         """

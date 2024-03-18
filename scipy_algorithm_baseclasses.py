@@ -74,6 +74,7 @@ groups = {
     'blur': 'Blur',
     'convolution': 'Convolution',
     'enhance': 'Enhance',
+    'pixel': 'Pixel Statistics'
 }
 
 
@@ -383,7 +384,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 feedback.reportError(*self.error)
 
         # Calculate and write band statistics (min, max, mean, std)
-        for b in range(1, self.bandcount + 1):
+        for b in range(1, self._outbands + 1):
             band = self.out_ds.GetRasterBand(b)
             stats = band.GetStatistics(0,1)
             band.SetStatistics(*stats)
