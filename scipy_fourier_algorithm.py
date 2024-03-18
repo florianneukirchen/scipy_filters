@@ -117,22 +117,34 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
             return self.my_fct_2D
 
     def my_fct_2D(self, input_raster, **kwargs):
+        dtype = kwargs.pop("output")
         input_fft = fft.fft2(input_raster)
-        result = ndimage.fourier_gaussian(input_fft, **kwargs)
-        result = fft.ifft2(result)
-        return result.real
+        a = ndimage.fourier_gaussian(input_fft, **kwargs)
+        a = fft.ifft2(a).real
+
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+            if a.min() < info.min or a.max() > info.max:
+                a = np.clip(a, info.min, info.max)
+        return a
+    
+
 
     def my_fct_3D(self, input_raster, **kwargs):
+        dtype = kwargs.pop("output")
         input_fft = fft.fftn(input_raster)
-        result = ndimage.fourier_gaussian(input_fft, **kwargs)
-        result = fft.ifftn(result)
-        return result.real
+        a = ndimage.fourier_gaussian(input_fft, **kwargs)
+        a = fft.ifftn(a).real
+
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+            if a.min() < info.min or a.max() > info.max:
+                a = np.clip(a, info.min, info.max)
+        return a
 
     def createInstance(self):
         return SciPyFourierGaussianAlgorithm()
     
-
-
 
 
 class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
@@ -242,17 +254,31 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
         else:
             return self.my_fct_2D
 
+
     def my_fct_2D(self, input_raster, **kwargs):
+        dtype = kwargs.pop("output")
         input_fft = fft.fft2(input_raster)
-        result = ndimage.fourier_ellipsoid(input_fft, **kwargs)
-        result = fft.ifft2(result)
-        return result.real
+        a = ndimage.fourier_ellipsoid(input_fft, **kwargs)
+        a = fft.ifft2(a).real
+
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+            if a.min() < info.min or a.max() > info.max:
+                a = np.clip(a, info.min, info.max)
+        return a
+    
 
     def my_fct_3D(self, input_raster, **kwargs):
+        dtype = kwargs.pop("output")
         input_fft = fft.fftn(input_raster)
-        result = ndimage.fourier_ellipsoid(input_fft, **kwargs)
-        result = fft.ifftn(result)
-        return result.real
+        a = ndimage.fourier_ellipsoid(input_fft, **kwargs)
+        a = fft.ifftn(a).real
+
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+            if a.min() < info.min or a.max() > info.max:
+                a = np.clip(a, info.min, info.max)
+        return a
 
     def createInstance(self):
         return SciPyFourierEllipsoidAlgorithm()
@@ -367,17 +393,31 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
         else:
             return self.my_fct_2D
 
+
     def my_fct_2D(self, input_raster, **kwargs):
+        dtype = kwargs.pop("output")
         input_fft = fft.fft2(input_raster)
-        result = ndimage.fourier_uniform(input_fft, **kwargs)
-        result = fft.ifft2(result)
-        return result.real
+        a = ndimage.fourier_uniform(input_fft, **kwargs)
+        a = fft.ifft2(a).real
+
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+            if a.min() < info.min or a.max() > info.max:
+                a = np.clip(a, info.min, info.max)
+        return a
+    
 
     def my_fct_3D(self, input_raster, **kwargs):
+        dtype = kwargs.pop("output")
         input_fft = fft.fftn(input_raster)
-        result = ndimage.fourier_uniform(input_fft, **kwargs)
-        result = fft.ifftn(result)
-        return result.real
+        a = ndimage.fourier_uniform(input_fft, **kwargs)
+        a = fft.ifftn(a).real
+
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+            if a.min() < info.min or a.max() > info.max:
+                a = np.clip(a, info.min, info.max)
+        return a
 
     def createInstance(self):
         return SciPyFourierUniformAlgorithm()
