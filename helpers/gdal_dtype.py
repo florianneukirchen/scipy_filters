@@ -19,21 +19,5 @@ map_dtype = {
         7: "float64",
 }
 
-def convert_dtype(a, dt_opt, feedback, band=None):
-    if band:
-        bands = f"Band {band}: "
-    else:
-        bands=""
-    feedback.pushInfo("{band}Convert input dataset to {dtype_options[dt_opt]}")
-    new_dtype = np.dtype(map_dtype[dt_opt])
-    # Clip values if integer
-    if np.issubdtype(new_dtype, np.integer):
-        info = np.iinfo(new_dtype)
-        if a.min() < info.min or a.max() > info.max:
-            err = f"{band}Warning: input values are out of bound of new dtype, clipping input to {info.min}...{info.max}"
-            feedback.reportError(err, fatalError = False)
-
-        a = np.clip(a, info.min, info.max)
-    
-    return a.astype(new_dtype)
-    
+def get_np_dtype(dt_opt):
+    return np.dtype(map_dtype[dt_opt])

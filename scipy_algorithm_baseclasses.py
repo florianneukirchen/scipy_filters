@@ -64,7 +64,7 @@ from .helpers import (array_to_str,
                       str_to_array, 
                       footprintexamples,
                       dtype_options,
-                      convert_dtype,)
+                      get_np_dtype,)
 
 # Group IDs and group names
 groups = {
@@ -122,6 +122,11 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             """
     
     _outbands = None # Optionally change the number of output bands
+
+    # Note: the np.dtype of the output array is added as "output" 
+    # to the kwargs. This works for ndimage filters,
+    # otherwise it must be handled by the custom function
+
     _outdtype = None # Optionally change default output dtype
 
     modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
@@ -325,9 +330,11 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         if self._outdtype == 0:
             # Set to dtype of input dataset
             self._outdtype = self._indtype
-            convert = False
-        else:
-            convert = True 
+
+        # ndimage filters have a parameter for output dtype
+        # For other function, it must be converted by hand
+        kwargs['output'] = get_np_dtype(self._outdtype)
+        print(kwargs['output'])
 
 
         self.out_ds = driver.Create(
@@ -352,9 +359,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             for i in range(1, self.bandcount + 1):
                 a = self.ds.GetRasterBand(i).ReadAsArray()
 
-                if convert:
-                    a = convert_dtype(a, self._outdtype, feedback, i)
-
                 # The actual function
                 filtered = self.fct(a, **kwargs)
 
@@ -365,11 +369,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     return {}
                 
         elif self._dimension == self.Dimensions.threeD:
-            a = self.ds.ReadAsArray()
-
-            if convert:
-                a = convert_dtype(a, self._outdtype, feedback)
-                
+            a = self.ds.ReadAsArray()               
 
             # The actual function
             filtered = self.fct(a, **kwargs)
