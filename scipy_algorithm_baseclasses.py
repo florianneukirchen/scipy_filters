@@ -319,6 +319,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             stats = band.GetStatistics(0,1)
             band.SetStatistics(*stats)
 
+        # Free some memory
+        self.ds = None
+        a = None
+
         # Close the dataset to write file to disk
         self.out_ds = None 
 
