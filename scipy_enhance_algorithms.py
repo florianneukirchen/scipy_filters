@@ -235,32 +235,20 @@ class SciPyUnsharpMaskAlgorithm(SciPyAlgorithmWithSigma):
     
     def unsharpmask(self, raster, **kwargs):
         # most likely raster is of dtype uint, but we need negative values
-        dtype = raster.dtype
-        print(dtype)
-        print(raster.min())
-        print(raster.max())
+        dtype = kwargs.pop("output")
         raster = raster.astype("float64")
-        print("float")
-        print(raster.min())
-        print(raster.max())
+
         blurred = ndimage.gaussian_filter(raster, sigma=kwargs['sigma'])
-        print("blurred")
-        print(blurred.min(), blurred.max())
-        out = raster + (raster - blurred) * kwargs['amount']
-        print("out")
-        print(out.min(), out.max())
+
+        a = raster + (raster - blurred) * kwargs['amount']
 
         # Clip according to datatype
-        try:
-            # Gives valueinfo if not integer
+        if np.issubdtype(dtype, np.integer):
             info = np.iinfo(dtype)
-        except ValueError:
-            info = None
-        
-        if info:
-            out = np.clip(out, info.min, info.max)
+            if a.min() < info.min or a.max() > info.max:
+                a = np.clip(a, info.min, info.max)
 
-        return out.astype(dtype)
+        return a.astype(dtype)
 
 
     def createInstance(self):
