@@ -81,6 +81,12 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
     # The function to be called, to be overwritten
     def get_fct(self):
         return ndimage.laplace
+    
+    
+    def checkAndComplain(self, feedback):
+        if self._outdtype in (1,2,4):
+            msg = self.tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            feedback.reportError(msg, fatalError = False)
 
     def createInstance(self):
         return SciPyLaplaceAlgorithm()    
@@ -136,6 +142,11 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
             kwargs['axis'] = self.axis
             return ndimage.sobel(input, **kwargs)
 
+    def checkAndComplain(self, feedback):
+        if self._outdtype in (1,2,4):
+            msg = self.tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            feedback.reportError(msg, fatalError = False)
+
     def createInstance(self):
         return SciPySobelAlgorithm()  
 
@@ -190,7 +201,12 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
         else:
             kwargs['axis'] = self.axis
             return ndimage.prewitt(input, **kwargs)
-        
+    
+    def checkAndComplain(self, feedback):
+        if self._outdtype in (1,2,4):
+            msg = self.tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            feedback.reportError(msg, fatalError = False)
+
     def createInstance(self):
         return SciPyPrewittAlgorithm()  
     

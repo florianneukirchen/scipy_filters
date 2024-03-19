@@ -113,6 +113,11 @@ class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
     # The function to be called, to be overwritten
     def get_fct(self):
         return ndimage.gaussian_laplace
+    
+    def checkAndComplain(self, feedback):
+        if self._outdtype in (1,2,4):
+            msg = self.tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            feedback.reportError(msg, fatalError = False)
 
     def createInstance(self):
         return SciPyGaussianLaplaceAlgorithm()
@@ -242,6 +247,11 @@ class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
     # The function to be called, to be overwritten
     def get_fct(self):
         return ndimage.gaussian_gradient_magnitude
+    
+    def checkAndComplain(self, feedback):
+        if self._outdtype in (1,2,4):
+            msg = self.tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            feedback.reportError(msg, fatalError = False)
 
     def createInstance(self):
         return SciPyGaussianGradientMagnitudeAlgorithm()
