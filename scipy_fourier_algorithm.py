@@ -529,8 +529,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
         kwargs['in2'] = kernel
 
-        # For feedback
-        self.kernel = kernel
+        self.kernel = kernel # For feedback
 
         kwargs['mode'] = 'same' # size must be the same as input raster
 

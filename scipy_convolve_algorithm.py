@@ -58,7 +58,8 @@ from .ui.origin_widget import (OriginWidgetWrapper,
 from .helpers import (array_to_str, 
                       str_to_int_or_list, 
                       check_structure, str_to_array, 
-                      kernelexamples)
+                      kernelexamples, 
+                      get_np_dtype)
 
 class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
@@ -109,9 +110,17 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
     
     # The function to be called
     def get_fct(self):
-        return ndimage.convolve
+        return self.my_fct 
+    
+    def my_fct(self, a, **kwargs):
 
+        # Used for feedback
+        self.inmin.append(a.min())
+        self.inmax.append(a.max())
+
+        return ndimage.convolve(a, **kwargs)
  
+
     def insert_parameters(self, config):
         super().insert_parameters(config)
 
@@ -163,6 +172,10 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
         self.addParameter(origin_param)
 
+        # Used for feedback
+        self.inmax = []
+        self.inmin = []
+
 
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
@@ -179,6 +192,8 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
             weights = weights / normalization
             
         kwargs['weights'] = weights
+ 
+        self.kernel = weights # For feedback
 
         origin = self.parameterAsString(parameters, self.ORIGIN, context)
         kwargs['origin'] = str_to_int_or_list(origin)
@@ -210,6 +225,40 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
         return super().checkParameterValues(parameters, context)
     
+
+    def checkAndComplain(self, feedback):
+
+        inmin = min(self.inmin)
+        inmax = max(self.inmax)
+
+        msg = self.tr(f"Input values are in the range {inmin}...{inmax}")
+        feedback.pushInfo(msg)
+
+        # Calculate the possible range after applying the kernel
+        outmax = ((np.where(self.kernel < 0, 0, self.kernel)    # positive part of kernel
+                   * max(0, inmax)).sum()                       # multiplied with positive input
+                  + (np.where(self.kernel > 0, 0, self.kernel)  # negative part of kernel
+                     * min(0, inmin)).sum()).astype("int")      # multiplied with negative input
+
+        outmin = ((np.where(self.kernel > 0, 0, self.kernel)    # negative part of kernel
+                   * max(0, inmax)).sum()                       # multiplied with positive input
+                  + (np.where(self.kernel < 0, 0, self.kernel)  # positive part of kernel
+                     * min(0, inmin)).sum()).astype("int")      # multiplied with negative input
+        
+        msg = self.tr(f"Expected output range is {outmin}...{outmax}")
+        feedback.pushInfo(msg)
+        
+        if self._outdtype in (1,2,4) and np.any(self.kernel < 0):
+            msg = self.tr(f"WARNING: With a kernel containing negative values, output values can be negative. But output data type is unsigned integer!")
+            feedback.reportError(msg, fatalError = False)
+
+        if 1 <= self._outdtype <= 5: # integer types
+            info_out = np.iinfo(get_np_dtype(self._outdtype))
+            if outmin < info_out.min or outmax > info_out.max:
+                msg = self.tr("WARNING: The possible range of output values is not in the range of the output datatype. Clipping is likely.")
+                feedback.reportError(msg, fatalError=False)
+
+
     def createInstance(self):
         return SciPyConvolveAlgorithm()
 
