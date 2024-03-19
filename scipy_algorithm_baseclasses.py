@@ -123,6 +123,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             """
     
     _outbands = None # Optionally change the number of output bands
+    _band_desc = None # Option to set description of bands (provide list with names)
 
     # Note: the np.dtype of the output array is added as "output" 
     # to the kwargs. This works for ndimage filters,
@@ -388,6 +389,13 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             band = self.out_ds.GetRasterBand(b)
             stats = band.GetStatistics(0,1)
             band.SetStatistics(*stats)
+
+        # Optionally change band desc
+        if self._band_desc:
+            for i in range(self._outbands):
+                band = self.out_ds.GetRasterBand(i + 1)
+                band.SetDescription(self._band_desc[i])
+
 
         # Free some memory
         self.ds = None

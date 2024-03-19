@@ -233,6 +233,91 @@ class SciPyPixelMedianAlgorithm(SciPyAlgorithm):
         return SciPyPixelMedianAlgorithm()
     
 
+class SciPyPixelStdAlgorithm(SciPyAlgorithm):
+    """
+    Pixel Statistics standard deviation
+
+    """
+
+    # Overwrite constants of base class
+    _name = 'pixel_std'
+    _displayname = 'Pixel standard deviation'
+    _outputname = 'Pixel std'
+    _groupid = "pixel" 
+    _outbands = 1
+    _help = """
+            Pixel standard deviation
+
+            Returns standard deviation of all bands for each individual pixel
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.myfnct
+    
+    def myfnct(self, a, **kwargs):
+        kwargs["axis"] = 0
+        dtype = kwargs.pop("output")
+        return np.std(a, **kwargs).astype(dtype)
+    
+
+    def initAlgorithm(self, config):
+        # Set dimensions to 3
+        self._dimension = self.Dimensions.threeD
+        super().initAlgorithm(config)
+        
+    def checkParameterValues(self, parameters, context):
+        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        if layer.bandCount() == 1:
+            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+        return super().checkParameterValues(parameters, context)
+    
+    def createInstance(self):
+        return SciPyPixelStdAlgorithm()
+
+
+class SciPyPixelVarAlgorithm(SciPyAlgorithm):
+    """
+    Pixel Statistics variance
+
+    """
+
+    # Overwrite constants of base class
+    _name = 'pixel_variance'
+    _displayname = 'Pixel variance'
+    _outputname = None
+    _groupid = "pixel" 
+    _outbands = 1
+    _help = """
+            Pixel variance
+
+            Returns variance of all bands for each individual pixel
+            """
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.myfnct
+    
+    def myfnct(self, a, **kwargs):
+        kwargs["axis"] = 0
+        dtype = kwargs.pop("output")
+        return np.var(a, **kwargs).astype(dtype)
+    
+
+    def initAlgorithm(self, config):
+        # Set dimensions to 3
+        self._dimension = self.Dimensions.threeD
+        super().initAlgorithm(config)
+        
+    def checkParameterValues(self, parameters, context):
+        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        if layer.bandCount() == 1:
+            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+        return super().checkParameterValues(parameters, context)
+    
+    def createInstance(self):
+        return SciPyPixelVarAlgorithm()
+
 class SciPyPixelRangeAlgorithm(SciPyAlgorithm):
     """
     Pixel Statistics range
@@ -287,10 +372,11 @@ class SciPyPixelMinMaxMeanAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'pixel_all'
-    _displayname = 'Pixel min, max, mean, median'
+    _displayname = 'Pixel statistics'
     _outputname = None
     _groupid = "pixel" 
-    _outbands = 4
+    _outbands = 5
+    _band_desc = ["Min", "Max", "Mean", "Median", "Std"]
     _help = """
             Pixel range filter
 
@@ -305,12 +391,13 @@ class SciPyPixelMinMaxMeanAlgorithm(SciPyAlgorithm):
         kwargs["axis"] = 0
         dtype = kwargs.pop("output")
 
-        out = np.zeros((4, a.shape[1], a.shape[2]), dtype)
+        out = np.zeros((5, a.shape[1], a.shape[2]), dtype)
 
         out[0] = np.min(a, **kwargs)
         out[1] = np.max(a, **kwargs)
         out[2] = np.mean(a, **kwargs)
         out[3] = np.median(a, **kwargs)
+        out[4] = np.std(a, **kwargs)
         
         return  out
     
