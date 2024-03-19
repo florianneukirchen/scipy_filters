@@ -170,8 +170,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         with some other properties.
         """
 
-        self.error = None
-
         # Some Algorithms will add a masklayer
         self.masklayer = None
 
@@ -363,12 +361,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
                 self.out_ds.GetRasterBand(i).WriteArray(filtered)
 
-                if self.error:
-                    msg, fatal = self.error
-                    msg = f"Band {i}: " + msg
-                    feedback.reportError(msg, fatal)
-                    self.error = None
-
                 feedback.setProgress(i * 100 / self.bandcount)
                 if feedback.isCanceled():
                     return {}
@@ -381,14 +373,14 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
             self.out_ds.WriteArray(filtered)
 
-            if self.error:
-                feedback.reportError(*self.error)
-
         # Calculate and write band statistics (min, max, mean, std)
         for b in range(1, self._outbands + 1):
             band = self.out_ds.GetRasterBand(b)
             stats = band.GetStatistics(0,1)
             band.SetStatistics(*stats)
+
+        # Check and feedback
+        self.checkAndComplain(feedback)
 
         # Optionally change band desc
         if self._band_desc:
@@ -440,6 +432,14 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             if dim_option == 1:
                 dims = 3
         return dims
+    
+    def checkAndComplain(self, feedback):
+        if 1 <= self._outdtype <= 5: # integer types
+            info_in = np.iinfo(get_np_dtype(self._indtype))
+            info_out = np.iinfo(get_np_dtype(self._outdtype))
+            if info_in.min < info_out.min or info_in.max > info_out.max:
+                msg = self.tr("Warning, the range of output datatype is not in the range of the input datatype. Clipping is likely.")
+                feedback.reportError(msg, fatalError=False)
 
 
     class Renamer(QgsProcessingLayerPostProcessorInterface):

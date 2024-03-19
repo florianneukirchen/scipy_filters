@@ -51,7 +51,7 @@ from .helpers import check_structure, str_to_array, kernelexamples
 from .ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
 
-from .helpers import str_to_int_or_list
+from .helpers import str_to_int_or_list, get_np_dtype
 
 class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
     """
@@ -471,8 +471,9 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
         # Set dimensions to 2
         self._dimension = self.Dimensions.twoD
 
-        # Set modes 
-        self.modes = ['full', 'valid', 'same']
+        # Used for feedback
+        self.inmax = []
+        self.inmin = []
 
         super().initAlgorithm(config)
 
@@ -527,6 +528,10 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
             kernel = kernel / normalization
 
         kwargs['in2'] = kernel
+
+        # For feedback
+        self.kernel = kernel
+
         kwargs['mode'] = 'same' # size must be the same as input raster
 
         return kwargs
@@ -544,6 +549,10 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
     def my_fct(self, a, **kwargs):
         dtype = kwargs.pop("output")
 
+        # Used for feedback
+        self.inmin.append(a.min())
+        self.inmax.append(a.max())
+
         a = signal.fftconvolve(a, **kwargs)
 
         if np.issubdtype(dtype, np.integer):
@@ -552,6 +561,38 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
                 self.error = (f"Values ({a.min().round(1)}...{a.max().round(1)}) are out of bounds of new dtype, clipping to {info.min}...{info.max}", False)
                 a = np.clip(a, info.min, info.max)
         return a
+
+    def checkAndComplain(self, feedback):
+
+        inmin = min(self.inmin)
+        inmax = max(self.inmax)
+
+        msg = self.tr(f"Input values are in the range {inmin}...{inmax}")
+        feedback.pushInfo(msg)
+
+        # Calculate the possible range after applying the kernel
+        outmax = ((np.where(self.kernel < 0, 0, self.kernel)    # positive part of kernel
+                   * max(0, inmax)).sum()                       # multiplied with positive input
+                  + (np.where(self.kernel > 0, 0, self.kernel)  # negative part of kernel
+                     * min(0, inmin)).sum()).astype("int")      # multiplied with negative input
+
+        outmin = ((np.where(self.kernel > 0, 0, self.kernel)    # negative part of kernel
+                   * max(0, inmax)).sum()                       # multiplied with positive input
+                  + (np.where(self.kernel < 0, 0, self.kernel)  # positive part of kernel
+                     * min(0, inmin)).sum()).astype("int")      # multiplied with negative input
+        
+        msg = self.tr(f"Expected output range is {outmin}...{outmax}")
+        feedback.pushInfo(msg)
+        
+        if self._outdtype in (1,2,4) and np.any(self.kernel < 0):
+            msg = self.tr(f"WARNING: With a kernel containing negative values, output values can be negative. But output data type is unsigned integer!")
+            feedback.reportError(msg, fatalError = False)
+
+        if 1 <= self._outdtype <= 5: # integer types
+            info_out = np.iinfo(get_np_dtype(self._outdtype))
+            if outmin < info_out.min or outmax > info_out.max:
+                msg = self.tr("WARNING: The possible range of output values is not in the range of the output datatype. Clipping is likely.")
+                feedback.reportError(msg, fatalError=False)
 
     # The function to be called, to be overwritten
     def get_fct(self):
