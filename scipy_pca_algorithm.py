@@ -86,7 +86,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             smaller than the count of original bands and if percentage of variance is \
             not set.
 
-            <b>Percentage of variance</b> is only used if it is greater than 0 \
+            <b>Percentage of variance to keep</b> is only used if it is greater than 0 \
             (typical values would be in the range between 90 and 100).
 
             <b>Output</b> The output raster contains \
@@ -127,7 +127,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         self.addParameter(QgsProcessingParameterNumber(
             self.PERCENTVARIANCE,
-            self.tr('Percentage of Variance (if set and > 0: overwrites number of components)'),
+            self.tr('Percentage of Variance to keep (if set and > 0: overwrites number of components)'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=0, 
             optional=True, 
