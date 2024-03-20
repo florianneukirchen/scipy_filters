@@ -28,9 +28,6 @@ from processing.gui.wrappers import WidgetWrapper
 from processing.tools import dataobjects
 from qgis.PyQt import uic
 
-from qgis.core import *
-
-from .dim_widget import DimsWidgetWrapper
 
 uipath = os.path.dirname(__file__)
 

@@ -26,9 +26,8 @@ from processing.gui.wrappers import WidgetWrapper
 from processing.tools import dataobjects
 from qgis.PyQt import uic
 
-from qgis.core import *
+from qgis.core import QgsProcessingParameterString
 
-from .dim_widget import DimsWidgetWrapper
 from ..helpers import check_structure
 
 uipath = os.path.dirname(__file__)

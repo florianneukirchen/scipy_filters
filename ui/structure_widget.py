@@ -27,11 +27,10 @@ import json
 from processing.gui.wrappers import WidgetWrapper
 from processing.tools import dataobjects
 from qgis.PyQt import uic
-from qgis.PyQt.QtWidgets import QToolButton, QMenu, QPlainTextEdit, QAction
+from qgis.PyQt.QtWidgets import QToolButton, QMenu, QAction
 
-from qgis.core import *
+from qgis.core import QgsProcessingParameterString
 
-from .dim_widget import DimsWidgetWrapper
 
 from ..helpers import array_to_str, check_structure
 

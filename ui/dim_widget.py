@@ -21,14 +21,12 @@
  ***************************************************************************/
 """
 
-import os
 
 from processing.gui.wrappers import WidgetWrapper
 from processing.tools import dataobjects
 from qgis.PyQt.QtWidgets import QComboBox
-from qgis.PyQt.QtCore import pyqtSignal
 
-from qgis.core import *
+from qgis.core import QgsProcessingParameterEnum, QgsProcessingUtils
 
 class SciPyParameterDims(QgsProcessingParameterEnum):
     def __init__(self, name, description="", options=None, allowMultiple=False, defaultValue=None, optional=False, usesStaticStrings=False, parent_layer=None):
@@ -39,8 +37,6 @@ class SciPyParameterDims(QgsProcessingParameterEnum):
     def clone(self):
         return SciPyParameterDims(self.name, self.description, self.options, self.allowMultiple, self.defaultValue, self.isoptional, self.usesStaticStrings, self.parent_layer)
     
-
-
 
 class DimsWidgetWrapper(WidgetWrapper):
     def __init__(self,  param, dialog, row=0, col=0, **kwargs):
