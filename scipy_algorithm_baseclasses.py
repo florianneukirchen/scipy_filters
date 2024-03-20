@@ -74,8 +74,8 @@ groups = {
     'blur': 'Blur',
     'convolution': 'Convolution',
     'enhance': 'Enhance',
-    'pixel': 'Pixel Statistics'
-    'pca': 'PCA'
+    'pixel': 'Pixel Statistics',
+    'pca': 'PCA',
 }
 
 
