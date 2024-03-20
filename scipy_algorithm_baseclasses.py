@@ -33,19 +33,15 @@ __revision__ = '$Format:%H$'
 from osgeo import gdal
 from scipy import ndimage
 import numpy as np
-import json
 import enum
 from qgis.PyQt.QtCore import QCoreApplication
-from qgis.core import (QgsProcessing,
-                       QgsProcessingAlgorithm,
+from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterRasterLayer,
                        QgsProcessingParameterNumber,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterEnum,
-                       QgsProcessingParameterBand,
                        QgsProcessingParameterString,
                        QgsProcessingLayerPostProcessorInterface,
-                       QgsProcessingParameterBoolean,
                        QgsProcessingParameterDefinition,
                        QgsProcessingException,
                         )
