@@ -320,7 +320,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     
     class UpdateMetadata(QgsProcessingLayerPostProcessorInterface):
         """
-        To rename output layer name in the postprocessing step.
+        To add metadata in the postprocessing step.
         """
         def __init__(self, abstract):
             self.abstract = abstract
