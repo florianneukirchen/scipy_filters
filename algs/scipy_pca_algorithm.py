@@ -276,6 +276,11 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             stats = band.GetStatistics(0,1)
             band.SetStatistics(*stats)
 
+        # Add band description
+        for i in range(bands):
+            band = self.out_ds.GetRasterBand(i + 1)
+            band.SetDescription(f"({100*variance_ratio[i]:.1f}%; {100*variance_explained_cumsum[i]:.1f}%)")
+
         # Close the dataset to write file to disk
         self.out_ds = None 
 
