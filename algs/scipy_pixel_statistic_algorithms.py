@@ -352,15 +352,15 @@ class SciPyPixelMinMaxMeanAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'pixel_all'
-    _displayname = 'Pixel statistics'
+    _displayname = 'Complete pixel statistics'
     _outputname = None
     _groupid = "pixel" 
     _outbands = 5
     _band_desc = ["Min", "Max", "Mean", "Median", "Std"]
     _help = """
-            Pixel range filter
+            Complete pixel statistics
 
-            Returns difference of max and min of all bands for each individual pixel
+            Returns min, max, mean, median and std of all bands for each individual pixel
             """
     
     # The function to be called, to be overwritten
