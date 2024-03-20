@@ -194,9 +194,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         U, S, VT = linalg.svd(centered,full_matrices=False)
 
-        S_norm = S / np.sqrt(n_pixels - 1)
-
-        loadings = VT.T @ np.diag(S_norm)
+        loadings = VT.T @ np.diag(S) / np.sqrt(n_pixels - 1)
 
         # variance_explained = eigenvalues
         # and they can be calculated from the singular values (S)
@@ -221,14 +219,16 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # Give feedback
         
         feedback.pushInfo("Singular values (of SVD):")
-        feedback.pushInfo(str(S))
+        feedback.pushInfo(str(S.tolist()))
         feedback.pushInfo("\nVariance explained (Eigenvalues):")
         feedback.pushInfo(str(variance_explained.tolist()))
         feedback.pushInfo("\nRatio of variance explained:")
-        feedback.pushInfo(str(variance_explained.tolist()))
+        feedback.pushInfo(str(variance_ratio.tolist()))
         feedback.pushInfo("\nCumulated sum of variance explained:")
         feedback.pushInfo(str(variance_explained_cumsum.tolist()))
-        feedback.pushInfo("\nLoadings:")
+        feedback.pushInfo("\nEigenvectors (V of SVD):")
+        feedback.pushInfo(str(VT.T.tolist()))
+        feedback.pushInfo("\nLoadings (eigenvectors scaled by sqrt(eigenvalues)):")
         feedback.pushInfo(str(loadings.tolist()))
         feedback.pushInfo("\nBand Mean:")
         feedback.pushInfo(str(col_mean.tolist()) + "\n")
@@ -286,6 +286,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         encoded = json.dumps({
                 'singular values': S.tolist(),
+                'eigenvectors': VT.T.tolist(),
                 'loadings': loadings.tolist(),
                 'variance explained': variance_explained.tolist(),
                 'variance_ratio': variance_ratio.tolist(),
@@ -305,6 +306,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 'variance_ratio': variance_ratio,
                 'variance explained cumsum': variance_explained_cumsum,
                 'band mean': col_mean,
+                'eigenvectors': VT.T,
                 'json': encoded}
 
 
