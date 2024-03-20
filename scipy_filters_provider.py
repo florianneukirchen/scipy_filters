@@ -32,24 +32,24 @@ __revision__ = '$Format:%H$'
 
 from qgis.core import QgsProcessingProvider
                                    
-from .scipy_convolve_algorithm import SciPyConvolveAlgorithm
-from .scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm, 
+from .algs.scipy_convolve_algorithm import SciPyConvolveAlgorithm
+from .algs.scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm, 
                                             SciPyGreyMorphologicalAlgorithm,
                                             SciPyTophatAlgorithm)
 
-from .scipy_morphological_binary_fill_holes import SciPyBinaryFillHolesAlgorithm
+from .algs.scipy_morphological_binary_fill_holes import SciPyBinaryFillHolesAlgorithm
 
-from .scipy_binary_hit_miss import SciPyBinaryHitMissAlgorithm
+from .algs.scipy_binary_hit_miss import SciPyBinaryHitMissAlgorithm
 
-from .scipy_gaussian_algorithm import (SciPyGaussianAlgorithm, 
+from .algs.scipy_gaussian_algorithm import (SciPyGaussianAlgorithm, 
                                        SciPyGaussianLaplaceAlgorithm,
                                        SciPyGaussianGradientMagnitudeAlgorithm)
 
-from .scipy_edge_algorithms import (SciPyLaplaceAlgorithm,
+from .algs.scipy_edge_algorithms import (SciPyLaplaceAlgorithm,
                                       SciPySobelAlgorithm,
                                       SciPyPrewittAlgorithm,)
 
-from .scipy_statistical_algorithms import (SciPyMedianAlgorithm,
+from .algs.scipy_statistical_algorithms import (SciPyMedianAlgorithm,
                                       SciPyMaximumAlgorithm,
                                       SciPyMinimumAlgorithm,
                                       SciPyPercentileAlgorithm,
@@ -57,20 +57,20 @@ from .scipy_statistical_algorithms import (SciPyMedianAlgorithm,
                                       SciPyUniformAlgorithm,
                                       SciPyRangeAlgorithm)
 
-from .scipy_fourier_algorithm import (SciPyFourierGaussianAlgorithm,
+from .algs.scipy_fourier_algorithm import (SciPyFourierGaussianAlgorithm,
                                       SciPyFFTConvolveAlgorithm,
                                       SciPyFourierEllipsoidAlgorithm,
                                       SciPyFourierUniformAlgorithm,)
 
-from .scipy_enhance_algorithms import (SciPyWienerAlgorithm,
+from .algs.scipy_enhance_algorithms import (SciPyWienerAlgorithm,
                                        SciPyUnsharpMaskAlgorithm)
 
 
-from .scipy_local_variance_algorithm import (SciPyEstimateVarianceAlgorithm,
+from .algs.scipy_local_variance_algorithm import (SciPyEstimateVarianceAlgorithm,
                                             SciPyEstimateStdAlgorithm,
                                             SciPyStdAlgorithm)
 
-from .scipy_pixel_statistic_algorithms import (SciPyPixelMinAlgorithm,
+from .algs.scipy_pixel_statistic_algorithms import (SciPyPixelMinAlgorithm,
                                                SciPyPixelMaxAlgorithm,
                                                SciPyPixelMeanAlgorithm,
                                                SciPyPixelMedianAlgorithm,
@@ -79,7 +79,7 @@ from .scipy_pixel_statistic_algorithms import (SciPyPixelMinAlgorithm,
                                                SciPyPixelVarAlgorithm,
                                                SciPyPixelMinMaxMeanAlgorithm)
 
-from .scipy_pca_algorithm import SciPyPCAAlgorithm
+from .algs.scipy_pca_algorithm import SciPyPCAAlgorithm
 
 class SciPyFiltersProvider(QgsProcessingProvider):
 

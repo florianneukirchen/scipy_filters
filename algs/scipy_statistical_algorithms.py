@@ -44,14 +44,14 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterBand,
                        QgsProcessingParameterDefinition
                         )
-from .scipy_algorithm_baseclasses import (SciPyAlgorithm,
+from ..scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           SciPyAlgorithmWithMode,
                                           SciPyAlgorithmWithModeAxis,
                                           SciPyStatisticalAlgorithm)
 
-from .ui.sizes_widget import (SizesWidgetWrapper)
+from ..ui.sizes_widget import (SizesWidgetWrapper)
 
-from .helpers import str_to_int_or_list
+from ..helpers import str_to_int_or_list
 
 class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
     # Overwrite constants of base class

@@ -49,7 +49,7 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingException,
                         )
 
-from .scipy_algorithm_baseclasses import groups
+from ..scipy_algorithm_baseclasses import groups
 
 
 class SciPyPCAAlgorithm(QgsProcessingAlgorithm):

@@ -42,7 +42,7 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterBand,)
                         
-from .scipy_algorithm_baseclasses import (SciPyAlgorithm,
+from ..scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           SciPyAlgorithmWithMode,
                                           SciPyAlgorithmWithModeAxis,
                                           SciPyStatisticalAlgorithm,
@@ -50,10 +50,10 @@ from .scipy_algorithm_baseclasses import (SciPyAlgorithm,
 
 from .scipy_gaussian_algorithm import SciPyAlgorithmWithSigma
 
-from .ui.sizes_widget import (OddSizesWidgetWrapper)
+from ..ui.sizes_widget import (OddSizesWidgetWrapper)
 
 
-from .helpers import str_to_int_or_list
+from ..helpers import str_to_int_or_list
 
 class SciPyWienerAlgorithm(SciPyAlgorithm):
     """

@@ -45,13 +45,13 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterDefinition,
                         )
 
-from .ui.sizes_widget import (SizesWidgetWrapper)
-from .scipy_algorithm_baseclasses import SciPyAlgorithm
-from .helpers import check_structure, str_to_array, kernelexamples
-from .ui.structure_widget import (StructureWidgetWrapper, 
+from ..ui.sizes_widget import (SizesWidgetWrapper)
+from ..scipy_algorithm_baseclasses import SciPyAlgorithm
+from ..helpers import check_structure, str_to_array, kernelexamples
+from ..ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
 
-from .helpers import str_to_int_or_list, get_np_dtype
+from ..helpers import str_to_int_or_list, get_np_dtype
 
 class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
     """

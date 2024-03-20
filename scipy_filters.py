@@ -42,6 +42,8 @@ except ModuleNotFoundError:
     # If scipy is not installed. We check below.
     pass
 
+from .scipy_filters_provider import SciPyFiltersProvider
+
 cmd_folder = os.path.split(inspect.getfile(inspect.currentframe()))[0]
 
 if cmd_folder not in sys.path:
