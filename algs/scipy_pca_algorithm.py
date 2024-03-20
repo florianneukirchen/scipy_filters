@@ -222,14 +222,16 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         
         feedback.pushInfo("Singular values (of SVD):")
         feedback.pushInfo(str(S))
-        feedback.pushInfo("Variance explained (Eigenvalues):")
-        feedback.pushInfo(str(variance_explained))
-        feedback.pushInfo("Ratio of variance explained:")
-        feedback.pushInfo(str(variance_explained))
-        feedback.pushInfo("Cumulated sum of variance explained:")
-        feedback.pushInfo(str(variance_explained_cumsum))
-        feedback.pushInfo("Loadings:")
-        feedback.pushInfo(str(loadings))
+        feedback.pushInfo("\nVariance explained (Eigenvalues):")
+        feedback.pushInfo(str(variance_explained.tolist()))
+        feedback.pushInfo("\nRatio of variance explained:")
+        feedback.pushInfo(str(variance_explained.tolist()))
+        feedback.pushInfo("\nCumulated sum of variance explained:")
+        feedback.pushInfo(str(variance_explained_cumsum.tolist()))
+        feedback.pushInfo("\nLoadings:")
+        feedback.pushInfo(str(loadings.tolist()))
+        feedback.pushInfo("\nBand Mean:")
+        feedback.pushInfo(str(col_mean.tolist()) + "\n")
 
         if feedback.isCanceled():
             return {}
