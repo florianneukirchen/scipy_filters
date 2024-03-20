@@ -54,7 +54,7 @@ from ..scipy_algorithm_baseclasses import (SciPyAlgorithm,
 
 from ..ui.sizes_widget import (GreaterZeroSizesWidgetWrapper)
 
-def estimate_local_variance(raster, size):
+def estimate_local_variance(raster, size, output=None):
     """
     Estimate local variance within window of size.
     
@@ -69,6 +69,7 @@ def estimate_local_variance(raster, size):
     size : int or array-like
         Scalar or array/list of length n (numbers of dimensions of the input raster),
         giving a size for each axis.
+    output : dtype of output
 
     Returns
     =======
@@ -77,7 +78,6 @@ def estimate_local_variance(raster, size):
 
     size = np.array(size)
 
-    dtype = raster.dtype
     raster = raster.astype("float64") # avoid overflow
 
     if size.ndim == 0:
@@ -89,7 +89,10 @@ def estimate_local_variance(raster, size):
     local_variance = (signal.correlate(raster ** 2, np.ones(size), mode='same') /
                       np.prod(size, axis=0) - local_mean ** 2)
 
-    return local_variance.astype(dtype)
+    if output:
+        return local_variance.astype(output)
+    else:
+        return local_variance
 
 
 class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
@@ -210,9 +213,9 @@ class SciPyEstimateStdAlgorithm(SciPyEstimateVarianceAlgorithm):
         return self.estimate_local_std
     
 
-    def estimate_local_std(self, raster, size):
-        local_variance = estimate_local_variance(raster, size)
-        return np.sqrt(local_variance)
+    def estimate_local_std(self, raster, size, output):
+        local_variance = estimate_local_variance(raster, size, None)
+        return np.sqrt(local_variance).astype(output)
         
         
     def createInstance(self):
@@ -221,7 +224,7 @@ class SciPyEstimateStdAlgorithm(SciPyEstimateVarianceAlgorithm):
 
 
 
-# Very slow calculation of Std:
+# Very slow calculation of Std, disabled
     
 class SciPyStdAlgorithm(SciPyStatisticalAlgorithm):
 
