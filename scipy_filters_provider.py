@@ -81,6 +81,8 @@ from .algs.scipy_pixel_statistic_algorithms import (SciPyPixelMinAlgorithm,
 
 from .algs.scipy_pca_algorithm import SciPyPCAAlgorithm
 
+from .algs.scipy_pca_helper_algorithms import (SciPyTransformToPCAlgorithm)
+
 class SciPyFiltersProvider(QgsProcessingProvider):
 
     def __init__(self):
@@ -145,6 +147,9 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyPixelVarAlgorithm())
 
         self.addAlgorithm(SciPyPCAAlgorithm())
+
+        self.addAlgorithm(SciPyTransformToPCAlgorithm())
+        
         
 
     def id(self):

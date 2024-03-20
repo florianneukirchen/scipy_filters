@@ -46,6 +46,9 @@ def str_to_array(s, dims=2, to_int=True):
         except (json.decoder.JSONDecodeError, ValueError, TypeError):
             raise QgsProcessingException('Can not parse string to array!')
 
+    if dims == None:
+        return a
+
     if dims == a.ndim:
         return a
     if a.ndim == 2 and dims == 3:
