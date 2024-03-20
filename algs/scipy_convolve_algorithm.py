@@ -31,22 +31,12 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 __revision__ = '$Format:%H$'
 
 from typing import Dict, Tuple
-from osgeo import gdal
-from qgis._core import QgsProcessingContext
 from scipy import ndimage
 import numpy as np
-import json
 from qgis.PyQt.QtCore import QCoreApplication
-from qgis.core import (QgsProcessing,
-                       QgsProcessingAlgorithm,
-                       QgsProcessingParameterRasterLayer,
-                       QgsProcessingParameterNumber,
-                       QgsProcessingParameterRasterDestination,
-                       QgsProcessingParameterEnum,
-                       QgsProcessingParameterString,
+from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterDefinition,
-                       QgsProcessingException,
-                        )
+                       QgsProcessingException,)
 
 from ..scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
 
@@ -56,9 +46,9 @@ from ..ui.structure_widget import (StructureWidgetWrapper,
 from ..ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
 
-from ..helpers import (array_to_str, 
-                      str_to_int_or_list, 
-                      check_structure, str_to_array, 
+from ..helpers import (str_to_int_or_list, 
+                      check_structure, 
+                      str_to_array, 
                       kernelexamples, 
                       get_np_dtype)
 

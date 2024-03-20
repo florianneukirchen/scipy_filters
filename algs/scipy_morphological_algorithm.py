@@ -30,19 +30,12 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 
 __revision__ = '$Format:%H$'
 
-import json
-import numpy as np
-from osgeo import gdal
+
 from scipy import ndimage
-from qgis.PyQt.QtCore import QCoreApplication
-from qgis.core import (QgsProcessing,
-                       QgsProcessingAlgorithm,
-                       QgsProcessingParameterRasterLayer,
+from qgis.core import (QgsProcessingParameterRasterLayer,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterNumber,
-                       QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterString,
-                       QgsProcessingParameterBoolean,
                        QgsProcessingParameterDefinition,
                        QgsProcessingException,
                         )
@@ -57,8 +50,7 @@ from ..ui.sizes_widget import (SizesWidgetWrapper)
 from ..ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
 
-from ..helpers import (array_to_str, 
-                      str_to_int_or_list, 
+from ..helpers import (str_to_int_or_list, 
                       check_structure, 
                       str_to_array, 
                       morphostructexamples,

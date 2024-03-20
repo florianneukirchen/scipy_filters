@@ -31,28 +31,18 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 __revision__ = '$Format:%H$'
 
 import numpy as np
-from osgeo import gdal
 from scipy import ndimage, signal
-from qgis.PyQt.QtCore import QCoreApplication
-from qgis.core import (QgsProcessing,
-                       QgsProcessingAlgorithm,
-                       QgsProcessingParameterRasterLayer,
-                       QgsProcessingParameterNumber,
-                       QgsProcessingParameterRasterDestination,
+from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterString,
-                       QgsProcessingParameterEnum,
-                       QgsProcessingParameterBand,
                        QgsProcessingParameterDefinition,
                         )
 
 from ..helpers import str_to_int_or_list
 
 from ..scipy_algorithm_baseclasses import (SciPyAlgorithm,
-                                          SciPyAlgorithmWithMode,
-                                          SciPyAlgorithmWithModeAxis,
                                           SciPyStatisticalAlgorithm)
 
-from ..ui.sizes_widget import (GreaterZeroSizesWidgetWrapper)
+from ..ui.sizes_widget import GreaterZeroSizesWidgetWrapper
 
 def estimate_local_variance(raster, size, output=None):
     """

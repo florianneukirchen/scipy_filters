@@ -30,17 +30,9 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 
 __revision__ = '$Format:%H$'
 
-from osgeo import gdal
 from scipy import ndimage
-from qgis.PyQt.QtCore import QCoreApplication
-from qgis.core import (QgsProcessing,
-                       QgsProcessingAlgorithm,
-                       QgsProcessingParameterRasterLayer,
-                       QgsProcessingParameterNumber,
-                       QgsProcessingParameterRasterDestination,
-                       QgsProcessingParameterEnum,
-                       QgsProcessingParameterBand,
-                        )
+from qgis.core import (QgsProcessingParameterNumber,
+                       QgsProcessingParameterEnum,)
 
 from ..scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
 

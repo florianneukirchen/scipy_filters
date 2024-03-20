@@ -31,21 +31,11 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 __revision__ = '$Format:%H$'
 
 import numpy as np
-from osgeo import gdal
 from scipy import ndimage, signal
-from qgis.PyQt.QtCore import QCoreApplication
-from qgis.core import (QgsProcessing,
-                       QgsProcessingAlgorithm,
-                       QgsProcessingParameterRasterLayer,
-                       QgsProcessingParameterNumber,
-                       QgsProcessingParameterRasterDestination,
-                       QgsProcessingParameterEnum,
-                       QgsProcessingParameterBand,)
+
+from qgis.core import QgsProcessingParameterNumber
                         
 from ..scipy_algorithm_baseclasses import (SciPyAlgorithm,
-                                          SciPyAlgorithmWithMode,
-                                          SciPyAlgorithmWithModeAxis,
-                                          SciPyStatisticalAlgorithm,
                                           QgsProcessingParameterString)
 
 from .scipy_gaussian_algorithm import SciPyAlgorithmWithSigma
