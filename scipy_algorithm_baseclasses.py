@@ -662,6 +662,9 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             watch="FOOTPRINT"
             )
         
+        origin_param.setFlags(origin_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+
+
         origin_param.setMetadata({
             'widget_wrapper': {
                 'class': OriginWidgetWrapper

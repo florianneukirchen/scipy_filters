@@ -44,6 +44,7 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterString,
+                       QgsProcessingParameterDefinition,
                        QgsProcessingException,
                         )
 
@@ -169,6 +170,9 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
                 'class': OriginWidgetWrapper
             }
         })
+
+        origin_param.setFlags(origin_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+
 
         self.addParameter(origin_param)
 

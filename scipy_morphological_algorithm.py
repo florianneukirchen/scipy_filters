@@ -122,6 +122,8 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
             }
         })
 
+        origin_param.setFlags(origin_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+        
         self.addParameter(origin_param)
         
         super().insert_parameters(config)

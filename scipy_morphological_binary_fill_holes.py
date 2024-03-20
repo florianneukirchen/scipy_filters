@@ -41,6 +41,7 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterNumber,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterString,
+                       QgsProcessingParameterDefinition,
                        QgsProcessingException,
                         )
 
@@ -56,11 +57,14 @@ from .helpers import (array_to_str,
                       morphostructexamples,
                       footprintexamples)
 
+from .ui.origin_widget import (OriginWidgetWrapper, 
+                               SciPyParameterOrigin,)
 
 class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
 
     STRUCTURE = 'STRUCTURE'
     CUSTOMSTRUCTURE = 'CUSTOMSTRUCTURE'
+    ORIGIN = 'ORIGIN'
 
     # Overwrite constants of base class
     _name = 'fill_holes'
@@ -113,6 +117,25 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
 
         self.addParameter(struct_param)
 
+        origin_param = SciPyParameterOrigin(
+            self.ORIGIN,
+            self.tr('Origin'),
+            defaultValue="0",
+            optional=False,
+            watch="STRUCTURE"
+            )
+        
+        origin_param.setMetadata({
+            'widget_wrapper': {
+                'class': OriginWidgetWrapper
+            }
+        })
+
+        origin_param.setFlags(origin_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+        
+        self.addParameter(origin_param)
+
+
 
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
@@ -130,7 +153,18 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
         ok, s, shape = check_structure(structure, dims)
         if not ok:
             return (ok, s)
-            
+        
+
+        origin = self.parameterAsString(parameters, self.ORIGIN, context)
+        origin = str_to_int_or_list(origin)
+
+        if isinstance(origin, list):          
+            if len(origin) != dims:
+                return (False, self.tr("Origin does not match number of dimensions"))
+            for i in range(dims):
+                if shape[i] != 0 and not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
+                    return (False, self.tr("Origin out of bounds of structure"))
+
         return super().checkParameterValues(parameters, context)
     
     def createInstance(self):
