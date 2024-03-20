@@ -43,11 +43,22 @@ from qgis.core import (QgsProcessing,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingParameterString,
                        QgsProcessingParameterBoolean,
+                       QgsProcessingParameterDefinition,
                        QgsProcessingException,
                         )
 from .scipy_algorithm_baseclasses import SciPyAlgorithm
 
-from .helpers import array_to_str, str_to_int_or_list, check_structure, str_to_array
+from .ui.origin_widget import (OriginWidgetWrapper, 
+                               SciPyParameterOrigin,)
+
+from .ui.structure_widget import (StructureWidgetWrapper, 
+                                  SciPyParameterStructure,)
+
+from .helpers import (array_to_str, 
+                      str_to_int_or_list, 
+                      check_structure, 
+                      str_to_array, 
+                      morphostructexamples)
 
 
 class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
@@ -55,7 +66,9 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
     STRUCTURE1 = 'STRUCTURE1'
     STRUCTURE2 = 'STRUCTURE2'
-
+    ORIGIN1 = 'ORIGIN1'
+    ORIGIN2 = 'ORIGIN2'
+    
     # Overwrite constants of base class
     _name = 'hit_or_miss'
     _displayname = 'Morphological (binary) hit or miss'
@@ -72,7 +85,7 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
             <b>Structure 1</b> String representation of array. 
             <b>Structure 2</b> String representation of array, disjoint to structure 1. \
-             If no value is provided, the complementary of structure1 is taken.
+            If no value is provided, the complementary of structure1 is taken.
 
             Both structures must have 2 dimensions if <i>dimension</i> is set to 2D. \
             Should have 3 dimensions if <i>dimension</i> is set to 3D, \
@@ -89,32 +102,96 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
         super().initAlgorithm(config)
 
 
-        self.addParameter(QgsProcessingParameterString(
+        struct1_param = SciPyParameterStructure(
             self.STRUCTURE1,
-            self.tr('Structure 1: Custom structure (string representation of array)'),
-            defaultValue="[[1, 0, 0],\n[0, 1, 1],\n[0, 1, 1]]",
-            multiLine=True,
-            optional=True,
-            ))
-        
-
-        self.addParameter(QgsProcessingParameterString(
-            self.STRUCTURE2,
-            self.tr('Structure 2: Custom structure (string representation of array)'),
+            self.tr('Structure 1'),
             defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
             multiLine=True,
             optional=True,
-            ))
+            to_int=True,
+            examples=morphostructexamples,
+            )
+        
+        struct1_param.setMetadata({
+            'widget_wrapper': {
+                'class': StructureWidgetWrapper
+            }
+        })
+
+        self.addParameter(struct1_param)        
+
+        struct2_param = SciPyParameterStructure(
+            self.STRUCTURE2,
+            self.tr('Structure 2 ()'),
+            defaultValue="",
+            multiLine=True,
+            optional=True,
+            to_int=True,
+            examples=morphostructexamples,
+            )
+        
+        struct2_param.setMetadata({
+            'widget_wrapper': {
+                'class': StructureWidgetWrapper
+            }
+        })
+
+        self.addParameter(struct2_param)
+
+        origin1_param = SciPyParameterOrigin(
+            self.ORIGIN1,
+            self.tr('Origin Structure 1'),
+            defaultValue="0",
+            optional=False,
+            watch="STRUCTURE1"
+            )
+        
+        origin1_param.setMetadata({
+            'widget_wrapper': {
+                'class': OriginWidgetWrapper
+            }
+        })
+
+        origin1_param.setFlags(origin1_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+
+        self.addParameter(origin1_param)
+
+        origin2_param = SciPyParameterOrigin(
+            self.ORIGIN2,
+            self.tr('Origin Structure 2 (if empty: use complementary of structure 1)'),
+            defaultValue="0",
+            optional=False,
+            watch="STRUCTURE2"
+            )
+        
+        origin2_param.setMetadata({
+            'widget_wrapper': {
+                'class': OriginWidgetWrapper
+            }
+        })
+
+        origin2_param.setFlags(origin2_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+
+        self.addParameter(origin2_param)
+
 
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
 
         structure1 = self.parameterAsString(parameters, self.STRUCTURE1, context)
-        kwargs['structure1'] = str_to_array(structure1, self._ndim)
+        if structure1.strip() != "":
+            kwargs['structure1'] = str_to_array(structure1, self._ndim)
 
 
         structure2 = self.parameterAsString(parameters, self.STRUCTURE2, context)
-        kwargs['structure2'] = str_to_array(structure2, self._ndim)
+        if structure2.strip() != "":
+            kwargs['structure2'] = str_to_array(structure2, self._ndim)
+
+        origin1 = self.parameterAsString(parameters, self.ORIGIN1, context)
+        kwargs['origin1'] = str_to_int_or_list(origin1)
+
+        origin2 = self.parameterAsString(parameters, self.ORIGIN2, context)
+        kwargs['origin2'] = str_to_int_or_list(origin2)
 
         return kwargs
     
@@ -133,6 +210,28 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
         if not ok:
             s = self.tr("Could not parse structure 2 or dimensions do not match")
             return (ok, s)
+        
+        origin = self.parameterAsString(parameters, self.ORIGIN1, context)
+        origin = str_to_int_or_list(origin)
+
+        if isinstance(origin, list):          
+            if len(origin) != dims:
+                return (False, self.tr("Origin 1 does not match number of dimensions"))
+            for i in range(dims):
+                if shape[i] != 0 and not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
+                    return (False, self.tr("Origin 1 out of bounds of structure"))
+
+
+        origin = self.parameterAsString(parameters, self.ORIGIN2, context)
+        origin = str_to_int_or_list(origin)
+
+        if isinstance(origin, list):          
+            if len(origin) != dims:
+                return (False, self.tr("Origin 2 does not match number of dimensions"))
+            for i in range(dims):
+                if shape[i] != 0 and not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
+                    return (False, self.tr("Origin 2 out of bounds of structure"))
+
         
         return super().checkParameterValues(parameters, context)
     
