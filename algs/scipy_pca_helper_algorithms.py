@@ -30,13 +30,18 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 
 __revision__ = '$Format:%H$'
 
-from scipy import ndimage
+from osgeo import gdal
 import numpy as np
+import json
 from qgis.PyQt.QtCore import QCoreApplication
-from qgis.core import (QgsProcessingParameterString,
+from qgis.core import (QgsProcessingAlgorithm,
+                       QgsProcessingParameterString,
                        QgsProcessingParameterDefinition,
                        QgsProcessingParameterNumber,
-                       QgsProcessingException,)
+                       QgsProcessingException,
+                       QgsProcessingLayerPostProcessorInterface,
+                       QgsProcessingParameterRasterLayer,
+                       QgsProcessingParameterRasterDestination)
 
 from ..scipy_algorithm_baseclasses import SciPyAlgorithm
 
@@ -52,97 +57,320 @@ from ..helpers import (str_to_int_or_list,
                       kernelexamples, 
                       get_np_dtype)
 
+from ..scipy_algorithm_baseclasses import groups
 
-class SciPyTransformToPCAlgorithm(SciPyAlgorithm):
+
+class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     """
     Transform to principal components
 
     """
 
     EIGENVECTORS = 'EIGENVECTORS'
-    MEAN = 'MEAN'
+    OUTPUT = 'OUTPUT'
+    INPUT = 'INPUT'
+
 
     # Overwrite constants of base class
-    _name = 'transform_to_PC'
-    _displayname = 'Transform to principal components'
-    _outputname = None
+
     _groupid = "pca" 
-    _default_dtype = 6 
+    _name = ''
+    _displayname = ''*
+    _outputname = ""
+
     # _outbands = 1
     _help = """
-            Transform to principal components using matrix of eigenvectors
+            Baseclass to transform to/from principal components using matrix of eigenvectors
 
 
             """
 
+    _inverse = False
+    _keepbands = 0
+
+    _bandmean = None
+    V = None
+
 
     def initAlgorithm(self, config):
-        # Set dimensions to 3
-        self._dimension = self.Dimensions.threeD
-        super().initAlgorithm(config)
 
+        self.addParameter(
+            QgsProcessingParameterRasterLayer(
+                self.INPUT,
+                self.tr('Input layer'),
+            )
+        )
 
-    def insert_parameters(self, config):
-        super().insert_parameters(config)
-
-        self.addParameter(QgsProcessingParameterString(
+        eig_param = QgsProcessingParameterString(
             self.EIGENVECTORS,
             self.tr('Eigenvectors'),
             defaultValue="",
             multiLine=True,
-            optional=False,
-            ))
+            optional=True,
+            )
+        
+        if self._inverse:
+            eig_param.setFlags(eig_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+        
+        self.addParameter(eig_param)
+
+        self.addParameter(
+            QgsProcessingParameterRasterDestination(
+                self.OUTPUT,
+            self.tr(self._outputname)))
+        
     
     def get_parameters(self, parameters, context):
-        kwargs = super().get_parameters(parameters, context)
+        
+        self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
+
 
         V = self.parameterAsString(parameters, self.EIGENVECTORS, context)
-        kwargs["V"] = str_to_array(V, dims=None, to_int=False)
-        print(kwargs["V"])
-        return kwargs
+        self.V = str_to_array(V, dims=None, to_int=False)
 
+        return
+
+    def processAlgorithm(self, parameters, context, feedback):
+        """
+        Here is where the processing itself takes place.
+        """
+        self.get_parameters(parameters, context)
+
+        self.ds = gdal.Open(self.inputlayer.source())
+
+        if not self.ds:
+            raise Exception("Failed to open Raster Layer")
+        
+        self.bandcount = self.ds.RasterCount
+        bands = self._keepbands        
+        if bands == 0:
+            bands = self.bandcount
 
         
-    # The function to be called, to be overwritten
-    def get_fct(self):
-        return self.myfnct
-    
-    def myfnct(self, a, **kwargs):
+        if feedback.isCanceled():
+            return {}
+        
+        feedback.setProgress(0)
 
-        dtype = kwargs.pop("output")
-        V = kwargs.pop("V")
-
+        # Start the actual work
+        a = self.ds.ReadAsArray().astype(np.float32)
+        
         orig_shape = a.shape
-        bands = orig_shape[0]
 
         # Flatten and float64
-        a = a.reshape(bands, -1).astype("float64")
+        a = a.reshape(orig_shape[0], -1).astype("float64")
         a = a.T
 
-        n_pixels = a.shape[0]
+        # n_pixels = a.shape[0]
 
         # substract mean
+        if not self._inverse:
+            col_mean = a.mean(axis=0)
+            col_mean = col_mean[np.newaxis, :]
 
-        col_mean = a.mean(axis=0)
-        col_mean = col_mean[np.newaxis, :]
+            a = a - col_mean
 
-        a = a - col_mean
+            feedback.pushInfo("\nBand Mean:")
+            feedback.pushInfo(str(col_mean.tolist()) + "\n")
 
         # Transform to PC
-        out = a @ V
-        out = out.T.reshape(orig_shape)
+        if self._inverse:
+            components = self.V.T
+        else:
+            components = self.V
 
-        return out.astype(dtype)
+        print("shapes", a.shape, components.shape)
+
+        new_array = a @ components
+
+        if self._inverse:
+            new_array = new_array + self._bandmean
+
+        new_array = new_array.T.reshape(orig_shape)
+
+        if feedback.isCanceled():
+            return {}
+        
+        # Prepare output and write file
+        etype = gdal.GDT_Float32
+
+        driver = gdal.GetDriverByName('GTiff')
+        self.out_ds = driver.Create(self.output_raster,
+                                    xsize=self.ds.RasterXSize,
+                                    ysize=self.ds.RasterYSize,
+                                    bands=bands,
+                                    eType=etype)
+
+        self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
+        self.out_ds.SetProjection(self.ds.GetProjection())
+
+        self.out_ds.WriteArray(new_array[0:bands,:,:])    
+
+        # Calculate and write band statistics (min, max, mean, std)
+        for b in range(1, bands + 1):
+            band = self.out_ds.GetRasterBand(b)
+            stats = band.GetStatistics(0,1)
+            band.SetStatistics(*stats)
+
+        # Close the dataset to write file to disk
+        self.out_ds = None 
     
+       
+        if self._inverse:
+            return {
+                self.OUTPUT: self.output_raster,
+                'eigenvectors': self.V,
+                }
+        else:
+            return {
+                self.OUTPUT: self.output_raster,
+                'band mean': col_mean,
+                'eigenvectors': self.V,
+                }
+                
+
+    def json_to_parameters(self, s):
+        s = s.strip()
+        if s == "":
+            return None, None
+        try:
+            decoded = json.loads(s)
+        except (json.decoder.JSONDecodeError, ValueError, TypeError):
+            return None, None
+        eigenvectors = decoded.get("eigenvectors", None)
+        means = decoded.get("band mean", 0)
+        try:
+            eigenvectors = np.array(eigenvectors)
+        except (ValueError, TypeError):
+            eigenvectors = None
+        try:
+            means = np.array(means)
+        except (ValueError, TypeError):
+            means = None
+        return eigenvectors, means
+
 
 
         
 
-    def checkParameterValues(self, parameters, context):
-        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
-        if layer.bandCount() == 1:
-            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
-        return super().checkParameterValues(parameters, context)
+
+    class UpdateMetadata(QgsProcessingLayerPostProcessorInterface):
+        """
+        To add metadata in the postprocessing step.
+        """
+        def __init__(self, abstract):
+            self.abstract = abstract
+            super().__init__()
+            
+        def postProcessLayer(self, layer, context, feedback):
+            meta = layer.metadata()
+            meta.setAbstract(self.abstract)
+            layer.setMetadata(meta)
+
+    def name(self):
+        return self._name
+
+    def displayName(self):
+        return self.tr(self._displayname)
+
+    def group(self):
+        if self._groupid == "":
+            return ""
+        s = groups.get(self._groupid)
+        if not s:
+            # If group ID is not in dictionary group, return error message for debugging
+            return "Displayname of group must be set in groups dictionary"
+        return self.tr(s)
+
+    def groupId(self):
+        return self._groupid
     
+    def shortHelpString(self):
+        return self.tr(self._help)
+
+    def tr(self, string):
+        return QCoreApplication.translate('Processing', string)
+
+
+    
+class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
+    """
+    Transform to principal components
+
+    """
+    _name = 'transform_to_PC'
+    _displayname = 'Transform to principal components'
+    _outputname = _displayname
+
     def createInstance(self):
-        return SciPyTransformToPCAlgorithm()
+        return SciPyTransformToPCAlgorithm()  
+    
+
+class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
+    """
+    Transform from principal components
+
+    """
+
+    BANDMEAN = 'BANDMEAN'
+
+    _name = 'transform_from_PC'
+    _displayname = 'Transform from principal components'
+    _outputname = _displayname
+
+    _inverse = True
+
+
+
+    def initAlgorithm(self, config):
+        super().initAlgorithm(config)
+
+        mean_param = QgsProcessingParameterString(
+            self.BANDMEAN,
+            self.tr('Mean of original bands'),
+            defaultValue="",
+            multiLine=True,
+            optional=True,
+            )
+        
+        mean_param.setFlags(mean_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+      
+        self.addParameter(mean_param)
+
+        
+
+    def get_parameters(self, parameters, context):
+        super().get_parameters(parameters, context)
+
+        abstract = self.inputlayer.metadata().abstract()
+        eigenvectors, means = self.json_to_parameters(abstract)
+
+
+        bandmean = self.parameterAsString(parameters, self.BANDMEAN, context)
+        bandmean = bandmean.strip()
+        if bandmean == "0":
+            self._bandmean = 0
+      
+        elif bandmean != "":
+            try:
+                decoded = json.loads(bandmean)
+                a = np.array(decoded)
+            except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                a = None
+
+            if a:
+                self._bandmean = a[np.newaxis, :]
+            
+        if self._bandmean == None:
+            # Use the paramters of the layer
+            self._bandmean = means[np.newaxis, :]
+
+        if self.V == None:
+            self.V = eigenvectors
+            
+
+
+
+    def createInstance(self):
+        return SciPyTransformFromPCAlgorithm()  
