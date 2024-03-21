@@ -129,7 +129,26 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         V = self.parameterAsString(parameters, self.EIGENVECTORS, context)
         self.V = str_to_array(V, dims=None, to_int=False)
 
-        return
+    def checkParameterValues(self, parameters, context):
+
+        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+
+        V = self.parameterAsString(parameters, self.EIGENVECTORS, context)
+        V = str_to_array(V, dims=None, to_int=False)
+    
+        if self._inverse:
+            abstract = inputlayer.metadata().abstract()
+        else:
+            paramlayer = self.parameterAsRasterLayer(parameters, self.PARAMETERLAYER, context)
+            if paramlayer:
+                abstract = paramlayer.metadata().abstract()
+            else:
+                abstract = ""
+
+        eigenvectors, layermeans = self.json_to_parameters(abstract)
+
+        return super().checkParameterValues(parameters, context)
+
 
     def processAlgorithm(self, parameters, context, feedback):
         """
@@ -329,6 +348,7 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
             QgsProcessingParameterRasterLayer(
                 self.PARAMETERLAYER,
                 self.tr('Read eigenvectors from PCA layer metadata'),
+                optional=True,
             )
         )
 
@@ -346,11 +366,12 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
         super().get_parameters(parameters, context)
 
         paramlayer = self.parameterAsRasterLayer(parameters, self.PARAMETERLAYER, context)
-        self.abstract = paramlayer.metadata().abstract()
+        if paramlayer:
+            self.abstract = paramlayer.metadata().abstract()
 
         eigenvectors, means = self.json_to_parameters(self.abstract)
 
-        if self.V == None:
+        if self.V is None:
             self.V = eigenvectors
         
         self._keepbands = self.parameterAsInt(parameters, self.NCOMPONENTS,context)
@@ -411,11 +432,11 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
             if a:
                 self._bandmean = a[np.newaxis, :]
             
-        if self._bandmean == None:
+        if self._bandmean is None:
             # Use the paramters of the layer
             self._bandmean = means[np.newaxis, :]
 
-        if self.V == None:
+        if self.V is None:
             self.V = eigenvectors
             
 
