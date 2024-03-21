@@ -178,6 +178,13 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         # Transform to PC
         if self._inverse:
             components = self.V.T
+            # If not all PC bands were kept
+            if self.bandcount < components.shape[0]:
+                bands = components.shape[0]
+                orig_shape = (bands, orig_shape[1], orig_shape[2])
+                
+                components = components[0:self.bandcount,:]
+
         else:
             components = self.V
 
@@ -316,7 +323,7 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.PARAMETERLAYER,
-                self.tr('Read eigenvectors from layer metadata'),
+                self.tr('Read eigenvectors from PCA layer metadata'),
             )
         )
 
