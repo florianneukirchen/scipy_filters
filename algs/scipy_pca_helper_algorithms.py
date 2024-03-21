@@ -145,7 +145,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         
         self.bandcount = self.ds.RasterCount
         bands = self._keepbands        
-        if bands == 0:
+        if bands == 0 or bands > self.bandcount:
             bands = self.bandcount
 
         
@@ -305,6 +305,7 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
     _outputname = _displayname
 
     PARAMETERLAYER = "PARAMETERLAYER"
+    NCOMPONENTS = 'NCOMPONENTS'
 
     def createInstance(self):
         return SciPyTransformToPCAlgorithm()  
@@ -319,6 +320,16 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
             )
         )
 
+        self.addParameter(QgsProcessingParameterNumber(
+            self.NCOMPONENTS,
+            self.tr('Number of components to keep. Set to 0 for all components.'),
+            QgsProcessingParameterNumber.Type.Integer,
+            defaultValue=0, 
+            optional=True, 
+            minValue=0, 
+            # maxValue=100
+            ))   
+
     def get_parameters(self, parameters, context):
         super().get_parameters(parameters, context)
 
@@ -330,6 +341,7 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
         if self.V == None:
             self.V = eigenvectors
         
+        self._keepbands = self.parameterAsInt(parameters, self.NCOMPONENTS,context)
 
 
 class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
