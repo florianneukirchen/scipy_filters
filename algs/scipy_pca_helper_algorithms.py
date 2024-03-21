@@ -132,9 +132,15 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     def checkParameterValues(self, parameters, context):
 
         inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        bands = inputlayer.bandCount()
 
         V = self.parameterAsString(parameters, self.EIGENVECTORS, context)
-        V = str_to_array(V, dims=None, to_int=False)
+        V = V.strip()
+
+        try:
+            V = str_to_array(V, dims=None, to_int=False)
+        except QgsProcessingException:
+            return False, self.tr("Can not parse eigenvectors")
     
         if self._inverse:
             abstract = inputlayer.metadata().abstract()
@@ -145,7 +151,54 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             else:
                 abstract = ""
 
-        eigenvectors, layermeans = self.json_to_parameters(abstract)
+        eigenvectors, layermeans = None, 0
+
+        abstract = abstract.strip()
+        if not abstract == "":
+            try:
+                decoded = json.loads(abstract)
+            except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                return False, self.tr("Could not decode metadata abstract")
+            eigenvectors = decoded.get("eigenvectors", None)
+            layermeans = decoded.get("band mean", 0)
+
+            if not eigenvectors is None:
+                try:
+                    eigenvectors = np.array(eigenvectors)
+                except (ValueError, TypeError):
+                    return False, self.tr("Could not decode metadata abstract")
+            
+
+        if V is None:
+            V = eigenvectors
+        if V is None:
+            return False, self.tr("The layer does not contain valid eigenvactors and no eigenvectors where provided")
+
+        if V.ndim != 2 or V.shape[0] != V.shape[1]:
+            return False, self.tr("Matrix of eigenvectors must be square (2D)")
+
+        if (self._inverse and V.shape[0] < bands) or ((not self._inverse) and V.shape[0] != bands):
+            return False, self.tr("Shape of matrix of eigenvectors does not match number of bands")
+
+        if self._inverse:
+            bandmean = self.parameterAsString(parameters, self.BANDMEAN, context)
+            bandmean = bandmean.strip()
+            if not bandmean == "":
+                layermeans = bandmean
+        # This checks whatever mean is taken
+        try:
+            decoded = json.loads(layermeans)
+            layermeans = np.array(decoded)
+        except (json.decoder.JSONDecodeError, ValueError, TypeError):
+            return False, self.tr("Could not parse list of mean")
+        if layermeans.ndim > 1:
+            # could be int resulting in ndim 0, otherwise should be ndim 1
+            return False, self.tr("False shape of means array")
+        if layermeans.ndim == 1 and layermeans.shape[0] != V.shape[0]:
+            return False, self.tr("False shape of means array")
+
+
+
 
         return super().checkParameterValues(parameters, context)
 
@@ -174,6 +227,9 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
         # Start the actual work
         a = self.ds.ReadAsArray().astype(np.float32)
+
+        if a.ndim == 2: # Layer with only 1 band
+            a = a[np.newaxis, :]
         
         orig_shape = a.shape
 
@@ -416,6 +472,12 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
         self.abstract = self.inputlayer.metadata().abstract()
         eigenvectors, means = self.json_to_parameters(self.abstract)
 
+        if means is None:
+            means = 0
+        if not isinstance(means, int):
+            means = means[np.newaxis, :]
+
+        self._bandmean = means
 
         bandmean = self.parameterAsString(parameters, self.BANDMEAN, context)
         bandmean = bandmean.strip()
@@ -429,13 +491,12 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
             except (json.decoder.JSONDecodeError, ValueError, TypeError):
                 a = None
 
-            if a:
-                self._bandmean = a[np.newaxis, :]
+            if not a is None:
+                if isinstance(a, int):
+                    self._bandmean = a
+                else:
+                    self._bandmean = a[np.newaxis, :]
             
-        if self._bandmean is None:
-            # Use the paramters of the layer
-            self._bandmean = means[np.newaxis, :]
-
         if self.V is None:
             self.V = eigenvectors
             
