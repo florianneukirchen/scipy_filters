@@ -92,7 +92,6 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     V = None
     abstract = ""
 
-
     def initAlgorithm(self, config):
 
         self.addParameter(
@@ -231,6 +230,16 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
                 'eigenvectors': self.V,
                 }
         else:
+            encoded = json.dumps({
+                'eigenvectors': self.V.tolist(),
+                'band mean': col_mean.tolist(),
+            })
+
+            global updatemetadata
+            updatemetadata = self.UpdateMetadata(encoded)
+            context.layerToLoadOnCompletionDetails(self.output_raster).setPostProcessor(updatemetadata)
+
+
             return {
                 self.OUTPUT: self.output_raster,
                 'band mean': col_mean,
@@ -257,10 +266,6 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         except (ValueError, TypeError):
             means = None
         return eigenvectors, means
-
-
-
-        
 
 
     class UpdateMetadata(QgsProcessingLayerPostProcessorInterface):
