@@ -75,7 +75,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
     _groupid = "pca" 
     _name = ''
-    _displayname = ''*
+    _displayname = ''
     _outputname = ""
 
     # _outbands = 1
@@ -90,6 +90,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
     _bandmean = None
     V = None
+    abstract = ""
 
 
     def initAlgorithm(self, config):
@@ -303,9 +304,33 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
     _displayname = 'Transform to principal components'
     _outputname = _displayname
 
+    PARAMETERLAYER = "PARAMETERLAYER"
+
     def createInstance(self):
         return SciPyTransformToPCAlgorithm()  
     
+    def initAlgorithm(self, config):
+        super().initAlgorithm(config)
+
+        self.addParameter(
+            QgsProcessingParameterRasterLayer(
+                self.PARAMETERLAYER,
+                self.tr('Read eigenvectors from layer metadata'),
+            )
+        )
+
+    def get_parameters(self, parameters, context):
+        super().get_parameters(parameters, context)
+
+        paramlayer = self.parameterAsRasterLayer(parameters, self.PARAMETERLAYER, context)
+        self.abstract = paramlayer.metadata().abstract()
+
+        eigenvectors, means = self.json_to_parameters(self.abstract)
+
+        if self.V == None:
+            self.V = eigenvectors
+        
+
 
 class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
     """
@@ -343,8 +368,8 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
     def get_parameters(self, parameters, context):
         super().get_parameters(parameters, context)
 
-        abstract = self.inputlayer.metadata().abstract()
-        eigenvectors, means = self.json_to_parameters(abstract)
+        self.abstract = self.inputlayer.metadata().abstract()
+        eigenvectors, means = self.json_to_parameters(self.abstract)
 
 
         bandmean = self.parameterAsString(parameters, self.BANDMEAN, context)
