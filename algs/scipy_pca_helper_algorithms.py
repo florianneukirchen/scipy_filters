@@ -151,7 +151,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             else:
                 abstract = ""
 
-        eigenvectors, layermeans = None, 0
+        eigenvectors, layermeans = None, ""
 
         abstract = abstract.strip()
         if not abstract == "":
@@ -160,7 +160,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             except (json.decoder.JSONDecodeError, ValueError, TypeError):
                 return False, self.tr("Could not decode metadata abstract")
             eigenvectors = decoded.get("eigenvectors", None)
-            layermeans = decoded.get("band mean", 0)
+            layermeans = decoded.get("band mean", "")
 
             if not eigenvectors is None:
                 try:
@@ -185,17 +185,19 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             bandmean = bandmean.strip()
             if not bandmean == "":
                 layermeans = bandmean
-        # This checks whatever mean is taken
-        try:
-            decoded = json.loads(layermeans)
-            layermeans = np.array(decoded)
-        except (json.decoder.JSONDecodeError, ValueError, TypeError):
-            return False, self.tr("Could not parse list of mean")
-        if layermeans.ndim > 1:
-            # could be int resulting in ndim 0, otherwise should be ndim 1
-            return False, self.tr("False shape of means array")
-        if layermeans.ndim == 1 and layermeans.shape[0] != V.shape[0]:
-            return False, self.tr("False shape of means array")
+
+            # This checks whatever mean is taken
+            if not layermeans == "":
+                try:
+                    decoded = json.loads(layermeans)
+                    layermeans = np.array(decoded)
+                except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                    return False, self.tr("Could not parse list of mean")
+                if layermeans.ndim > 1:
+                    # could be int resulting in ndim 0, otherwise should be ndim 1
+                    return False, self.tr("False shape of means array")
+                if layermeans.ndim == 1 and layermeans.shape[0] != V.shape[0]:
+                    return False, self.tr("False shape of means array")
 
 
 
@@ -471,20 +473,24 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
 
         self.abstract = self.inputlayer.metadata().abstract()
         eigenvectors, means = self.json_to_parameters(self.abstract)
-
+        print("means", means)
         if means is None:
             means = 0
-        if not isinstance(means, int):
+        if isinstance(means, np.ndarray) and means.ndim == 1:
             means = means[np.newaxis, :]
 
         self._bandmean = means
 
         bandmean = self.parameterAsString(parameters, self.BANDMEAN, context)
         bandmean = bandmean.strip()
-        if bandmean == "0":
-            self._bandmean = 0
+        try:
+            bandmean = int(bandmean)
+        except (ValueError, TypeError):
+            pass
+
+
       
-        elif bandmean != "":
+        if not isinstance(bandmean, int) and bandmean != "":
             try:
                 decoded = json.loads(bandmean)
                 a = np.array(decoded)
