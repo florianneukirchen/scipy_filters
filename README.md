@@ -4,7 +4,8 @@ Experimental QGIS plugin providing access to [SciPy](https://scipy.org/) filters
 Includes raster filters such as:
 - Convolution with a custom kernel
 - Morphological filters (binary or grey dilation, erosion, closing, opening; tophat etc.)
-- Statistical filters (median, minimum, percentile etc.)
+- Principal Component Analysis (PCA)
+- Statistical filters (local median, minimum, percentile etc.)
 - Edge detection (sobel, laplace etc.)
 - Unsharp mask for sharpening, Wiener filter for noise reduction
 
@@ -50,15 +51,16 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 
 ### Dimension, output data type, border mode, etc.
 - The integer values are the indices of the combo box.
-- In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). 
+- In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). Exception: PCA (only float32/34 as options).
 
 ## Changelog
 
 ### Git main
-- Unsharp mask: Avoid overflow error by calculating in float64
+- New: Principal Component Analysis (PCA)
 - Advanced option to change the dtype of the output 
 - For filters where negative values are expected in the output, use float32 as default output dtype (instead of dtype of input layer) to avoid clipping and overflow errors 
 - Convolve: normalize with sum of absolute values of kernel as default, not simply the sum
+- Unsharp mask: Avoid overflow error by calculating in float64
 - Use sizes widget in more filters
 - More load options for kernel/structure/footprint
 - New origin widget and add origin as parameter to a couple of filters
