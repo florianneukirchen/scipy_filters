@@ -78,8 +78,6 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     # _outbands = 1
     _help = """
             Baseclass to transform to/from principal components using matrix of eigenvectors
-
-
             """
 
     _inverse = False
@@ -102,7 +100,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
         eig_param = QgsProcessingParameterString(
             self.EIGENVECTORS,
-            self.tr('Eigenvectors or Loadings'),
+            self.tr('Eigenvectors'),
             defaultValue="",
             multiLine=True,
             optional=True,
@@ -500,6 +498,49 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
     _displayname = 'Transform to principal components'
     _outputname = _displayname
 
+    _help = """
+        Transform data into given principal components \
+        with a matrix of weights (eigenvectors or loadings) by taking the \
+        dot product with a matrix of weights (after centering the data). \
+
+
+        The eigenvectors / loadings can also be read from the metadata of an \
+        existing PCA layer. Normalized PCA scores are only partially supported.
+
+        <b>Eigenvectors</b> Matrix of eigenvectors or loadings (as string). \
+        Optional if the next parameter is set. \
+        The matrix can be taken from the output of the PCA algorith of this plugin. \
+        Using eigenvectors, the result will be unnormalized PCA scores. \
+        Using loadings, the result will be normalized PCA scores, \
+        but the metadata of the layer will be incorrect (and automatic \
+        inverse transform from PC does not work). 
+
+        <b>Read eigenvectors / loadings from PCA layer metadata</b> \
+        Reads the weights for the transformation from the metadata \
+        of a layer that was generated using the PCA algorithm of this plugin. \
+        Ignored if the parameter <i>eigenvectors</i> is used. \
+        The eigenvectors are used, if the layer contains unnormalized scores. \
+        The loadings are used, if the layer contains normalized scores; however, \
+        in this case, the metadata of the result will not be correct \
+        (and automatic inverse transform from PC does not work).
+
+        <b>Number of components</b> is only used if the value is greater than 0 and \
+        smaller than the count of original bands.
+
+        <b>False mean for each band</b> As first step of PCA, the data of each \
+        band is centered by subtracting the means. If false means are provided, \
+        these are substracted instead of the real means of the input layer. \
+        This allows to transform another raster image into the same space \
+        as the principal components of another layer. The result is usefull \
+        for comparation of several rasters, but should not be considered to be \
+        proper principal components. Only used if "Used false mean" is checked.
+
+        <b>Use false mean</b> See also <i>false mean of each band</i>. The \
+        false mean to be used can also be read from the metadata of a PCA layer. \
+        
+        <b>Output data type</b> Float32 or Float64.
+        """
+
     PARAMETERLAYER = "PARAMETERLAYER"
     NCOMPONENTS = 'NCOMPONENTS'
     FALSEMEAN = 'FALSEMEAN'
@@ -561,6 +602,38 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
     _name = 'transform_from_PC'
     _displayname = 'Transform from principal components'
     _outputname = _displayname
+
+    _help = """
+        Transform data from principal components back into the original \
+        feature space \
+        with a matrix of eigenvectors by taking the \
+        dot product with the transpose of the matrix of eigenvectors \
+        and adding the original means to the result.
+
+        Normalized PCA scores are only partially supported, see below. \
+        The eigenvectors / loadings can also be read from the metadata \
+        of the input layer, as long as they exist and are complete. \
+        If the layer contains the PCA generated with the PCA \
+        algorithm of this plugin (i.e. the meta data is complete), \
+        the transform works for both normalized and unnormalized scores \
+        without changing any parameters.
+
+        <b>Eigenvectors</b> Matrix of eigenvectors (as string). \
+        Optional if the next parameter is set. \
+        The matrix can be taken from the output of the PCA algorith of this plugin. \
+        Assumes that the input contains unnormalized PCA scores. \
+        For normalized PCA scores, divide the loadings matrix by \
+        the eigenvalues ("variance explained") and enter the result \
+        into the <i>eigenvectors</i> text field.
+
+        <b>Mean of original bands</b> As first step of PCA, the data of each \
+        band is centered by subtracting the means. These must be added \
+        after rotating back into the original feature space. \
+        Optional if the meta data of the input layer is complete. \
+        (Use false means if they were used for the forward transformation.)
+                
+        <b>Output data type</b> Float32 or Float64.
+        """
 
     _inverse = True
 
