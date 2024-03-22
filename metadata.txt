@@ -6,12 +6,13 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=0.2
+version=0.3
 author=Florian Neukirchen
 email=mail@riannek.de
 
-about=Gives access to filters implemented with SciPy, including morphology 
-    (binary or grey dilation, erosion, closing, opening; tophat etc.);
+about=Gives access to raster filters implemented with SciPy, including morphology 
+    (binary or grey dilation, erosion, closing, opening; tophat etc.),
+    principal component analysis (PCA), 
     statistical filters (median, minimum, percentile etc.), edge detection
     (sobel, prewitt etc.) and convolution with a custom kernel.
 
@@ -23,7 +24,17 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=0.2
+changelog=0.3
+    - New: Principal Component Analysis (PCA)
+    - Advanced option to change the dtype of the output 
+    - For filters where negative values are expected in the output, use float32 as default output dtype (instead of dtype of input layer) to avoid clipping and overflow errors 
+    - Convolve: normalize with sum of absolute values of kernel as default, not simply the sum
+    - Unsharp mask: Avoid overflow error by calculating in float64
+    - Use sizes widget in more filters
+    - More load options for kernel/structure/footprint
+    - New origin widget and add origin as parameter to a couple of filters
+    - New set of filters for pixel statistics (std, mean, min ... for all bands of individual pixels)
+    0.2
     - Catch exception if SciPy is not installed and offer to install it automatically (with pip)
     - Improved user interface with custom widgets, making it more intuitive and allowing for far better parameters (see breaking changes if you already used version 0.1 in a script or model).
     - Calculate and write band statistics (min, max, mean, std) into the metadata of the output file; enables QGIS to render correctly with min/max stretching
@@ -45,7 +56,7 @@ changelog=0.2
         - Convolve: ORIGIN has been removed. (An improved version is on the todo list)
 
 # Tags are comma separated with spaces allowed
-tags=python,raster,filter
+tags=python,raster,filter,analysis,principal components analysis,pca,edge,smoothing,
 
 homepage=https://github.com/florianneukirchen/scipy_filters
 icon=icon.png
