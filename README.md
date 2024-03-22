@@ -3,16 +3,17 @@ Experimental QGIS plugin providing access to [SciPy](https://scipy.org/) filters
 
 Includes raster filters such as:
 - Convolution with a custom kernel
-- Morphological filters (binary or grey dilation, erosion, closing, opening; tophat etc.)
+- Morphological filters (binary/grey dilation, erosion, closing, opening; tophat etc.)
 - Principal Component Analysis (PCA)
 - Statistical filters (local median, minimum, percentile etc.)
 - Edge detection (sobel, laplace etc.)
 - Unsharp mask for sharpening, Wiener filter for noise reduction
 
-Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html), a library to filter images (or arrays, rasters) in n dimensions. For more information, see the SciPy tutorial on [Multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html).
+Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html), a library to filter images (or arrays, rasters) in *n* dimensions. For more information, see the SciPy tutorial on [Multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html).
 
 These scipy.ndimage filters are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands. 
 
+For more information, see the help in the window of the respective processing tool.
 
 ## Resources
 - QGIS Plugin Repository: [https://plugins.qgis.org/plugins/scipy_filters/](https://plugins.qgis.org/plugins/scipy_filters/)
@@ -42,8 +43,6 @@ str(numpyarray.tolist())
 
 The order of axes is `[bands,] rows, cols`. These arrays must have the same number of dimensions as the input (2D or 3D). However, if you pass a 2D array to a 3D calculation, the plugin automatically adds a new axis as first axis and the result is the same as using the same kernel in 2D.
 
-For more information, see the help in the window of the respective processing tool.
-
 ### Size
 When calling an algorithm with "size" as parameter from python, you have two options: 
 - `"SIZES"`: string containing a list of integer values with one value for each axis, such as `"1,5,5"` or `"[3,20,5]"` for 3D filters.
@@ -51,11 +50,11 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 
 ### Dimension, output data type, border mode, etc.
 - The integer values are the indices of the combo box.
-- In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). Exception: PCA (only float32/34 as options).
+- In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). Exception: PCA (only float32/float64 as options).
 
 ## Changelog
 
-### Git main
+### 0.3 (03/2024)
 - New: Principal Component Analysis (PCA)
 - Advanced option to change the dtype of the output 
 - For filters where negative values are expected in the output, use float32 as default output dtype (instead of dtype of input layer) to avoid clipping and overflow errors 
