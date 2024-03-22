@@ -174,10 +174,10 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             bandmean = self.parameterAsString(parameters, self.BANDMEAN, context)
 
             bandmean = bandmean.strip()
-            if not (bandmean[0] == "[" and bandmean[-1] == "]"):
-                bandmean = "[" + bandmean + "]"
 
             if bandmean != "":
+                if not (bandmean[0] == "[" and bandmean[-1] == "]"):
+                    bandmean = "[" + bandmean + "]"
                 try:
                     decoded = json.loads(bandmean)
                     a = np.array(decoded)
@@ -256,8 +256,9 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             bandmean = self.parameterAsString(parameters, self.BANDMEAN, context)
 
             bandmean = bandmean.strip()
-            if not (bandmean[0] == "[" and bandmean[-1] == "]"):
-                bandmean = "[" + bandmean + "]"
+            if bandmean != "":
+                if not (bandmean[0] == "[" and bandmean[-1] == "]"):
+                    bandmean = "[" + bandmean + "]"
             
             if not bandmean == "":
                 try:
