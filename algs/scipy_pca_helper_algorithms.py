@@ -505,7 +505,6 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
             self.tr('Use false mean (provided as parameter) to center data'),
             optional=True,
             defaultValue=False,
-
         )
 
                 
