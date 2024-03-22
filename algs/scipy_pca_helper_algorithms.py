@@ -42,6 +42,7 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingLayerPostProcessorInterface,
                        QgsProcessingParameterBoolean,
                        QgsProcessingParameterRasterLayer,
+                       QgsProcessingParameterEnum,
                        QgsProcessingParameterRasterDestination)
 
 
@@ -65,6 +66,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
     BANDMEAN = 'BANDMEAN'
+    DTYPE = 'DTYPE'
 
     # Overwrite constants of base class
 
@@ -122,6 +124,18 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
       
         self.addParameter(mean_param)
 
+        dtype_param = QgsProcessingParameterEnum(
+            self.DTYPE,
+            self.tr('Output data type'),
+            ['Float32 (32 bit float)', 'Float64 (64 bit float)'],
+            defaultValue=0,
+            optional=True)
+        
+        # Set as advanced parameter
+        dtype_param.setFlags(dtype_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+        self.addParameter(dtype_param)
+
+
         self.addParameter(
             QgsProcessingParameterRasterDestination(
                 self.OUTPUT,
@@ -173,6 +187,8 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
                 if not a is None:
                     self._bandmean = a[np.newaxis, :]
         
+        self.outdtype = self.parameterAsInt(parameters, self.DTYPE, context)
+        self.outdtype = self.outdtype + 6 # float32 and float64 in gdal
 
     def checkParameterValues(self, parameters, context):
 
@@ -284,15 +300,17 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         feedback.setProgress(0)
 
         # Start the actual work
-        a = self.ds.ReadAsArray().astype(np.float32)
-
+        if self.outdtype == 6:
+            a = self.ds.ReadAsArray().astype(np.float32)
+        else:
+            a = self.ds.ReadAsArray().astype(np.float64)
         if a.ndim == 2: # Layer with only 1 band
             a = a[np.newaxis, :]
         
         orig_shape = a.shape
 
-        # Flatten and float64
-        a = a.reshape(orig_shape[0], -1).astype("float64")
+        # Flatten 
+        a = a.reshape(orig_shape[0], -1)
         a = a.T
 
 
@@ -333,14 +351,13 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             return {}
         
         # Prepare output and write file
-        etype = gdal.GDT_Float32
 
         driver = gdal.GetDriverByName('GTiff')
         self.out_ds = driver.Create(self.output_raster,
                                     xsize=self.ds.RasterXSize,
                                     ysize=self.ds.RasterYSize,
                                     bands=bands,
-                                    eType=etype)
+                                    eType=self.outdtype)
 
         self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
         self.out_ds.SetProjection(self.ds.GetProjection())

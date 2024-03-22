@@ -41,6 +41,8 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterRasterDestination,
                        QgsProcessingLayerPostProcessorInterface,
                        QgsProcessingException,
+                       QgsProcessingParameterEnum,
+                       QgsProcessingParameterDefinition,
                         )
 
 from ..scipy_algorithm_baseclasses import groups
@@ -59,6 +61,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     NCOMPONENTS = 'NCOMPONENTS'
     PERCENTVARIANCE = 'PERCENTVARIANCE'
+    DTYPE = 'DTYPE'
 
     
     _name = 'pca'
@@ -129,6 +132,17 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             maxValue=100
             ))      
     
+        dtype_param = QgsProcessingParameterEnum(
+            self.DTYPE,
+            self.tr('Output data type'),
+            ['Float32 (32 bit float)', 'Float64 (64 bit float)'],
+            defaultValue=0,
+            optional=True)
+        
+        # Set as advanced parameter
+        dtype_param.setFlags(dtype_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+        self.addParameter(dtype_param)
+
 
         self.addParameter(
             QgsProcessingParameterRasterDestination(
@@ -147,6 +161,10 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         self.ncomponents = self.parameterAsInt(parameters, self.NCOMPONENTS,context)
         self.percentvariance = self.parameterAsDouble(parameters, self.PERCENTVARIANCE,context)
+
+        self.outdtype = self.parameterAsInt(parameters, self.DTYPE, context)
+        self.outdtype = self.outdtype + 6 # float32 and float64 in gdal
+
         # Open Raster with GDAL
         self.ds = gdal.Open(self.inputlayer.source())
 
@@ -163,7 +181,10 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         feedback.setProgress(0)
 
         # Start the actual work
-        a = self.ds.ReadAsArray().astype(np.float32)
+        if self.outdtype == 6:
+            a = self.ds.ReadAsArray().astype(np.float32)
+        else:
+            a = self.ds.ReadAsArray().astype(np.float64)
 
         # shape is bands, RasterYSize, RasterXSize
         orig_shape = a.shape
@@ -256,14 +277,14 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             bands = self.ncomponents 
 
         # Prepare output and write file
-        etype = gdal.GDT_Float32
+        # etype = gdal.GDT_Float32
 
         driver = gdal.GetDriverByName('GTiff')
         self.out_ds = driver.Create(self.output_raster,
                                     xsize=self.ds.RasterXSize,
                                     ysize=self.ds.RasterYSize,
                                     bands=bands,
-                                    eType=etype)
+                                    eType=self.outdtype)
 
         self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
         self.out_ds.SetProjection(self.ds.GetProjection())
