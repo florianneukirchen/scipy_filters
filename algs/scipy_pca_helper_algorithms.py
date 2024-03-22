@@ -40,16 +40,11 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterNumber,
                        QgsProcessingException,
                        QgsProcessingLayerPostProcessorInterface,
+                       QgsProcessingParameterBoolean,
                        QgsProcessingParameterRasterLayer,
                        QgsProcessingParameterRasterDestination)
 
-from ..scipy_algorithm_baseclasses import SciPyAlgorithm
 
-from ..ui.structure_widget import (StructureWidgetWrapper, 
-                                  SciPyParameterStructure,)
-
-from ..ui.origin_widget import (OriginWidgetWrapper, 
-                               SciPyParameterOrigin,)
 
 from ..helpers import (str_to_int_or_list, 
                       check_structure, 
@@ -69,7 +64,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     EIGENVECTORS = 'EIGENVECTORS'
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
-
+    BANDMEAN = 'BANDMEAN'
 
     # Overwrite constants of base class
 
@@ -87,6 +82,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
     _inverse = False
     _keepbands = 0
+    falsemean = False
 
     _bandmean = None
     V = None
@@ -114,6 +110,18 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         
         self.addParameter(eig_param)
 
+        mean_param = QgsProcessingParameterString(
+            self.BANDMEAN,
+            self.tr('Mean of original bands'),
+            defaultValue="",
+            multiLine=False,
+            optional=True,
+            )
+        
+        mean_param.setFlags(mean_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+      
+        self.addParameter(mean_param)
+
         self.addParameter(
             QgsProcessingParameterRasterDestination(
                 self.OUTPUT,
@@ -125,9 +133,46 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
 
-
+        # eigenvectors from text field
         V = self.parameterAsString(parameters, self.EIGENVECTORS, context)
         self.V = str_to_array(V, dims=None, to_int=False)
+
+        # Parameters from metadata abstract
+        if self._inverse:
+            self.abstract = self.inputlayer.metadata().abstract()
+            # The other case is handled in the inheriting class
+
+        eigenvectors, means = self.json_to_parameters(self.abstract)
+
+        if self.V is None:
+            self.V = eigenvectors
+
+        # Get the mean, start with metadata of layer and eventually overwrite it
+        if self._inverse or self.falsemean:    
+            if means is None:
+                means = 0
+            if isinstance(means, np.ndarray) and means.ndim == 1:
+                means = means[np.newaxis, :]
+
+            self._bandmean = means
+
+            # Mean from text field
+            bandmean = self.parameterAsString(parameters, self.BANDMEAN, context)
+
+            bandmean = bandmean.strip()
+            if not (bandmean[0] == "[" and bandmean[-1] == "]"):
+                bandmean = "[" + bandmean + "]"
+
+            if bandmean != "":
+                try:
+                    decoded = json.loads(bandmean)
+                    a = np.array(decoded)
+                except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                    a = None
+
+                if not a is None:
+                    self._bandmean = a[np.newaxis, :]
+        
 
     def checkParameterValues(self, parameters, context):
 
@@ -137,19 +182,23 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         V = self.parameterAsString(parameters, self.EIGENVECTORS, context)
         V = V.strip()
 
+        # Check eigenvectors (text field)
         try:
             V = str_to_array(V, dims=None, to_int=False)
         except QgsProcessingException:
             return False, self.tr("Can not parse eigenvectors")
-    
+
+        # Get parameters from metadata and check eigenvectors
         if self._inverse:
             abstract = inputlayer.metadata().abstract()
+            checkmean = True
         else:
             paramlayer = self.parameterAsRasterLayer(parameters, self.PARAMETERLAYER, context)
             if paramlayer:
                 abstract = paramlayer.metadata().abstract()
             else:
                 abstract = ""
+            checkmean = self.parameterAsBool(parameters, self.FALSEMEAN, context)
 
         eigenvectors, layermeans = None, ""
 
@@ -168,39 +217,46 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
                 except (ValueError, TypeError):
                     return False, self.tr("Could not decode metadata abstract")
             
-
+        # Check if eigenvectors are provided one or the other way
         if V is None:
             V = eigenvectors
         if V is None:
             return False, self.tr("The layer does not contain valid eigenvactors and no eigenvectors where provided")
 
+        # Check dimensions and shape of eigenvectors
         if V.ndim != 2 or V.shape[0] != V.shape[1]:
             return False, self.tr("Matrix of eigenvectors must be square (2D)")
 
         if (self._inverse and V.shape[0] < bands) or ((not self._inverse) and V.shape[0] != bands):
             return False, self.tr("Shape of matrix of eigenvectors does not match number of bands")
 
-        if self._inverse:
+
+        # Check provided means
+        if checkmean:
+            if isinstance(layermeans, list) and len(layermeans) > 1:
+                layermeans = np.array(layermeans)
+
+            # Start with mean from text field
             bandmean = self.parameterAsString(parameters, self.BANDMEAN, context)
+
             bandmean = bandmean.strip()
+            if not (bandmean[0] == "[" and bandmean[-1] == "]"):
+                bandmean = "[" + bandmean + "]"
+            
             if not bandmean == "":
+                try:
+                    decoded = json.loads(bandmean)
+                    bandmean = np.array(decoded)
+                except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                    return False, self.tr("Could not parse list of means")
+                # If mean is given in text field, do not use the one from metadata
                 layermeans = bandmean
 
-            # This checks whatever mean is taken
-            if not layermeans == "":
-                try:
-                    decoded = json.loads(layermeans)
-                    layermeans = np.array(decoded)
-                except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                    return False, self.tr("Could not parse list of mean")
-                if layermeans.ndim > 1:
-                    # could be int resulting in ndim 0, otherwise should be ndim 1
-                    return False, self.tr("False shape of means array")
-                if layermeans.ndim == 1 and layermeans.shape[0] != V.shape[0]:
-                    return False, self.tr("False shape of means array")
-
-
-
+            # Check dimensions (both cases) 
+            if layermeans.ndim != 1:
+                return False, self.tr("False shape of means list")
+            if layermeans.shape[0] != V.shape[0]:
+                return False, self.tr("False shape of means list")
 
         return super().checkParameterValues(parameters, context)
 
@@ -239,17 +295,19 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         a = a.reshape(orig_shape[0], -1).astype("float64")
         a = a.T
 
-        # n_pixels = a.shape[0]
 
         # substract mean
         if not self._inverse:
-            col_mean = a.mean(axis=0)
-            col_mean = col_mean[np.newaxis, :]
+            if not self.falsemean:
+                self._bandmean = a.mean(axis=0)
+                self._bandmean = self._bandmean[np.newaxis, :]
+                feedback.pushInfo(self.tr("\nBand Mean:"))
+            else:
+                feedback.pushInfo(self.tr("\nFalse (given) band mean:"))
+            feedback.pushInfo(str(self._bandmean[0].tolist()) + "\n")
 
-            a = a - col_mean
+            a = a - self._bandmean
 
-            feedback.pushInfo("\nBand Mean:")
-            feedback.pushInfo(str(col_mean.tolist()) + "\n")
 
         # Transform to PC
         if self._inverse:
@@ -263,8 +321,6 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
         else:
             components = self.V
-
-        print("shapes", a.shape, components.shape)
 
         new_array = a @ components
 
@@ -309,7 +365,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         else:
             encoded = json.dumps({
                 'eigenvectors': self.V.tolist(),
-                'band mean': col_mean.tolist(),
+                'band mean': self._bandmean[0].tolist(),
             })
 
             global updatemetadata
@@ -319,7 +375,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
             return {
                 self.OUTPUT: self.output_raster,
-                'band mean': col_mean,
+                'band mean': self._bandmean[0],
                 'eigenvectors': self.V,
                 }
                 
@@ -395,6 +451,7 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
 
     PARAMETERLAYER = "PARAMETERLAYER"
     NCOMPONENTS = 'NCOMPONENTS'
+    FALSEMEAN = 'FALSEMEAN'
 
     def createInstance(self):
         return SciPyTransformToPCAlgorithm()  
@@ -418,21 +475,31 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
             optional=True, 
             minValue=0, 
             # maxValue=100
-            ))   
+            ))
+        
+        means_b = QgsProcessingParameterBoolean(
+            self.FALSEMEAN,
+            self.tr('Use false mean (provided as parameter) to center data'),
+            optional=True,
+            defaultValue=False,
+
+        )
+
+                
+        means_b.setFlags(means_b.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+      
+        self.addParameter(means_b)
 
     def get_parameters(self, parameters, context):
-        super().get_parameters(parameters, context)
-
         paramlayer = self.parameterAsRasterLayer(parameters, self.PARAMETERLAYER, context)
         if paramlayer:
             self.abstract = paramlayer.metadata().abstract()
-
-        eigenvectors, means = self.json_to_parameters(self.abstract)
-
-        if self.V is None:
-            self.V = eigenvectors
         
-        self._keepbands = self.parameterAsInt(parameters, self.NCOMPONENTS,context)
+        self._keepbands = self.parameterAsInt(parameters, self.NCOMPONENTS, context)
+        self.falsemean = self.parameterAsBool(parameters, self.FALSEMEAN, context)
+
+        super().get_parameters(parameters, context)
+
 
 
 class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
@@ -441,72 +508,11 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
 
     """
 
-    BANDMEAN = 'BANDMEAN'
-
     _name = 'transform_from_PC'
     _displayname = 'Transform from principal components'
     _outputname = _displayname
 
     _inverse = True
-
-
-
-    def initAlgorithm(self, config):
-        super().initAlgorithm(config)
-
-        mean_param = QgsProcessingParameterString(
-            self.BANDMEAN,
-            self.tr('Mean of original bands'),
-            defaultValue="",
-            multiLine=True,
-            optional=True,
-            )
-        
-        mean_param.setFlags(mean_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
-      
-        self.addParameter(mean_param)
-
-        
-
-    def get_parameters(self, parameters, context):
-        super().get_parameters(parameters, context)
-
-        self.abstract = self.inputlayer.metadata().abstract()
-        eigenvectors, means = self.json_to_parameters(self.abstract)
-        print("means", means)
-        if means is None:
-            means = 0
-        if isinstance(means, np.ndarray) and means.ndim == 1:
-            means = means[np.newaxis, :]
-
-        self._bandmean = means
-
-        bandmean = self.parameterAsString(parameters, self.BANDMEAN, context)
-        bandmean = bandmean.strip()
-        try:
-            bandmean = int(bandmean)
-        except (ValueError, TypeError):
-            pass
-
-
-      
-        if not isinstance(bandmean, int) and bandmean != "":
-            try:
-                decoded = json.loads(bandmean)
-                a = np.array(decoded)
-            except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                a = None
-
-            if not a is None:
-                if isinstance(a, int):
-                    self._bandmean = a
-                else:
-                    self._bandmean = a[np.newaxis, :]
-            
-        if self.V is None:
-            self.V = eigenvectors
-            
-
 
 
     def createInstance(self):
