@@ -365,7 +365,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 'variance_ratio': variance_ratio.tolist(),
                 'variance explained cumsum': variance_explained_cumsum.tolist(),
                 'band mean': col_mean.tolist(),
-                'is normalized': str(self.normalized),
+                'is normalized': self.normalized,
                 })
 
         # Save loadings etc as json in the metadata abstract of the layer
