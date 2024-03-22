@@ -148,7 +148,8 @@ def str_to_int_or_list(s):
         pass
     if out:
         return out
-    
+    if s == "":
+        return None
     if not (s[0] == "[" and s[-1] == "]"):
         s = "[" + s + "]"
 
