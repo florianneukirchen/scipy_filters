@@ -112,9 +112,14 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         
         self.addParameter(eig_param)
 
+        if self._inverse:
+            desc = self.tr('Mean of original bands')
+        else:
+            desc = self.tr('False mean for each band')
+
         mean_param = QgsProcessingParameterString(
             self.BANDMEAN,
-            self.tr('Mean of original bands'),
+            desc,
             defaultValue="",
             multiLine=False,
             optional=True,
