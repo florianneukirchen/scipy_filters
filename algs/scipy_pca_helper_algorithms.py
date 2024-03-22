@@ -85,6 +85,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     _inverse = False
     _keepbands = 0
     falsemean = False
+    msg = ""
 
     _bandmean = None
     V = None
@@ -101,7 +102,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
         eig_param = QgsProcessingParameterString(
             self.EIGENVECTORS,
-            self.tr('Eigenvectors'),
+            self.tr('Eigenvectors or Loadings'),
             defaultValue="",
             multiLine=True,
             optional=True,
@@ -162,6 +163,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             # The other case is handled in the inheriting class
 
         eigenvectors, means = self.json_to_parameters(self.abstract)
+
 
         if self.V is None:
             self.V = eigenvectors
@@ -289,6 +291,9 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         """
         self.get_parameters(parameters, context)
 
+        if self.msg != "":
+            feedback.reportError(self.tr(self.msg), fatalError=False)
+
         self.ds = gdal.Open(self.inputlayer.source())
 
         if not self.ds:
@@ -411,12 +416,35 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             decoded = json.loads(s)
         except (json.decoder.JSONDecodeError, ValueError, TypeError):
             return None, None
-        eigenvectors = decoded.get("eigenvectors", None)
-        means = decoded.get("band mean", 0)
+        is_normalized = decoded.get("is normalized", None)
+
+        if is_normalized is None:
+            self.msg = "Metadata does not tell if these are normalized scores. Calculating assuming unnormalized scores."
+            is_normalized = False
+        print("is normalized", is_normalized)
+        if is_normalized:
+            eigenvectors = decoded.get("loadings", None)
+        else:
+            eigenvectors = decoded.get("eigenvectors", None)
+            
+        print(is_normalized)
+        print(eigenvectors)
+
         try:
             eigenvectors = np.array(eigenvectors)
         except (ValueError, TypeError):
             eigenvectors = None
+
+        if is_normalized:
+            eigenvals = decoded.get("variance explained", None)
+            if not eigenvals is None:
+                try:
+                    eigenvals = np.array(eigenvals)
+                    eigenvectors = (eigenvectors / eigenvals)
+                except (ValueError, TypeError):
+                    msg = "Could not read eigenvalues from metadata"
+
+        means = decoded.get("band mean", 0)
         try:
             means = np.array(means)
         except (ValueError, TypeError):
@@ -485,7 +513,7 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.PARAMETERLAYER,
-                self.tr('Read eigenvectors from PCA layer metadata'),
+                self.tr('Read eigenvectors/loadings from PCA layer metadata'),
                 optional=True,
             )
         )
