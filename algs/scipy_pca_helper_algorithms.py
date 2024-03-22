@@ -604,10 +604,10 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
     _outputname = _displayname
 
     _help = """
-        Transform data from principal components back into the original \
-        feature space \
-        with a matrix of eigenvectors by taking the \
-        dot product with the transpose of the matrix of eigenvectors \
+        Transform data from principal components (i.e. the PCA scores) \
+        back into the original feature space \
+        using a matrix of eigenvectors by taking the \
+        dot product of the scores the with the transpose of the matrix of eigenvectors \
         and adding the original means to the result.
 
         Normalized PCA scores are only partially supported, see below. \
