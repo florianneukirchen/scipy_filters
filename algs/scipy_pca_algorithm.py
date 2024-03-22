@@ -89,11 +89,22 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             <b>Output</b> The output raster contains \
             the data projected into the principal components (i.e. the scores).
 
+            <b>Output data type</b> Float32 or Float64
+            
             The following values / vectors are avaible a) in the log tab of \
             the processing window, b) in JSON format in the "Abstract" field \
             of the metadata of the output raster layer, eventually to be used \
-            by subsequent transformations, and c) in the output dictionary if \
-            the tool has been called from the python console or a script.
+            by subsequent transformations, and c) in the output dict if \
+            the tool has been called from the python console or a script:\n
+            <ul>
+            <li>Singular values (of SVD)</li>
+            <li>Variance explained (Eigenvalues)</li>
+            <li>Ratio of variance explained</li>
+            <li>Cumulated sum of variance explained</li>
+            <li>Eigenvectors (V of SVD)</li>
+            <li>Loadings (eigenvectors scaled by sqrt(eigenvalues))</li>
+            <li>Band Mean</li>
+            </ul>
             """
     
     # Init Algorithm
