@@ -369,8 +369,12 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 })
 
         # Save loadings etc as json in the metadata abstract of the layer
+        if self.normalized:
+            layername = "PCA (normalized)"
+        else:
+            layername = "PCA (not normalized)"
         global updatemetadata
-        updatemetadata = self.UpdateMetadata(encoded)
+        updatemetadata = self.UpdateMetadata(encoded, layername)
         context.layerToLoadOnCompletionDetails(self.output_raster).setPostProcessor(updatemetadata)
 
         return {self.OUTPUT: self.output_raster,
@@ -397,11 +401,13 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         """
         To add metadata in the postprocessing step.
         """
-        def __init__(self, abstract):
+        def __init__(self, abstract, layername):
             self.abstract = abstract
+            self.layername = layername
             super().__init__()
             
         def postProcessLayer(self, layer, context, feedback):
+            layer.setName(self.layername)
             meta = layer.metadata()
             meta.setAbstract(self.abstract)
             layer.setMetadata(meta)
