@@ -1,5 +1,5 @@
 # SciPy filter pack for QGIS
-Experimental QGIS plugin providing access to [SciPy](https://scipy.org/) filters via the processing toolbox. SciPy offers a range of highly optimised algorithms for i.e. [multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html) and [signal processing](https://docs.scipy.org/doc/scipy/tutorial/signal.html), and some can be useful to analyze raster layers.
+QGIS plugin providing access to [SciPy](https://scipy.org/) filters via the processing toolbox. SciPy offers a range of highly optimised algorithms for i.e. [multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html) and [signal processing](https://docs.scipy.org/doc/scipy/tutorial/signal.html), and some can be useful to analyze raster layers.
 
 Includes raster filters such as:
 - Convolution with a custom kernel
@@ -12,6 +12,8 @@ Includes raster filters such as:
 Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html), a library to filter images (or arrays, rasters) in *n* dimensions. For more information, see the SciPy tutorial on [Multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html).
 
 These scipy.ndimage filters are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands. 
+
+For many filters, a custom footprint and/or structure or kernel can be provided, adjusting the size and shape of the filter.
 
 For more information, see the help in the window of the respective processing tool.
 
