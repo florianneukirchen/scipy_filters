@@ -10,11 +10,22 @@ version=0.3
 author=Florian Neukirchen
 email=mail@riannek.de
 
-about=Gives access to raster filters implemented with SciPy, including morphology 
-    (binary or grey dilation, erosion, closing, opening; tophat etc.),
-    principal component analysis (PCA), 
-    statistical filters (median, minimum, percentile etc.), edge detection
-    (sobel, prewitt etc.) and convolution with a custom kernel.
+about=SciPy filters for raster layers (installed into the processing toolbox). Including:
+    - binary/grey morphology (dilation, erosion, closing, opening; tophat etc.)
+    - principal component analysis (PCA)
+    - statistical filters (local variance, std, median, minimum, percentile etc.)
+    - edge detection (sobel, prewitt, gaussian magnitude etc.) 
+    - convolution with a custom kernel (both, classic and FFT versions)
+    - sharpening with unsharp mask
+    - noise removal with Wiener filter
+    - blurring (gaussian, box filter etc.)
+    Most filters are based on scipy.ndimage, a library to filter images (or arrays, rasters) \
+    in n dimensions. These are either applied on each layer seperately in 2D, \
+    or in 3D on a 3D datacube consisting of all bands. 
+    For many filters, a custom footprint and/or structure or kernel can be provided, \
+    adjusting the size and shape of the filter.
+
+    
 
 tracker=https://github.com/florianneukirchen/scipy_filters/issues
 repository=https://github.com/florianneukirchen/scipy_filters
