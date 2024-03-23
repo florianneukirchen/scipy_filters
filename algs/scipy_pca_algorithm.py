@@ -60,7 +60,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
-    NORMALIZED = 'NORMALIZED'
     NCOMPONENTS = 'NCOMPONENTS'
     PERCENTVARIANCE = 'PERCENTVARIANCE'
     DTYPE = 'DTYPE'
@@ -81,8 +80,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             <i>number of components</i> to keep or the <i>percentage of variance</i> \
             explained by the kept components can be set. 
 
-            <b>Normalize</b> Compute normalized version of PCA scores, by dividing \
-            by sqrt(n_samples - 1). Number of samples means number of pixels in this case. \
             
             <b>Number of components</b> is only used if the value is greater than 0 and \
             smaller than the count of original bands and if percentage of variance is \
@@ -93,7 +90,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
             <b>Output</b> The output raster contains \
             the data projected into the principal components \
-            (i.e. the normalized or unnormalized scores).
+            (i.e. the PCA scores).
 
             <b>Output data type</b> Float32 or Float64
 
@@ -112,24 +109,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             <li>Band Mean</li>
             </ul>
 
-            <b>Note on Normalization</b> The normalized version of the PCA \
-            can be calculated in two ways: 
-            
-            <ul>
-            <li>By first dividing the data by \
-            sqrt(n_samples - 1); then performing SVD and calculating \
-            scores as dot productuct of normalized data and V (of the SVD, \
-            not transposed).</li>
-            <li>By performing SVD with unnormalized data, then calculating \
-            loadings by dividing the eigenvectors by sqrt(n_samples - 1) \
-            and calculating scores as dot product of unnormalized data \
-            and loadings.
-            </ul>
-
-            Unnmormalized scores are calculated as dot product of \
-            unnormalized data and the (unnormalized) eigenvectors \
-            of the SVD. (The result is the same as PCA using the \
-            python module sklearn without normalizing the data).              )
             """
     
     # Init Algorithm
@@ -147,12 +126,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(QgsProcessingParameterBoolean(
-            self.NORMALIZED,
-            self.tr('Normalize'),
-            optional=True,
-            defaultValue=False,
-        ))
 
         self.addParameter(QgsProcessingParameterNumber(
             self.NCOMPONENTS,
@@ -201,8 +174,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # Get Parameters
         self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
-
-        self.normalized = self.parameterAsBool(parameters, self.NORMALIZED, context)
 
         self.ncomponents = self.parameterAsInt(parameters, self.NCOMPONENTS,context)
         self.percentvariance = self.parameterAsDouble(parameters, self.PERCENTVARIANCE,context)
@@ -259,9 +230,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # The constant used for normalization in PCA is: 1 / sqrt(n_samples) 
         # or 1 / sqrt(n_samples - 1)
 
-        # Normalizing afterwards means: 
-        # Normalized scores are data @ loadings
-        # Unnormalized scores are data @ VT.T
 
         U, S, VT = linalg.svd(centered,full_matrices=False)
 
@@ -308,10 +276,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             return {}
 
         # Get the scores, i.e. the data in principal components
-        if self.normalized: 
-            new_array = centered @ loadings
-        else:       
-            new_array = centered @ VT.T
+        new_array = centered @ VT.T
 
 
         # Reshape to original shape
@@ -365,16 +330,11 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 'variance_ratio': variance_ratio.tolist(),
                 'variance explained cumsum': variance_explained_cumsum.tolist(),
                 'band mean': col_mean.tolist(),
-                'is normalized': self.normalized,
                 })
 
         # Save loadings etc as json in the metadata abstract of the layer
-        if self.normalized:
-            layername = "PCA (normalized)"
-        else:
-            layername = "PCA (not normalized)"
         global updatemetadata
-        updatemetadata = self.UpdateMetadata(encoded, layername)
+        updatemetadata = self.UpdateMetadata(encoded)
         context.layerToLoadOnCompletionDetails(self.output_raster).setPostProcessor(updatemetadata)
 
         return {self.OUTPUT: self.output_raster,
@@ -385,7 +345,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 'variance explained cumsum': variance_explained_cumsum,
                 'band mean': col_mean,
                 'eigenvectors': VT.T,
-                'is normalized': self.normalized,
                 'json': encoded}
 
 
@@ -401,13 +360,11 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         """
         To add metadata in the postprocessing step.
         """
-        def __init__(self, abstract, layername):
+        def __init__(self, abstract):
             self.abstract = abstract
-            self.layername = layername
             super().__init__()
             
         def postProcessLayer(self, layer, context, feedback):
-            layer.setName(self.layername)
             meta = layer.metadata()
             meta.setAbstract(self.abstract)
             layer.setMetadata(meta)

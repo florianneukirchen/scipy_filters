@@ -83,7 +83,6 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     _inverse = False
     _keepbands = 0
     falsemean = False
-    msg = ""
 
     _bandmean = None
     V = None
@@ -289,8 +288,6 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         """
         self.get_parameters(parameters, context)
 
-        if self.msg != "":
-            feedback.reportError(self.tr(self.msg), fatalError=False)
 
         self.ds = gdal.Open(self.inputlayer.source())
 
@@ -414,33 +411,13 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             decoded = json.loads(s)
         except (json.decoder.JSONDecodeError, ValueError, TypeError):
             return None, None
-        is_normalized = decoded.get("is normalized", None)
 
-        if is_normalized is None:
-            self.msg = "Metadata does not tell if these are normalized scores. Calculating assuming unnormalized scores."
-            is_normalized = False
-        print("is normalized", is_normalized)
-        if is_normalized:
-            eigenvectors = decoded.get("loadings", None)
-        else:
-            eigenvectors = decoded.get("eigenvectors", None)
-            
-        print(is_normalized)
-        print(eigenvectors)
+        eigenvectors = decoded.get("eigenvectors", None)
 
         try:
             eigenvectors = np.array(eigenvectors)
         except (ValueError, TypeError):
             eigenvectors = None
-
-        if is_normalized:
-            eigenvals = decoded.get("variance explained", None)
-            if not eigenvals is None:
-                try:
-                    eigenvals = np.array(eigenvals)
-                    eigenvectors = (eigenvectors / eigenvals)
-                except (ValueError, TypeError):
-                    msg = "Could not read eigenvalues from metadata"
 
         means = decoded.get("band mean", 0)
         try:
@@ -500,29 +477,21 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
 
     _help = """
         Transform data into given principal components \
-        with a matrix of weights (eigenvectors or loadings) by taking the \
+        with a matrix of eigenvectors by taking the \
         dot product with a matrix of weights (after centering the data). \
 
 
-        The eigenvectors / loadings can also be read from the metadata of an \
-        existing PCA layer. Normalized PCA scores are only partially supported.
+        The eigenvectors can also be read from the metadata of an \
+        existing PCA layer. 
 
-        <b>Eigenvectors</b> Matrix of eigenvectors or loadings (as string). \
+        <b>Eigenvectors</b> Matrix of eigenvectors (as string). \
         Optional if the next parameter is set. \
-        The matrix can be taken from the output of the PCA algorith of this plugin. \
-        Using eigenvectors, the result will be unnormalized PCA scores. \
-        Using loadings, the result will be normalized PCA scores, \
-        but the metadata of the layer will be incorrect (and automatic \
-        inverse transform from PC does not work). 
+        
 
-        <b>Read eigenvectors / loadings from PCA layer metadata</b> \
+        <b>Read eigenvectors from PCA layer metadata</b> \
         Reads the weights for the transformation from the metadata \
         of a layer that was generated using the PCA algorithm of this plugin. \
-        Ignored if the parameter <i>eigenvectors</i> is used. \
-        The eigenvectors are used, if the layer contains unnormalized scores. \
-        The loadings are used, if the layer contains normalized scores; however, \
-        in this case, the metadata of the result will not be correct \
-        (and automatic inverse transform from PC does not work).
+        Ignored if the parameter <i>eigenvectors</i> is used. 
 
         <b>Number of components</b> is only used if the value is greater than 0 and \
         smaller than the count of original bands.
@@ -554,7 +523,7 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.PARAMETERLAYER,
-                self.tr('Read eigenvectors/loadings from PCA layer metadata'),
+                self.tr('Read eigenvectors from PCA layer metadata'),
                 optional=True,
             )
         )
@@ -610,21 +579,12 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
         dot product of the scores the with the transpose of the matrix of eigenvectors \
         and adding the original means to the result.
 
-        Normalized PCA scores are only partially supported, see below. \
-        The eigenvectors / loadings can also be read from the metadata \
+        The eigenvectors can also be read from the metadata \
         of the input layer, as long as they exist and are complete. \
-        If the layer contains the PCA generated with the PCA \
-        algorithm of this plugin (i.e. the meta data is complete), \
-        the transform works for both normalized and unnormalized scores \
-        without changing any parameters.
 
         <b>Eigenvectors</b> Matrix of eigenvectors (as string). \
         Optional if the next parameter is set. \
         The matrix can be taken from the output of the PCA algorith of this plugin. \
-        Assumes that the input contains unnormalized PCA scores. \
-        For normalized PCA scores, divide the loadings matrix by \
-        the eigenvalues ("variance explained") and enter the result \
-        into the <i>eigenvectors</i> text field.
 
         <b>Mean of original bands</b> As first step of PCA, the data of each \
         band is centered by subtracting the means. These must be added \
