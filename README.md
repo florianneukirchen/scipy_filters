@@ -2,16 +2,18 @@
 QGIS plugin providing access to [SciPy](https://scipy.org/) filters via the processing toolbox. SciPy offers a range of highly optimised algorithms for i.e. [multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html) and [signal processing](https://docs.scipy.org/doc/scipy/tutorial/signal.html), and some can be useful to analyze raster layers.
 
 Includes raster filters such as:
-- Convolution with a custom kernel
+- Convolution with a custom kernel (classic or with FFT)
 - Morphological filters (binary/grey dilation, erosion, closing, opening; tophat etc.)
 - Principal Component Analysis (PCA)
 - Statistical filters (local median, minimum, percentile etc.)
 - Edge detection (sobel, laplace etc.)
 - Unsharp mask for sharpening, Wiener filter for noise reduction
+- Pixel statistics (std, mean, min ... of all bands for individual pixels)
 
-Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html), a library to filter images (or arrays, rasters) in *n* dimensions. For more information, see the SciPy tutorial on [Multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html).
 
-These scipy.ndimage filters are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands. 
+Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html), a library to filter images (or arrays, rasters) in *n* dimensions. These are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands.  For more information, see the SciPy tutorial on [Multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html). In most cases, the plugin simply provides a user interface for a single SciPy function, gets the raster data using GDAL, calls the SciPy function with the provided parameters and loads the result back into QGIS. A few filters (PCA, unsharp mask, pixel statistics etc.) use custom functions that where implemented using SciPy and/or Numpy.
+
+
 
 For many filters, a custom footprint and/or structure or kernel can be provided, adjusting the size and shape of the filter.
 
@@ -47,7 +49,7 @@ The order of axes is `[bands,] rows, cols`. These arrays must have the same numb
 
 ### Size
 When calling an algorithm with "size" as parameter from python, you have two options: 
-- `"SIZES"`: string containing a list of integer values with one value for each axis, such as `"1,5,5"` or `"[3,20,5]"` for 3D filters.
+- `"SIZES"`: string containing a list of integer values with one value for each axis, such as `"1,5,5"` or `"[3,20,5]"` for 3D filters or `"5,5"` for 2D filters.
 - `"SIZE"`: integer, use same size for all axes (ignored if SIZES is used).
 
 ### Dimension, output data type, border mode, etc.
@@ -65,7 +67,7 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 - Use sizes widget in more filters
 - More load options for kernel/structure/footprint
 - New origin widget and add origin as parameter to a couple of filters
-- New set of filters for pixel statistics (std, mean, min ... for all bands of individual pixels)
+- New set of filters for pixel statistics (std, mean, min ... of all bands for individual pixels)
 
 ### 0.2 (03/2024)
 - Catch exception if SciPy is not installed and offer to install it automatically (with pip)
