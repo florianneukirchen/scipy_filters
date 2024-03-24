@@ -111,7 +111,7 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
         struct2_param = SciPyParameterStructure(
             self.STRUCTURE2,
-            tr('Structure 2 ()'),
+            tr('Structure 2'),
             defaultValue="",
             multiLine=True,
             optional=True,
