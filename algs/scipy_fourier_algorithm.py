@@ -39,11 +39,12 @@ from qgis.core import (QgsProcessingParameterNumber,
                         )
 
 from ..ui.sizes_widget import SizesWidgetWrapper
-from ..scipy_algorithm_baseclasses import SciPyAlgorithm
+from ..scipy_algorithm_baseclasses import SciPyAlgorithm, Dimensions
 
 from ..helpers import (check_structure, 
                        str_to_array, 
-                       kernelexamples)
+                       kernelexamples,
+                       tr)
 
 from ..ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
@@ -90,7 +91,7 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
 
         self.addParameter(QgsProcessingParameterNumber(
             self.SIGMA,
-            self.tr('Sigma'),
+            tr('Sigma'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=5, 
             optional=False, 
@@ -108,7 +109,7 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
     
     # The function to be called, to be overwritten
     def get_fct(self):
-        if self._dimension == self.Dimensions.threeD:
+        if self._dimension == Dimensions.threeD:
             return self.my_fct_3D
         else:
             return self.my_fct_2D
@@ -185,7 +186,7 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
 
         size_param = QgsProcessingParameterNumber(
             self.SIZE,
-            self.tr('Size'),
+            tr('Size'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=5, 
             optional=True, 
@@ -199,7 +200,7 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
 
         sizes_param = QgsProcessingParameterString(
             self.SIZES,
-            self.tr('Size'),
+            tr('Size'),
             defaultValue="", 
             optional=True, 
             )
@@ -239,14 +240,14 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
         sizes = str_to_int_or_list(sizes)
         if isinstance(sizes, list):
             if len(sizes) != dims:
-                return (False, self.tr("Sizes does not match number of dimensions"))
+                return (False, tr("Sizes does not match number of dimensions"))
 
         return super().checkParameterValues(parameters, context)
     
 
     # The function to be called, to be overwritten
     def get_fct(self):
-        if self._dimension == self.Dimensions.threeD:
+        if self._dimension == Dimensions.threeD:
             return self.my_fct_3D
         else:
             return self.my_fct_2D
@@ -325,7 +326,7 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
 
         size_param = QgsProcessingParameterNumber(
             self.SIZE,
-            self.tr('Size'),
+            tr('Size'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=5, 
             optional=True, 
@@ -339,7 +340,7 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
 
         sizes_param = QgsProcessingParameterString(
             self.SIZES,
-            self.tr('Size'),
+            tr('Size'),
             defaultValue="", 
             optional=True, 
             )
@@ -378,14 +379,14 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
         sizes = str_to_int_or_list(sizes)
         if isinstance(sizes, list):
             if len(sizes) != dims:
-                return (False, self.tr("Sizes does not match number of dimensions"))
+                return (False, tr("Sizes does not match number of dimensions"))
 
         return super().checkParameterValues(parameters, context)
     
     
     # The function to be called, to be overwritten
     def get_fct(self):
-        if self._dimension == self.Dimensions.threeD:
+        if self._dimension == Dimensions.threeD:
             return self.my_fct_3D
         else:
             return self.my_fct_2D
@@ -466,7 +467,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
     def initAlgorithm(self, config):
         # Set dimensions to 2
-        self._dimension = self.Dimensions.twoD
+        self._dimension = Dimensions.twoD
 
         # Used for feedback
         self.inmax = []
@@ -481,7 +482,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
         kernel_param = SciPyParameterStructure(
             self.KERNEL,
-            self.tr('Kernel'),
+            tr('Kernel'),
             defaultValue=default_kernel,
             examples=kernelexamples,
             multiLine=True,
@@ -499,7 +500,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
         
         self.addParameter(QgsProcessingParameterNumber(
             self.NORMALIZATION,
-            self.tr('Normalization (devide kernel values by number). Set to 0 to devide by sum of kernel values.'),
+            tr('Normalization (devide kernel values by number). Set to 0 to devide by sum of kernel values.'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=0, 
             optional=True, 
@@ -563,7 +564,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
         inmin = min(self.inmin)
         inmax = max(self.inmax)
 
-        msg = self.tr(f"Input values are in the range {inmin}...{inmax}")
+        msg = tr(f"Input values are in the range {inmin}...{inmax}")
         feedback.pushInfo(msg)
 
         # Calculate the possible range after applying the kernel
@@ -577,17 +578,17 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
                   + (np.where(self.kernel < 0, 0, self.kernel)  # positive part of kernel
                      * min(0, inmin)).sum()).astype("int")      # multiplied with negative input
         
-        msg = self.tr(f"Expected output range is {outmin}...{outmax}")
+        msg = tr(f"Expected output range is {outmin}...{outmax}")
         feedback.pushInfo(msg)
         
         if self._outdtype in (1,2,4) and np.any(self.kernel < 0):
-            msg = self.tr(f"WARNING: With a kernel containing negative values, output values can be negative. But output data type is unsigned integer!")
+            msg = tr(f"WARNING: With a kernel containing negative values, output values can be negative. But output data type is unsigned integer!")
             feedback.reportError(msg, fatalError = False)
 
         if 1 <= self._outdtype <= 5: # integer types
             info_out = np.iinfo(get_np_dtype(self._outdtype))
             if outmin < info_out.min or outmax > info_out.max:
-                msg = self.tr("WARNING: The possible range of output values is not in the range of the output datatype. Clipping is likely.")
+                msg = tr("WARNING: The possible range of output values is not in the range of the output datatype. Clipping is likely.")
                 feedback.reportError(msg, fatalError=False)
 
     # The function to be called, to be overwritten

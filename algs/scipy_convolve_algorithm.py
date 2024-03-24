@@ -50,7 +50,8 @@ from ..helpers import (str_to_int_or_list,
                       check_structure, 
                       str_to_array, 
                       kernelexamples, 
-                      get_np_dtype)
+                      get_np_dtype,
+                      tr)
 
 class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
@@ -119,7 +120,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
         kernel_param = SciPyParameterStructure(
             self.KERNEL,
-            self.tr('Kernel'),
+            tr('Kernel'),
             defaultValue=default_kernel,
             examples=kernelexamples,
             multiLine=True,
@@ -138,7 +139,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
         
         self.addParameter(QgsProcessingParameterNumber(
             self.NORMALIZATION,
-            self.tr('Normalization (devide kernel values by number). Set to 0 to devide by sum of kernel values.'),
+            tr('Normalization (devide kernel values by number). Set to 0 to devide by sum of kernel values.'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=0, 
             optional=True, 
@@ -149,7 +150,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
         
         origin_param = SciPyParameterOrigin(
             self.ORIGIN,
-            self.tr('Origin'),
+            tr('Origin'),
             defaultValue="0",
             optional=False,
             watch="KERNEL"
@@ -210,11 +211,11 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
         if isinstance(origin, list):          
             if len(origin) != dims:
-                return (False, self.tr("Origin does not match number of dimensions"))
+                return (False, tr("Origin does not match number of dimensions"))
             
             for i in range(dims):
                 if not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
-                    return (False, self.tr("Origin out of bounds of structure"))
+                    return (False, tr("Origin out of bounds of structure"))
 
 
         return super().checkParameterValues(parameters, context)
@@ -225,7 +226,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
         inmin = min(self.inmin)
         inmax = max(self.inmax)
 
-        msg = self.tr(f"Input values are in the range {inmin}...{inmax}")
+        msg = tr(f"Input values are in the range {inmin}...{inmax}")
         feedback.pushInfo(msg)
 
         # Calculate the possible range after applying the kernel
@@ -239,17 +240,17 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
                   + (np.where(self.kernel < 0, 0, self.kernel)  # positive part of kernel
                      * min(0, inmin)).sum()).astype("int")      # multiplied with negative input
         
-        msg = self.tr(f"Expected output range is {outmin}...{outmax}")
+        msg = tr(f"Expected output range is {outmin}...{outmax}")
         feedback.pushInfo(msg)
         
         if self._outdtype in (1,2,4) and np.any(self.kernel < 0):
-            msg = self.tr(f"WARNING: With a kernel containing negative values, output values can be negative. But output data type is unsigned integer!")
+            msg = tr(f"WARNING: With a kernel containing negative values, output values can be negative. But output data type is unsigned integer!")
             feedback.reportError(msg, fatalError = False)
 
         if 1 <= self._outdtype <= 5: # integer types
             info_out = np.iinfo(get_np_dtype(self._outdtype))
             if outmin < info_out.min or outmax > info_out.max:
-                msg = self.tr("WARNING: The possible range of output values is not in the range of the output datatype. Clipping is likely.")
+                msg = tr("WARNING: The possible range of output values is not in the range of the output datatype. Clipping is likely.")
                 feedback.reportError(msg, fatalError=False)
 
 

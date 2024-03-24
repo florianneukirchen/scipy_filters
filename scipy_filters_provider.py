@@ -31,6 +31,8 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 __revision__ = '$Format:%H$'
 
 from qgis.core import QgsProcessingProvider
+
+from .helpers import tr
                                    
 from .algs.scipy_convolve_algorithm import SciPyConvolveAlgorithm
 from .algs.scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm, 
@@ -169,7 +171,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
 
         This string should be short (e.g. "Lastools") and localised.
         """
-        return self.tr('SciPy Filters')
+        return tr('SciPy Filters')
 
     def icon(self):
         """

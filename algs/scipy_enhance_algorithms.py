@@ -36,14 +36,15 @@ from scipy import ndimage, signal
 from qgis.core import QgsProcessingParameterNumber
                         
 from ..scipy_algorithm_baseclasses import (SciPyAlgorithm,
-                                          QgsProcessingParameterString)
+                                          QgsProcessingParameterString,
+                                          Dimensions)
 
 from .scipy_gaussian_algorithm import SciPyAlgorithmWithSigma
 
 from ..ui.sizes_widget import (OddSizesWidgetWrapper)
 
 
-from ..helpers import str_to_int_or_list
+from ..helpers import str_to_int_or_list, tr
 
 class SciPyWienerAlgorithm(SciPyAlgorithm):
     """
@@ -98,7 +99,7 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
 
         sizes_param = QgsProcessingParameterString(
             self.SIZES,
-            self.tr('Size: integer (odd) or array of odd integers with sizes for every dimension'),
+            tr('Size: integer (odd) or array of odd integers with sizes for every dimension'),
             defaultValue="5", 
             optional=False, 
             )
@@ -114,7 +115,7 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
 
         self.addParameter(QgsProcessingParameterNumber(
             self.NOISE,
-            self.tr('Noise'),
+            tr('Noise'),
             QgsProcessingParameterNumber.Type.Double,
             # defaultValue=5, 
             optional=True, 
@@ -138,7 +139,7 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
         sizes = self.parameterAsString(parameters, self.SIZES, context)
 
         dims = 2
-        if self._dimension == self.Dimensions.nD:
+        if self._dimension == Dimensions.nD:
             dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
             if dim_option == 1:
                 dims = 3
@@ -147,15 +148,15 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
         try:
             sizes = str_to_int_or_list(sizes)
         except ValueError:
-            return (False, self.tr("Can not parse size."))
+            return (False, tr("Can not parse size."))
         
         sizes = np.array(sizes)
 
         if not (sizes.size == 1 or sizes.size == dims):
-            return (False, self.tr('Number of elements in array must match the number of dimensions'))
+            return (False, tr('Number of elements in array must match the number of dimensions'))
         
         if np.any(sizes % 2 == 0):
-            return (False, self.tr('Every element in size must be odd.'))
+            return (False, tr('Every element in size must be odd.'))
 
         return super().checkParameterValues(parameters, context)
 
@@ -201,7 +202,7 @@ class SciPyUnsharpMaskAlgorithm(SciPyAlgorithmWithSigma):
         
         self.addParameter(QgsProcessingParameterNumber(
             self.AMOUNT,
-            self.tr('Amount'),
+            tr('Amount'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=1.0, 
             optional=False, 

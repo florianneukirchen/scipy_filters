@@ -35,7 +35,7 @@ from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterEnum,)
 
 from ..scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
-
+from ..helpers import tr
 
 class SciPyAlgorithmWithSigma(SciPyAlgorithmWithMode):
     """
@@ -48,7 +48,7 @@ class SciPyAlgorithmWithSigma(SciPyAlgorithmWithMode):
 
         self.addParameter(QgsProcessingParameterNumber(
             self.SIGMA,
-            self.tr('Sigma'),
+            tr('Sigma'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=5, 
             optional=False, 
@@ -108,7 +108,7 @@ class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
     
     def checkAndComplain(self, feedback):
         if self._outdtype in (1,2,4):
-            msg = self.tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            msg = tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
             feedback.reportError(msg, fatalError = False)
 
     def createInstance(self):
@@ -167,13 +167,13 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
         
         self.addParameter(QgsProcessingParameterEnum(
             self.ORDER,
-            self.tr('Order'),
+            tr('Order'),
             self.order_options,
             defaultValue=0)) 
         
         self.addParameter(QgsProcessingParameterNumber(
             self.TRUNCATE,
-            self.tr('Truncate filter at x standard deviations'),
+            tr('Truncate filter at x standard deviations'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=4, 
             optional=True, 
@@ -242,7 +242,7 @@ class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
     
     def checkAndComplain(self, feedback):
         if self._outdtype in (1,2,4):
-            msg = self.tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            msg = tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
             feedback.reportError(msg, fatalError = False)
 
     def createInstance(self):

@@ -34,7 +34,7 @@ from osgeo import gdal
 from scipy import ndimage
 import numpy as np
 import enum
-from qgis.PyQt.QtCore import QCoreApplication
+
 from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterRasterLayer,
                        QgsProcessingParameterNumber,
@@ -60,7 +60,8 @@ from .helpers import (array_to_str,
                       str_to_array, 
                       footprintexamples,
                       dtype_options,
-                      get_np_dtype,)
+                      get_np_dtype,
+                      tr)
 
 # Group IDs and group names
 groups = {
@@ -73,6 +74,11 @@ groups = {
     'pixel': 'Pixel Statistics',
     'pca': 'PCA',
 }
+
+class Dimensions(enum.Enum):
+    nD = 2         # users can decide between 1D, 2D, 3D
+    twoD = 0       # Seperate for each band
+    threeD = 1     # 3D filter in data cube
 
 
 class SciPyAlgorithm(QgsProcessingAlgorithm):
@@ -139,10 +145,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     # that are not working in n dimensions.
     # Calling from a script, DIMENSION must be in (0,1,2) and match the 
     # values of the enum!
-    class Dimensions(enum.Enum):
-        nD = 2         # users can decide between 1D, 2D, 3D
-        twoD = 0       # Seperate for each band
-        threeD = 1     # 3D filter in data cube
 
     _dimension = Dimensions.nD
     _ndim = None # to be set while getting parameters
@@ -174,15 +176,15 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.INPUT,
-                self.tr('Input layer'),
+                tr('Input layer'),
             )
         )
 
-        if self._dimension == self.Dimensions.nD:
+        if self._dimension == Dimensions.nD:
             # Algorithms based on scipy.ndimage can have any number of dimensions
             dim_param = SciPyParameterDims(
                 self.DIMENSION,
-                self.tr('Dimension'),
+                tr('Dimension'),
                 self._dimension_options,
                 defaultValue=0,
                 optional=False,)
@@ -202,7 +204,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         
         dtype_param = QgsProcessingParameterEnum(
             self.DTYPE,
-            self.tr('Output data type'),
+            tr('Output data type'),
             dtype_options,
             defaultValue=self._default_dtype,
             optional=True)
@@ -219,7 +221,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterRasterDestination(
                 self.OUTPUT,
-            self.tr(self._outputname)))
+            tr(self._outputname)))
         
     def get_parameters(self, parameters, context):
         """
@@ -241,14 +243,14 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             # 0 will be changed to dtype of input layer
             self._outdtype = 0
         
-        if self._dimension == self.Dimensions.nD:
+        if self._dimension == Dimensions.nD:
             dimension = self.parameterAsInt(parameters, self.DIMENSION, context)
             if dimension == 1:
-                self._dimension = self.Dimensions.threeD
+                self._dimension = Dimensions.threeD
                 self._ndim = 3
             else:
                 # Default to 2D
-                self._dimension = self.Dimensions.twoD
+                self._dimension = Dimensions.twoD
                 self._ndim = 2
 
         return {}
@@ -280,13 +282,13 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         # Set to 2D if layer has only one band
         if self.bandcount == 1:
-            self._dimension = self.Dimensions.twoD
+            self._dimension = Dimensions.twoD
 
         # Eventually open mask layer 
         if self.masklayer:
             self.mask_ds = gdal.Open(self.masklayer.source())
             if not self.mask_ds:
-                raise Exception(self.tr("Failed to open Mask Layer"))
+                raise Exception(tr("Failed to open Mask Layer"))
             
             # Mask must have same crs etc.
             if not (self.mask_ds.GetProjection() == self.ds.GetProjection()
@@ -328,7 +330,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         # ndimage filters have a parameter for output dtype
         # For other function, it must be converted by hand
         kwargs['output'] = get_np_dtype(self._outdtype)
-        print(kwargs['output'])
+        # print(kwargs['output'])
 
 
         self.out_ds = driver.Create(
@@ -348,7 +350,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         # Start the actual work
 
-        if self._dimension == self.Dimensions.twoD:
+        if self._dimension == Dimensions.twoD:
             # Iterate over bands and calculate 
             for i in range(1, self.bandcount + 1):
                 a = self.ds.GetRasterBand(i).ReadAsArray()
@@ -362,7 +364,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 if feedback.isCanceled():
                     return {}
                 
-        elif self._dimension == self.Dimensions.threeD:
+        elif self._dimension == Dimensions.threeD:
             a = self.ds.ReadAsArray()               
 
             # The actual function
@@ -411,20 +413,20 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         # 3D only possible with more than 1 bands
         if dim_option == 1 and layer.bandCount() == 1:
-            return (False, self.tr("3D only possible if input layer has more than 1 bands"))
+            return (False, tr("3D only possible if input layer has more than 1 bands"))
             
         return super().checkParameterValues(parameters, context)
     
     @property
     def dims(self):
         d = 2
-        if self._dimension == self.Dimensions.threeD:
+        if self._dimension == Dimensions.threeD:
             d = 3
         return d
 
     def getDimsForCheck(self, parameters, context):
         dims = 2
-        if self._dimension == self.Dimensions.nD:
+        if self._dimension == Dimensions.nD:
             dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
             if dim_option == 1:
                 dims = 3
@@ -435,7 +437,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             info_in = np.iinfo(get_np_dtype(self._indtype))
             info_out = np.iinfo(get_np_dtype(self._outdtype))
             if info_in.min < info_out.min or info_in.max > info_out.max:
-                msg = self.tr("Warning, the range of output datatype is not in the range of the input datatype. Clipping is likely.")
+                msg = tr("Warning, the range of output datatype is not in the range of the input datatype. Clipping is likely.")
                 feedback.reportError(msg, fatalError=False)
 
 
@@ -465,7 +467,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         Returns the translated algorithm name, which should be used for any
         user-visible display of the algorithm name.
         """
-        return self.tr(self._displayname)
+        return tr(self._displayname)
 
     def group(self):
         """
@@ -478,7 +480,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         if not s:
             # If group ID is not in dictionary group, return error message for debugging
             return "Displayname of group must be set in groups dictionary"
-        return self.tr(s)
+        return tr(s)
 
     def groupId(self):
         """
@@ -495,10 +497,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         Returns the help string that is shown on the right side of the 
         user interface.
         """
-        return self.tr(self._help)
+        return tr(self._help)
 
-    def tr(self, string):
-        return QCoreApplication.translate('Processing', string)
 
 
 
@@ -517,13 +517,13 @@ class SciPyAlgorithmWithMode(SciPyAlgorithm):
 
         self.addParameter(QgsProcessingParameterEnum(
             self.MODE,
-            self.tr('Border Mode'),
+            tr('Border Mode'),
             [mode.capitalize() for mode in self.modes],
             defaultValue=0)) 
         
         self.addParameter(QgsProcessingParameterNumber(
             self.CVAL,
-            self.tr('Constant value past edges for border mode "constant"'),
+            tr('Constant value past edges for border mode "constant"'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=0, 
             optional=True, 
@@ -556,7 +556,7 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
         
         self.addParameter(QgsProcessingParameterEnum(
             self.AXIS,
-            self.tr('Axis'),
+            tr('Axis'),
             self.axis_modes,
             defaultValue=0)) 
         
@@ -574,7 +574,7 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
             self.axis = -2
         if self.axis_mode == 1:
             self.axis = -1
-        if self.axis_mode == 2 and self._dimension == self.Dimensions.threeD:
+        if self.axis_mode == 2 and self._dimension == Dimensions.threeD:
             self.axis = -3
 
         return kwargs
@@ -584,7 +584,7 @@ class SciPyAlgorithmWithModeAxis(SciPyAlgorithmWithMode):
         if dim_option == 0: # 2D
             axis_mode = self.parameterAsInt(parameters, self.AXIS, context)
             if axis_mode == 2: # Band (not in 2D)
-                return (False, self.tr("Band axis not possible in 2D case"))
+                return (False, tr("Band axis not possible in 2D case"))
             
         return super().checkParameterValues(parameters, context)
     
@@ -604,7 +604,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
 
         size_param = QgsProcessingParameterNumber(
             self.SIZE,
-            self.tr('Size of flat structuring element (either size or footprint must be given, with footprint, size is ignored)'),
+            tr('Size of flat structuring element (either size or footprint must be given, with footprint, size is ignored)'),
             QgsProcessingParameterNumber.Type.Integer,
             defaultValue=1, 
             optional=True, 
@@ -619,7 +619,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
 
         sizes_param = QgsProcessingParameterString(
             self.SIZES,
-            self.tr('Size'),
+            tr('Size'),
             defaultValue="", 
             optional=True, 
             )
@@ -634,7 +634,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
 
         footprint_param = SciPyParameterStructure(
             self.FOOTPRINT,
-            self.tr('Footprint array'),
+            tr('Footprint array'),
             defaultValue="",
             examples=footprintexamples,
             multiLine=True,
@@ -653,7 +653,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
 
         origin_param = SciPyParameterOrigin(
             self.ORIGIN,
-            self.tr('Origin'),
+            tr('Origin'),
             defaultValue="0",
             optional=False,
             watch="FOOTPRINT"
@@ -681,24 +681,24 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
         ok, s, shape = check_structure(footprint, dims)
         if not ok:
             s = 'Footprint: ' + s
-            return (ok, self.tr(s))
+            return (ok, tr(s))
 
         sizes = self.parameterAsString(parameters, self.SIZES, context)
         sizes = str_to_int_or_list(sizes)
         if isinstance(sizes, list):
             if len(sizes) != dims:
-                return (False, self.tr("Sizes does not match number of dimensions"))
+                return (False, tr("Sizes does not match number of dimensions"))
 
         origin = self.parameterAsString(parameters, self.ORIGIN, context)
         origin = str_to_int_or_list(origin)
 
         if isinstance(origin, list):          
             if len(origin) != dims:
-                return (False, self.tr("Origin does not match number of dimensions"))
+                return (False, tr("Origin does not match number of dimensions"))
             
             for i in range(dims):
                 if shape[i] != 0 and not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
-                    return (False, self.tr("Origin out of bounds of structure"))
+                    return (False, tr("Origin out of bounds of structure"))
 
 
         # Extra check for rank_filter: rank must be < as footprint size
@@ -715,7 +715,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
                 size = self.parameterAsInt(parameters, self.SIZE, context)
                 footprintsize = np.power(size, dims)
             if rank >= footprintsize:
-                return (False, self.tr('Rank must be smaller than the size of the footprint'))
+                return (False, tr('Rank must be smaller than the size of the footprint'))
             
         return super().checkParameterValues(parameters, context)
     

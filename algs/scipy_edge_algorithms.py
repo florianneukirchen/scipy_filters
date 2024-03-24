@@ -36,7 +36,7 @@ from scipy import ndimage
 from ..scipy_algorithm_baseclasses import (SciPyAlgorithmWithMode,
                                           SciPyAlgorithmWithModeAxis,)
 
-
+from ..helpers import tr
 
 class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
     # Overwrite constants of base class
@@ -75,7 +75,7 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
     
     def checkAndComplain(self, feedback):
         if self._outdtype in (1,2,4):
-            msg = self.tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            msg = tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
             feedback.reportError(msg, fatalError = False)
 
     def createInstance(self):
@@ -134,7 +134,7 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
 
     def checkAndComplain(self, feedback):
         if self._outdtype in (1,2,4):
-            msg = self.tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            msg = tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
             feedback.reportError(msg, fatalError = False)
 
     def createInstance(self):
@@ -194,7 +194,7 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
     
     def checkAndComplain(self, feedback):
         if self._outdtype in (1,2,4):
-            msg = self.tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            msg = tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
             feedback.reportError(msg, fatalError = False)
 
     def createInstance(self):

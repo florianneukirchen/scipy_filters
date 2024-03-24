@@ -54,7 +54,8 @@ from ..helpers import (str_to_int_or_list,
                       check_structure, 
                       str_to_array, 
                       morphostructexamples,
-                      footprintexamples)
+                      footprintexamples,
+                      tr)
 
 class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
     """
@@ -77,14 +78,14 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
         
         self.addParameter(QgsProcessingParameterEnum(
             self.ALGORITHM,
-            self.tr('Filter'),
+            tr('Filter'),
             self.algorithms,
             defaultValue=0)) 
         
 
         struct_param = SciPyParameterStructure(
             self.STRUCTURE,
-            self.tr('Structure'),
+            tr('Structure'),
             defaultValue="[[0, 1, 0],\n[1, 1, 1],\n[0, 1, 0]]",
             examples=morphostructexamples,
             multiLine=True,
@@ -102,7 +103,7 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
         
         origin_param = SciPyParameterOrigin(
             self.ORIGIN,
-            self.tr('Origin'),
+            tr('Origin'),
             defaultValue="0",
             optional=False,
             watch="STRUCTURE"
@@ -147,10 +148,10 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
 
         if isinstance(origin, list):          
             if len(origin) != dims:
-                return (False, self.tr("Origin does not match number of dimensions"))
+                return (False, tr("Origin does not match number of dimensions"))
             for i in range(dims):
                 if shape[i] != 0 and not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
-                    return (False, self.tr("Origin out of bounds of structure"))
+                    return (False, tr("Origin out of bounds of structure"))
 
         return super().checkParameterValues(parameters, context)
 
@@ -216,7 +217,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
         self.addParameter(QgsProcessingParameterNumber(
             self.ITERATIONS,
-            self.tr('Iterations'),
+            tr('Iterations'),
             QgsProcessingParameterNumber.Type.Integer,
             defaultValue=1, 
             optional=True, 
@@ -226,7 +227,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         
         self.addParameter(QgsProcessingParameterEnum(
             self.BORDERVALUE,
-            self.tr('Border value (value at border of output array)'),
+            tr('Border value (value at border of output array)'),
             ["0","1"],
             optional=True,
             defaultValue=0))
@@ -234,7 +235,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.MASK,
-                self.tr('Mask layer'),
+                tr('Mask layer'),
                 optional=True,
             )
         )
@@ -324,7 +325,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
         size_param = QgsProcessingParameterNumber(
             self.SIZE,
-            self.tr('Size of flat structuring element (Ignored if footprint or structure provided)'),
+            tr('Size of flat structuring element (Ignored if footprint or structure provided)'),
             QgsProcessingParameterNumber.Type.Integer,
             defaultValue=1, 
             optional=True, 
@@ -338,7 +339,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
         sizes_param = QgsProcessingParameterString(
             self.SIZES,
-            self.tr('Size'),
+            tr('Size'),
             defaultValue="", 
             optional=True, 
             )
@@ -353,13 +354,13 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         
         self.addParameter(QgsProcessingParameterEnum(
             self.MODE,
-            self.tr('Border Mode'),
+            tr('Border Mode'),
             [mode.capitalize() for mode in self.modes],
             defaultValue=0)) 
         
         self.addParameter(QgsProcessingParameterNumber(
             self.CVAL,
-            self.tr('Constant value past edges for border mode "constant"'),
+            tr('Constant value past edges for border mode "constant"'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=0, 
             optional=True, 
@@ -369,7 +370,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         
         struct_param = SciPyParameterStructure(
             self.FOOTPRINT,
-            self.tr('Footprint array'),
+            tr('Footprint array'),
             defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
             examples=footprintexamples,
             multiLine=True,
@@ -393,13 +394,13 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         if footprint:
             ok, s, shape = check_structure(footprint, dims)
             if not ok:
-                return (ok, self.tr('Footprint: ' + s))
+                return (ok, tr('Footprint: ' + s))
         
         sizes = self.parameterAsString(parameters, self.SIZES, context)
         sizes = str_to_int_or_list(sizes)
         if isinstance(sizes, list):
             if len(sizes) != dims:
-                return (False, self.tr("Sizes does not match number of dimensions"))
+                return (False, tr("Sizes does not match number of dimensions"))
 
         return super().checkParameterValues(parameters, context)
     

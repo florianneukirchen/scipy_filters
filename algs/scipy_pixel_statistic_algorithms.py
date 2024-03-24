@@ -32,8 +32,8 @@ __revision__ = '$Format:%H$'
 
 import numpy as np
                       
-from ..scipy_algorithm_baseclasses import SciPyAlgorithm
-
+from ..scipy_algorithm_baseclasses import SciPyAlgorithm, Dimensions
+from ..helpers import tr
 
 class SciPyPixelMinAlgorithm(SciPyAlgorithm):
     """
@@ -66,13 +66,13 @@ class SciPyPixelMinAlgorithm(SciPyAlgorithm):
 
     def initAlgorithm(self, config):
         # Set dimensions to 3
-        self._dimension = self.Dimensions.threeD
+        self._dimension = Dimensions.threeD
         super().initAlgorithm(config)
         
     def checkParameterValues(self, parameters, context):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         if layer.bandCount() == 1:
-            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+            return (False, tr("Pixel statistics only possible if layer has more than 1 band."))
         return super().checkParameterValues(parameters, context)
         
     def createInstance(self):
@@ -111,14 +111,14 @@ class SciPyPixelMaxAlgorithm(SciPyAlgorithm):
 
     def initAlgorithm(self, config):
         # Set dimensions to 3
-        self._dimension = self.Dimensions.threeD
+        self._dimension = Dimensions.threeD
         super().initAlgorithm(config)
         
 
     def checkParameterValues(self, parameters, context):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         if layer.bandCount() == 1:
-            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+            return (False, tr("Pixel statistics only possible if layer has more than 1 band."))
         return super().checkParameterValues(parameters, context)
     
     def createInstance(self):
@@ -157,13 +157,13 @@ class SciPyPixelMeanAlgorithm(SciPyAlgorithm):
 
     def initAlgorithm(self, config):
         # Set dimensions to 3
-        self._dimension = self.Dimensions.threeD
+        self._dimension = Dimensions.threeD
         super().initAlgorithm(config)
 
     def checkParameterValues(self, parameters, context):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         if layer.bandCount() == 1:
-            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+            return (False, tr("Pixel statistics only possible if layer has more than 1 band."))
         return super().checkParameterValues(parameters, context)        
 
     def createInstance(self):
@@ -200,13 +200,13 @@ class SciPyPixelMedianAlgorithm(SciPyAlgorithm):
 
     def initAlgorithm(self, config):
         # Set dimensions to 3
-        self._dimension = self.Dimensions.threeD
+        self._dimension = Dimensions.threeD
         super().initAlgorithm(config)
         
     def checkParameterValues(self, parameters, context):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         if layer.bandCount() == 1:
-            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+            return (False, tr("Pixel statistics only possible if layer has more than 1 band."))
         return super().checkParameterValues(parameters, context)
     
     def createInstance(self):
@@ -243,13 +243,13 @@ class SciPyPixelStdAlgorithm(SciPyAlgorithm):
 
     def initAlgorithm(self, config):
         # Set dimensions to 3
-        self._dimension = self.Dimensions.threeD
+        self._dimension = Dimensions.threeD
         super().initAlgorithm(config)
         
     def checkParameterValues(self, parameters, context):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         if layer.bandCount() == 1:
-            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+            return (False, tr("Pixel statistics only possible if layer has more than 1 band."))
         return super().checkParameterValues(parameters, context)
     
     def createInstance(self):
@@ -286,13 +286,13 @@ class SciPyPixelVarAlgorithm(SciPyAlgorithm):
 
     def initAlgorithm(self, config):
         # Set dimensions to 3
-        self._dimension = self.Dimensions.threeD
+        self._dimension = Dimensions.threeD
         super().initAlgorithm(config)
         
     def checkParameterValues(self, parameters, context):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         if layer.bandCount() == 1:
-            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+            return (False, tr("Pixel statistics only possible if layer has more than 1 band."))
         return super().checkParameterValues(parameters, context)
     
     def createInstance(self):
@@ -330,13 +330,13 @@ class SciPyPixelRangeAlgorithm(SciPyAlgorithm):
 
     def initAlgorithm(self, config):
         # Set dimensions to 3
-        self._dimension = self.Dimensions.threeD
+        self._dimension = Dimensions.threeD
         super().initAlgorithm(config)
         
     def checkParameterValues(self, parameters, context):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         if layer.bandCount() == 1:
-            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+            return (False, tr("Pixel statistics only possible if layer has more than 1 band."))
         return super().checkParameterValues(parameters, context)
     
     def createInstance(self):
@@ -384,13 +384,13 @@ class SciPyPixelMinMaxMeanAlgorithm(SciPyAlgorithm):
 
     def initAlgorithm(self, config):
         # Set dimensions to 3
-        self._dimension = self.Dimensions.threeD
+        self._dimension = Dimensions.threeD
         super().initAlgorithm(config)
         
     def checkParameterValues(self, parameters, context):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         if layer.bandCount() == 1:
-            return (False, self.tr("Pixel statistics only possible if layer has more than 1 band."))
+            return (False, tr("Pixel statistics only possible if layer has more than 1 band."))
         return super().checkParameterValues(parameters, context)
     
     def createInstance(self):

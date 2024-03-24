@@ -35,6 +35,7 @@ import sys
 import inspect
 
 from qgis.core import QgsApplication
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 
 try:
     from .scipy_filters_provider import SciPyFiltersProvider
@@ -54,7 +55,24 @@ if cmd_folder not in sys.path:
 class SciPyFiltersPlugin(object):
 
     def __init__(self):
+        # super().__init__()
         self.provider = None
+
+        # initialize locale
+        self.plugin_dir = os.path.dirname(__file__)
+        locale = QSettings().value('locale/userLocale')[0:2]
+        locale_path = os.path.join(
+            self.plugin_dir,
+            'i18n',
+            'scipy_filters_{}.qm'.format(locale))
+        
+
+        if os.path.exists(locale_path):
+            self.translator = QTranslator()
+            self.translator.load(locale_path)
+            QCoreApplication.installTranslator(self.translator)
+    
+
 
     def initProcessing(self):
         """Init Processing provider for QGIS >= 3.8."""

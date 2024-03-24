@@ -47,6 +47,7 @@ from qgis.core import (QgsProcessingAlgorithm,
                         )
 
 from ..scipy_algorithm_baseclasses import groups
+from ..helpers import tr
 
 
 class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
@@ -122,14 +123,14 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.INPUT,
-                self.tr('Input layer'),
+                tr('Input layer'),
             )
         )
 
 
         self.addParameter(QgsProcessingParameterNumber(
             self.NCOMPONENTS,
-            self.tr('Number of components to keep. Set to 0 for all components.'),
+            tr('Number of components to keep. Set to 0 for all components.'),
             QgsProcessingParameterNumber.Type.Integer,
             defaultValue=0, 
             optional=True, 
@@ -140,7 +141,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         self.addParameter(QgsProcessingParameterNumber(
             self.PERCENTVARIANCE,
-            self.tr('Percentage of Variance to keep (if set and > 0: overwrites number of components)'),
+            tr('Percentage of Variance to keep (if set and > 0: overwrites number of components)'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=0, 
             optional=True, 
@@ -150,7 +151,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     
         dtype_param = QgsProcessingParameterEnum(
             self.DTYPE,
-            self.tr('Output data type'),
+            tr('Output data type'),
             ['Float32 (32 bit float)', 'Float64 (64 bit float)'],
             defaultValue=0,
             optional=True)
@@ -163,7 +164,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterRasterDestination(
                 self.OUTPUT,
-            self.tr(self._outputname)))
+            tr(self._outputname)))
         
 
     def processAlgorithm(self, parameters, context, feedback):
@@ -352,7 +353,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         # PCA only possible with more than 1 bands
         if layer.bandCount() == 1:
-            return (False, self.tr("PCA only possible if input layer has more than 1 bands"))
+            return (False, tr("PCA only possible if input layer has more than 1 bands"))
             
         return super().checkParameterValues(parameters, context)
     
@@ -385,7 +386,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         Returns the translated algorithm name, which should be used for any
         user-visible display of the algorithm name.
         """
-        return self.tr(self._displayname)
+        return tr(self._displayname)
 
     def group(self):
         """
@@ -398,7 +399,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         if not s:
             # If group ID is not in dictionary group, return error message for debugging
             return "Displayname of group must be set in groups dictionary"
-        return self.tr(s)
+        return tr(s)
 
     def groupId(self):
         """
@@ -415,7 +416,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         Returns the help string that is shown on the right side of the 
         user interface.
         """
-        return self.tr(self._help)
+        return tr(self._help)
 
     def tr(self, string):
         return QCoreApplication.translate('Processing', string)

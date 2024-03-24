@@ -47,11 +47,8 @@ from qgis.core import (QgsProcessingAlgorithm,
 
 
 
-from ..helpers import (str_to_int_or_list, 
-                      check_structure, 
-                      str_to_array, 
-                      kernelexamples, 
-                      get_np_dtype)
+from ..helpers import (str_to_array, 
+                      tr)
 
 from ..scipy_algorithm_baseclasses import groups
 
@@ -93,13 +90,13 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.INPUT,
-                self.tr('Input layer'),
+                tr('Input layer'),
             )
         )
 
         eig_param = QgsProcessingParameterString(
             self.EIGENVECTORS,
-            self.tr('Eigenvectors'),
+            tr('Eigenvectors'),
             defaultValue="",
             multiLine=True,
             optional=True,
@@ -111,9 +108,9 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         self.addParameter(eig_param)
 
         if self._inverse:
-            desc = self.tr('Mean of original bands')
+            desc = tr('Mean of original bands')
         else:
-            desc = self.tr('False mean for each band')
+            desc = tr('False mean for each band')
 
         mean_param = QgsProcessingParameterString(
             self.BANDMEAN,
@@ -129,7 +126,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
         dtype_param = QgsProcessingParameterEnum(
             self.DTYPE,
-            self.tr('Output data type'),
+            tr('Output data type'),
             ['Float32 (32 bit float)', 'Float64 (64 bit float)'],
             defaultValue=0,
             optional=True)
@@ -142,7 +139,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterRasterDestination(
                 self.OUTPUT,
-            self.tr(self._outputname)))
+            tr(self._outputname)))
         
     
     def get_parameters(self, parameters, context):
@@ -206,7 +203,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         try:
             V = str_to_array(V, dims=None, to_int=False)
         except QgsProcessingException:
-            return False, self.tr("Can not parse eigenvectors")
+            return False, tr("Can not parse eigenvectors")
 
         # Get parameters from metadata and check eigenvectors
         if self._inverse:
@@ -227,7 +224,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             try:
                 decoded = json.loads(abstract)
             except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                return False, self.tr("Could not decode metadata abstract")
+                return False, tr("Could not decode metadata abstract")
             eigenvectors = decoded.get("eigenvectors", None)
             layermeans = decoded.get("band mean", "")
 
@@ -235,20 +232,20 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
                 try:
                     eigenvectors = np.array(eigenvectors)
                 except (ValueError, TypeError):
-                    return False, self.tr("Could not decode metadata abstract")
+                    return False, tr("Could not decode metadata abstract")
             
         # Check if eigenvectors are provided one or the other way
         if V is None:
             V = eigenvectors
         if V is None:
-            return False, self.tr("The layer does not contain valid eigenvactors and no eigenvectors where provided")
+            return False, tr("The layer does not contain valid eigenvactors and no eigenvectors where provided")
 
         # Check dimensions and shape of eigenvectors
         if V.ndim != 2 or V.shape[0] != V.shape[1]:
-            return False, self.tr("Matrix of eigenvectors must be square (2D)")
+            return False, tr("Matrix of eigenvectors must be square (2D)")
 
         if (self._inverse and V.shape[0] < bands) or ((not self._inverse) and V.shape[0] != bands):
-            return False, self.tr("Shape of matrix of eigenvectors does not match number of bands")
+            return False, tr("Shape of matrix of eigenvectors does not match number of bands")
 
 
         # Check provided means
@@ -269,15 +266,15 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
                     decoded = json.loads(bandmean)
                     bandmean = np.array(decoded)
                 except (json.decoder.JSONDecodeError, ValueError, TypeError):
-                    return False, self.tr("Could not parse list of means")
+                    return False, tr("Could not parse list of means")
                 # If mean is given in text field, do not use the one from metadata
                 layermeans = bandmean
 
             # Check dimensions (both cases) 
             if layermeans.ndim != 1:
-                return False, self.tr("False shape of means list")
+                return False, tr("False shape of means list")
             if layermeans.shape[0] != V.shape[0]:
-                return False, self.tr("False shape of means list")
+                return False, tr("False shape of means list")
 
         return super().checkParameterValues(parameters, context)
 
@@ -325,9 +322,9 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             if not self.falsemean:
                 self._bandmean = a.mean(axis=0)
                 self._bandmean = self._bandmean[np.newaxis, :]
-                feedback.pushInfo(self.tr("\nBand Mean:"))
+                feedback.pushInfo(tr("\nBand Mean:"))
             else:
-                feedback.pushInfo(self.tr("\nFalse (given) band mean:"))
+                feedback.pushInfo(tr("\nFalse (given) band mean:"))
             feedback.pushInfo(str(self._bandmean[0].tolist()) + "\n")
 
             a = a - self._bandmean
@@ -444,7 +441,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         return self._name
 
     def displayName(self):
-        return self.tr(self._displayname)
+        return tr(self._displayname)
 
     def group(self):
         if self._groupid == "":
@@ -453,13 +450,13 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         if not s:
             # If group ID is not in dictionary group, return error message for debugging
             return "Displayname of group must be set in groups dictionary"
-        return self.tr(s)
+        return tr(s)
 
     def groupId(self):
         return self._groupid
     
     def shortHelpString(self):
-        return self.tr(self._help)
+        return tr(self._help)
 
     def tr(self, string):
         return QCoreApplication.translate('Processing', string)
@@ -523,14 +520,14 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
         self.addParameter(
             QgsProcessingParameterRasterLayer(
                 self.PARAMETERLAYER,
-                self.tr('Read eigenvectors from PCA layer metadata'),
+                tr('Read eigenvectors from PCA layer metadata'),
                 optional=True,
             )
         )
 
         self.addParameter(QgsProcessingParameterNumber(
             self.NCOMPONENTS,
-            self.tr('Number of components to keep. Set to 0 for all components.'),
+            tr('Number of components to keep. Set to 0 for all components.'),
             QgsProcessingParameterNumber.Type.Integer,
             defaultValue=0, 
             optional=True, 
@@ -540,7 +537,7 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
         
         means_b = QgsProcessingParameterBoolean(
             self.FALSEMEAN,
-            self.tr('Use false mean (provided as parameter) to center data'),
+            tr('Use false mean (provided as parameter) to center data'),
             optional=True,
             defaultValue=False,
         )
@@ -600,3 +597,20 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
 
     def createInstance(self):
         return SciPyTransformFromPCAlgorithm()  
+    
+
+class SciPyKeepNBands(QgsProcessingAlgorithm):
+    """
+    Keep only n bands (or principal components), utility algorithm for PCA.
+
+    """
+
+    OUTPUT = 'OUTPUT'
+    INPUT = 'INPUT'
+    NCOMPONENTS = 'NCOMPONENTS'
+
+    _name = 'keep_only'
+    _displayname = 'Keep only n bands (n components)'
+    _outputname = 'Keep only n bands'
+    _groupid = "pca" 
+

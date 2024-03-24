@@ -46,7 +46,8 @@ from ..ui.structure_widget import (StructureWidgetWrapper,
 from ..helpers import (str_to_int_or_list, 
                       check_structure, 
                       str_to_array, 
-                      morphostructexamples,)
+                      morphostructexamples,
+                      tr)
 
 from ..ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
@@ -92,7 +93,7 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
 
         struct_param = SciPyParameterStructure(
             self.STRUCTURE,
-            self.tr('Structure'),
+            tr('Structure'),
             defaultValue="[[0, 1, 0],\n[1, 1, 1],\n[0, 1, 0]]",
             examples=morphostructexamples,
             multiLine=True,
@@ -110,7 +111,7 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
 
         origin_param = SciPyParameterOrigin(
             self.ORIGIN,
-            self.tr('Origin'),
+            tr('Origin'),
             defaultValue="0",
             optional=False,
             watch="STRUCTURE"
@@ -151,10 +152,10 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
 
         if isinstance(origin, list):          
             if len(origin) != dims:
-                return (False, self.tr("Origin does not match number of dimensions"))
+                return (False, tr("Origin does not match number of dimensions"))
             for i in range(dims):
                 if shape[i] != 0 and not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
-                    return (False, self.tr("Origin out of bounds of structure"))
+                    return (False, tr("Origin out of bounds of structure"))
 
         return super().checkParameterValues(parameters, context)
     

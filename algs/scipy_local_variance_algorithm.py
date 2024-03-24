@@ -37,7 +37,7 @@ from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterDefinition,
                         )
 
-from ..helpers import str_to_int_or_list
+from ..helpers import str_to_int_or_list, tr
 
 from ..scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           SciPyStatisticalAlgorithm)
@@ -112,7 +112,7 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
        
         size_param = QgsProcessingParameterNumber(
             self.SIZE,
-            self.tr('Size of filter'),
+            tr('Size of filter'),
             QgsProcessingParameterNumber.Type.Integer,
             defaultValue=3, 
             optional=True, 
@@ -126,7 +126,7 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
 
         sizes_param = QgsProcessingParameterString(
             self.SIZES,
-            self.tr('Size'),
+            tr('Size'),
             defaultValue="", 
             optional=True, 
             )
@@ -148,7 +148,7 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
         sizes = str_to_int_or_list(sizes)
         if isinstance(sizes, list):
             if len(sizes) != dims:
-                return (False, self.tr("Sizes does not match number of dimensions"))
+                return (False, tr("Sizes does not match number of dimensions"))
 
         return super().checkParameterValues(parameters, context)
     
@@ -265,7 +265,7 @@ class SciPyStdAlgorithm(SciPyStatisticalAlgorithm):
         
         self.addParameter(QgsProcessingParameterNumber(
             self.DDOF,
-            self.tr('Delta degrees of freedom (ddof)'),
+            tr('Delta degrees of freedom (ddof)'),
             QgsProcessingParameterNumber.Type.Integer,
             optional=False, 
             defaultValue=1,

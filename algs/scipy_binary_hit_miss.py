@@ -46,7 +46,8 @@ from ..ui.structure_widget import (StructureWidgetWrapper,
 from ..helpers import (str_to_int_or_list, 
                       check_structure, 
                       str_to_array, 
-                      morphostructexamples)
+                      morphostructexamples,
+                      tr)
 
 
 class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
@@ -92,7 +93,7 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
         struct1_param = SciPyParameterStructure(
             self.STRUCTURE1,
-            self.tr('Structure 1'),
+            tr('Structure 1'),
             defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
             multiLine=True,
             optional=True,
@@ -110,7 +111,7 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
         struct2_param = SciPyParameterStructure(
             self.STRUCTURE2,
-            self.tr('Structure 2 ()'),
+            tr('Structure 2 ()'),
             defaultValue="",
             multiLine=True,
             optional=True,
@@ -128,7 +129,7 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
         origin1_param = SciPyParameterOrigin(
             self.ORIGIN1,
-            self.tr('Origin Structure 1'),
+            tr('Origin Structure 1'),
             defaultValue="0",
             optional=False,
             watch="STRUCTURE1"
@@ -146,7 +147,7 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
         origin2_param = SciPyParameterOrigin(
             self.ORIGIN2,
-            self.tr('Origin Structure 2 (if empty: use complementary of structure 1)'),
+            tr('Origin Structure 2 (if empty: use complementary of structure 1)'),
             defaultValue="0",
             optional=False,
             watch="STRUCTURE2"
@@ -190,13 +191,13 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
         structure = self.parameterAsString(parameters, self.STRUCTURE1, context)
         ok, s, shape = check_structure(structure, dims)
         if not ok:
-            s = self.tr("Could not parse structure 1 or dimensions do not match")
+            s = tr("Could not parse structure 1 or dimensions do not match")
             return (ok, s)
         
         structure = self.parameterAsString(parameters, self.STRUCTURE2, context)
         ok, s, shape = check_structure(structure, dims)
         if not ok:
-            s = self.tr("Could not parse structure 2 or dimensions do not match")
+            s = tr("Could not parse structure 2 or dimensions do not match")
             return (ok, s)
         
         origin = self.parameterAsString(parameters, self.ORIGIN1, context)
@@ -204,10 +205,10 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
         if isinstance(origin, list):          
             if len(origin) != dims:
-                return (False, self.tr("Origin 1 does not match number of dimensions"))
+                return (False, tr("Origin 1 does not match number of dimensions"))
             for i in range(dims):
                 if shape[i] != 0 and not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
-                    return (False, self.tr("Origin 1 out of bounds of structure"))
+                    return (False, tr("Origin 1 out of bounds of structure"))
 
 
         origin = self.parameterAsString(parameters, self.ORIGIN2, context)
@@ -215,10 +216,10 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
         if isinstance(origin, list):          
             if len(origin) != dims:
-                return (False, self.tr("Origin 2 does not match number of dimensions"))
+                return (False, tr("Origin 2 does not match number of dimensions"))
             for i in range(dims):
                 if shape[i] != 0 and not (-(shape[i] // 2) <= origin[i] <= (shape[i]-1) // 2):
-                    return (False, self.tr("Origin 2 out of bounds of structure"))
+                    return (False, tr("Origin 2 out of bounds of structure"))
 
         
         return super().checkParameterValues(parameters, context)
