@@ -69,7 +69,7 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
     _groupid = 'morphological'
 
     def getAlgs(self):
-        return ['Dilation', 'Erosion', 'Closing', 'Opening']
+        return [tr('Dilation'), tr('Erosion'), tr('Closing'), tr('Opening')]
     
 
     def insert_parameters(self, config):
@@ -495,7 +495,7 @@ class SciPyTophatAlgorithm(SciPyGreyMorphologicalAlgorithm):
             """
     
     def getAlgs(self):
-        return ['White Tophat', 'Black Tophat', 'Morphological Gradient', 'Morphological Laplace']
+        return [tr('White Tophat'), tr('Black Tophat'), tr('Morphological Gradient'), tr('Morphological Laplace')]
 
     # The function to be called
     def get_fct(self):
