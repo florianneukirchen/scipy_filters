@@ -701,8 +701,6 @@ class SciPyKeepN(QgsProcessingAlgorithm):
         global postprocess
         meta = self.inputlayer.metadata()
         name = tr("{} components of {}").format(self.ncomponents, self.inputlayer.name())
-        print(name)
-        print(meta)
         postprocess = self.PostProcess(meta, name)
         context.layerToLoadOnCompletionDetails(self.output_raster).setPostProcessor(postprocess)
 
@@ -717,13 +715,11 @@ class SciPyKeepN(QgsProcessingAlgorithm):
         def __init__(self, meta, name):
             self.meta = meta
             self.name = name
-            print(name)
             super().__init__()
             
         def postProcessLayer(self, layer, context, feedback):
             layer.setMetadata(self.meta)
             layer.setName(self.name)
-            print(self.name)
 
     def shortHelpString(self):
         """
