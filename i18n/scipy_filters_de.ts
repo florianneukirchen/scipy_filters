@@ -34,24 +34,24 @@
         <translation>Warnung, der Wertebereich des Ausgabedatentyps ist nicht innerhalb desjenigen des Eingabedatentyps. Die Werte werden vermutlich beschnitten.</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="520"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="522"/>
         <source>Border Mode</source>
         <translation>Randmodus</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="526"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="528"/>
         <source>Constant value past edges for border mode &quot;constant&quot;</source>
-        <translation>Konstanter Wert für Randmodus &quot;constant&quot;</translation>
+        <translation>Konstanter Wert für Randmodus &amp;quot;constant&amp;quot;</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="559"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="561"/>
         <source>Axis</source>
         <translation>Achse</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="589"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="591"/>
         <source>Band axis not possible in 2D case</source>
-        <translation>Achse &quot;Band&quot; ist in 2D nicht möglich</translation>
+        <translation>Achse &amp;quot;Band&amp;quot; ist in 2D nicht möglich</translation>
     </message>
     <message>
         <location filename="../algs/scipy_statistical_algorithms.py" line="462"/>
@@ -64,12 +64,12 @@
         <translation>Größe</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="637"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="639"/>
         <source>Footprint array</source>
         <translation>Fußabdruck</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="656"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="658"/>
         <source>Origin</source>
         <translation>Ursprung</translation>
     </message>
@@ -79,17 +79,17 @@
         <translation>Größe passt nicht zur Anzahl der Dimensionen</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="699"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="701"/>
         <source>Origin does not match number of dimensions</source>
         <translation>Ursprung passt nicht zur Anzahl der Dimensionen</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="703"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="705"/>
         <source>Origin out of bounds of structure</source>
         <translation>Ursprung liegt außerhalb des Fußabdrucks</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="720"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="722"/>
         <source>Rank must be smaller than the size of the footprint</source>
         <translation>Rangordnung muss kleiner sein als Größe des Fußabdrucks</translation>
     </message>
@@ -102,6 +102,96 @@
         <location filename="../algs/scipy_statistical_algorithms.py" line="394"/>
         <source>Rank</source>
         <translation>Rangordnung</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="69"/>
+        <source>Morphological Filters</source>
+        <translation>Morphologische Filter</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="70"/>
+        <source>Statistical Filters</source>
+        <translation>Statistische Filter</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="74"/>
+        <source>Pixel Statistics</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../scipy_filters_provider.py" line="174"/>
+        <source>SciPy Filters</source>
+        <translation>SciPy Filter</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="68"/>
+        <source>Edges</source>
+        <translation>Kanten</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="71"/>
+        <source>Blur</source>
+        <translation>Weichzeichnen</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="72"/>
+        <source>Convolution</source>
+        <translation>Faltung</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="73"/>
+        <source>Enhance</source>
+        <translation>Verbesserung</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="75"/>
+        <source>PCA</source>
+        <translation>PCA</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="50"/>
+        <source>Median filter</source>
+        <translation>Median Filter</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="100"/>
+        <source>Minimum filter</source>
+        <translation>Minimum Filter</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="149"/>
+        <source>Maximum filter</source>
+        <translation>Maximum Filter</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="199"/>
+        <source>Local range (difference of min and max)</source>
+        <translation>Spannbreite (Differenz von Min und Max)</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="200"/>
+        <source>Range</source>
+        <translation>Spannbreite</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="258"/>
+        <source>Percentile filter</source>
+        <translation>Perzentilenfilter</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="336"/>
+        <source>Rank filter</source>
+        <translation>Rangordnungsfilter</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="427"/>
+        <source>Uniform filter (box filter)</source>
+        <translation>Gleichförmiger Filter (Box Filter)</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="428"/>
+        <source>Uniform filter</source>
+        <translation>Gleichförmiger Filter</translation>
     </message>
 </context>
 <context>
