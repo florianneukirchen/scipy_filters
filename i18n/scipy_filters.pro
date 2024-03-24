@@ -1,6 +1,7 @@
 FORMS = ../ui/SizesWidget.ui ../ui/OriginWidget.ui ../ui/StructureWidget.ui
 SOURCES = ../scipy_algorithm_baseclasses.py \
           ../scipy_filters_provider.py \
+          ../scipy_filters.py \
           ../helpers/gdal_dtype.py \
           ../helpers/structures.py \
           ../algs/scipy_statistical_algorithms.py \

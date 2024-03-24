@@ -37,6 +37,9 @@ import inspect
 from qgis.core import QgsApplication
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 
+from .helpers import tr
+
+# This fails if scipy is not installed
 try:
     from .scipy_filters_provider import SciPyFiltersProvider
 except ModuleNotFoundError:
@@ -99,8 +102,8 @@ class SciPyFiltersPlugin(object):
         from qgis.PyQt.QtWidgets import QMessageBox
         choice = QMessageBox.question(
             None,
-            'SciPy Filters: SciPy is not installed',
-            'SciPy is not installed. Do you want to install it automatically (using pip)?',
+            tr('SciPy Filters: SciPy is not installed'),
+            tr('SciPy is not installed. Do you want to install it automatically (using pip)?'),
             QMessageBox.Yes | QMessageBox.No
         )
         if choice == QMessageBox.Yes:
@@ -112,21 +115,21 @@ class SciPyFiltersPlugin(object):
             try:
                 res = subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'scipy'])
             except subprocess.CalledProcessError:
-                msg = 'Installing SciPy failed. This probably means that pip is not installed.'
+                msg = tr('Installing SciPy failed. This probably means that pip is not installed.')
             
 
             # Test if it worked
             try:
                 import scipy
             except ModuleNotFoundError:
-                msg = 'Installing SciPy failed.'
+                msg = tr('Installing SciPy failed.')
 
             if not msg:
                 return True
             
             QMessageBox.warning(
                 None,
-                'SciPy Filters: Installing SciPy failed.',
+                tr('SciPy Filters: Installing SciPy failed.'),
                 msg + ' ' + res
             )
 

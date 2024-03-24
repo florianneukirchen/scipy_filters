@@ -119,7 +119,7 @@
         <translation type="unfinished">Pixelstatistik</translation>
     </message>
     <message>
-        <location filename="../scipy_filters_provider.py" line="174"/>
+        <location filename="../scipy_filters_provider.py" line="175"/>
         <source>SciPy Filters</source>
         <translation>SciPy Filter</translation>
     </message>
@@ -434,76 +434,76 @@
         <translation type="unfinished">Vollständige Pixelstatistik</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="97"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="98"/>
         <source>Eigenvectors</source>
         <translation type="unfinished">Eigenvektoren</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="111"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="112"/>
         <source>Mean of original bands</source>
         <translation type="unfinished">Mittelwert der ursprünglichen Bänder</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="113"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="114"/>
         <source>False mean for each band</source>
         <translation type="unfinished">Falscher Mittelwert für jedes Band</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="206"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="207"/>
         <source>Can not parse eigenvectors</source>
         <translation type="unfinished">Kann Eigenvektoren nicht parsen</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="235"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="236"/>
         <source>Could not decode metadata abstract</source>
         <translation type="unfinished">Kann keine Daten aus Abstract der Metadaten decodieren</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="241"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="242"/>
         <source>The layer does not contain valid eigenvectors and no eigenvectors where provided</source>
         <translation type="unfinished">Layer enthält keine validen Eigenvektoren und keine Eigenvektoren wurden angegeben</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="245"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="246"/>
         <source>Matrix of eigenvectors must be square (2D)</source>
         <translation type="unfinished">Matrix der Eigenvektoren muss quadratisch sein (2D)</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="248"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="249"/>
         <source>Shape of matrix of eigenvectors does not match number of bands</source>
         <translation type="unfinished">Größe der Matrix der Eigenvektoren passt nicht zur Anzahl der Bänder</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="269"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="270"/>
         <source>Could not parse list of means</source>
         <translation type="unfinished">Kann die Liste der Mittelwerte nicht parsen</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="277"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="278"/>
         <source>False shape of means list</source>
         <translation type="unfinished">Liste der Mittelwerte hat falsche Länge</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="325"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="326"/>
         <source>
 Band Mean:</source>
         <translation type="unfinished">
 Mittelwerte der Bänder:</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="327"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="328"/>
         <source>
 False (given) band mean:</source>
         <translation type="unfinished">
 Falsche (gegebene) Band-Mittelwerte:</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="472"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="473"/>
         <source>Transform to principal components</source>
         <translation type="unfinished">Transformation in die Hauptkomponenten</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="520"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="521"/>
         <source>Read eigenvectors from PCA layer metadata</source>
         <translation type="unfinished">Lese Eigenvektoren aus Metadaten eines PCA-Layers</translation>
     </message>
@@ -513,19 +513,19 @@ Falsche (gegebene) Band-Mittelwerte:</translation>
         <translation type="unfinished">Anzahl der zu behaltenen Komponenten. 0 für alle Komponenten.</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="538"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="539"/>
         <source>Use false mean (provided as parameter) to center data</source>
         <translation type="unfinished">Verwende falsche Mittelwerte (als Parameter übergeben), um Daten zu zentrieren</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="569"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="570"/>
         <source>Transform from principal components</source>
         <translation type="unfinished">Transformation von den Hauptkomponenten zurück</translation>
     </message>
     <message>
         <location filename="../algs/scipy_pca_algorithm.py" line="99"/>
         <source>Percentage of Variance to keep (if set and &gt; 0: overwrites number of components)</source>
-        <translation type="unfinished">Prozentsatz der Varianz, der erhalten werden soll (wenn gesetzt und &gt; 0: überschreibt Anzahl der Komponenten)</translation>
+        <translation type="unfinished">Prozentsatz der Varianz, der erhalten werden soll (wenn gesetzt und &amp;gt; 0: überschreibt Anzahl der Komponenten)</translation>
     </message>
     <message>
         <location filename="../algs/scipy_pca_algorithm.py" line="313"/>
@@ -536,37 +536,6 @@ Falsche (gegebene) Band-Mittelwerte:</translation>
         <location filename="../algs/scipy_pca_algorithm.py" line="347"/>
         <source>Principal Component Analysis (PCA)</source>
         <translation type="unfinished">Hauptkomponentenanalyse (PCA)</translation>
-    </message>
-    <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="372"/>
-        <source>
-            Principal Component Analysis (PCA),             calculated using Singular Value Decomposition (SVD) using svd from             &lt;a href=&quot;https://docs.scipy.org/doc/scipy/reference/linalg.html&quot;&gt;scipy.linalg&lt;/a&gt;.
-
-            With default parameters, all components are kept. Optionally, either the             &lt;i&gt;number of components&lt;/i&gt; to keep or the &lt;i&gt;percentage of variance&lt;/i&gt;             explained by the kept components can be set. 
-
-            
-            &lt;b&gt;Number of components&lt;/b&gt; is only used if the value is greater than 0 and             smaller than the count of original bands and if percentage of variance is             not set.
-
-            &lt;b&gt;Percentage of variance to keep&lt;/b&gt; is only used if it is greater than 0             (typical values would be in the range between 90 and 100).
-
-            &lt;b&gt;Output&lt;/b&gt; The output raster contains             the data projected into the principal components             (i.e. the PCA scores).
-
-            &lt;b&gt;Output data type&lt;/b&gt; Float32 or Float64
-
-            The following values / vectors are avaible a) in the log tab of             the processing window, b) in JSON format in the &quot;Abstract&quot; field             of the metadata of the output raster layer, eventually to be used             by subsequent transformations, and c) in the output dict if             the tool has been called from the python console or a script:
-
-            &lt;ul&gt;
-            &lt;li&gt;Singular values (of SVD)&lt;/li&gt;
-            &lt;li&gt;Variance explained (Eigenvalues)&lt;/li&gt;
-            &lt;li&gt;Ratio of variance explained&lt;/li&gt;
-            &lt;li&gt;Cumulated sum of variance explained&lt;/li&gt;
-            &lt;li&gt;Eigenvectors (V of SVD)&lt;/li&gt;
-            &lt;li&gt;Loadings (eigenvectors scaled by sqrt(eigenvalues))&lt;/li&gt;
-            &lt;li&gt;Band Mean&lt;/li&gt;
-            &lt;/ul&gt;
-
-            </source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../algs/scipy_morphological_binary_fill_holes.py" line="63"/>
@@ -927,6 +896,61 @@ Falsche (gegebene) Band-Mittelwerte:</translation>
         <location filename="../algs/scipy_morphological_algorithm.py" line="435"/>
         <source>Grey </source>
         <translation type="unfinished">Graue(s) </translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="301"/>
+        <source>Mask layer does not match input layer, reprojecting mask.</source>
+        <translation type="unfinished">Masken-Layer passt nicht zum Eingabelayer, reprojeziere Maske.</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="319"/>
+        <source>Mask layer does match input layer.</source>
+        <translation type="unfinished">Masken-Layer passt nicht zum Eingabe-Layer.</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="614"/>
+        <source>Keep only n components</source>
+        <translation type="unfinished">Behalte nur n Komponenten</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="631"/>
+        <source>Number of components to keep (negative: number of components to remove)</source>
+        <translation type="unfinished">Anzahl der Komponenten, die behalten werden sollen (negativ: Anzahl der Komponenten, die entfernt werden sollen)</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="663"/>
+        <source>Number of components can&apos;t be larger than band count, keeping all bands.</source>
+        <translation type="unfinished">Anzahl der Komponenten kann nicht größer als Anzahl der Bänder sein, behalte alle Bänder.</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="703"/>
+        <source>{} components of {}</source>
+        <translation type="unfinished">{} Komponenten von {}</translation>
+    </message>
+    <message>
+        <location filename="../scipy_filters.py" line="103"/>
+        <source>SciPy Filters: SciPy is not installed</source>
+        <translation type="unfinished">SciPy Filter: SciPy ist nicht installiert</translation>
+    </message>
+    <message>
+        <location filename="../scipy_filters.py" line="103"/>
+        <source>SciPy is not installed. Do you want to install it automatically (using pip)?</source>
+        <translation type="unfinished">SciPy ist nicht installiert. Wollen Sie es automatisch (mit pip) installieren?</translation>
+    </message>
+    <message>
+        <location filename="../scipy_filters.py" line="118"/>
+        <source>Installing SciPy failed. This probably means that pip is not installed.</source>
+        <translation type="unfinished">Installation von SciPy ist fehlgeschlagen. Vermutlich ist pip nicht installiert.</translation>
+    </message>
+    <message>
+        <location filename="../scipy_filters.py" line="125"/>
+        <source>Installing SciPy failed.</source>
+        <translation type="unfinished">Installation von SciPy ist fehlgeschlagen.</translation>
+    </message>
+    <message>
+        <location filename="../scipy_filters.py" line="130"/>
+        <source>SciPy Filters: Installing SciPy failed.</source>
+        <translation type="unfinished">SciPy Filter: Installation von SciPy ist fehlgeschlagen.</translation>
     </message>
 </context>
 <context>
