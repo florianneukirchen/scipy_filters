@@ -60,7 +60,7 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'fourier_gaussian'
-    _displayname = 'Fourier Gaussian'
+    _displayname = tr('Fourier Gaussian')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "blur" 
     _help = """
@@ -154,8 +154,8 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'fourier_ellipsoid'
-    _displayname = 'Fourier ellipsoid'
-    _outputname = 'Gaussian ellipsoid' # If set to None, the displayname is used 
+    _displayname = tr('Fourier ellipsoid')
+    _outputname = None # If set to None, the displayname is used 
     _groupid = "blur" 
     _help = """
             Ellipsoidal box filter calculated by multiplication \
@@ -293,8 +293,8 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'fourier_uniform'
-    _displayname = 'Fourier uniform (box filter)'
-    _outputname = 'Fourier uniform' # If set to None, the displayname is used 
+    _displayname = tr('Fourier uniform (box filter)')
+    _outputname = tr('Fourier uniform') # If set to None, the displayname is used 
     _groupid = "blur" 
     _help = """
             Uniform filter calculated by multiplication \
@@ -434,7 +434,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'fft_convolve'
-    _displayname = 'FFT Convolve'
+    _displayname = tr('FFT Convolve')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "convolution" 
 

@@ -61,7 +61,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
     # Overwrite constants of base class
     _name = 'convolve'
-    _displayname = 'Convolve'
+    _displayname = tr('Convolve')
     _outputname = None # If set to None, the displayname is used 
     _groupid = 'convolution'
 

@@ -65,14 +65,14 @@ from .helpers import (array_to_str,
 
 # Group IDs and group names
 groups = {
-    'edges': 'Edges',
-    'morphological': "Morphological Filters",
-    'statistic': 'Statistical Filters',
-    'blur': 'Blur',
-    'convolution': 'Convolution',
-    'enhance': 'Enhance',
-    'pixel': 'Pixel Statistics',
-    'pca': 'PCA',
+    'edges': tr('Edges'),
+    'morphological': tr("Morphological Filters"),
+    'statistic': tr('Statistical Filters'),
+    'blur': tr('Blur'),
+    'convolution': tr('Convolution'),
+    'enhance': tr('Enhance'),
+    'pixel': tr('Pixel Statistics'),
+    'pca': tr('PCA'),
 }
 
 class Dimensions(enum.Enum):
@@ -467,6 +467,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         Returns the translated algorithm name, which should be used for any
         user-visible display of the algorithm name.
         """
+
+        # string must be passed through tr(), even if the string was already marked with tr()
         return tr(self._displayname)
 
     def group(self):
@@ -480,7 +482,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         if not s:
             # If group ID is not in dictionary group, return error message for debugging
             return "Displayname of group must be set in groups dictionary"
+        # s must be passed through tr(), even if the string was already marked with tr()
         return tr(s)
+
 
     def groupId(self):
         """

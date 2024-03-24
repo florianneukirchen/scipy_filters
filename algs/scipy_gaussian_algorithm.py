@@ -74,7 +74,7 @@ class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
 
     # Overwrite constants of base class
     _name = 'gaussian_laplace'
-    _displayname = 'Gaussian Laplace'
+    _displayname = tr('Gaussian Laplace')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
 
@@ -127,8 +127,8 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
 
     # Overwrite constants of base class
     _name = 'gaussian'
-    _displayname = 'Gaussian filter (blur)'
-    _outputname = 'Gaussian' 
+    _displayname = tr('Gaussian filter (blur)')
+    _outputname = tr('Gaussian') 
     _groupid = "blur" 
     _help = """
             Gaussian filter (blur with a gaussian kernel). \
@@ -208,7 +208,7 @@ class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
 
     # Overwrite constants of base class
     _name = 'gaussian_gradient_magnitude'
-    _displayname = 'Gaussian gradient magnitude'
+    _displayname = tr('Gaussian gradient magnitude')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
 

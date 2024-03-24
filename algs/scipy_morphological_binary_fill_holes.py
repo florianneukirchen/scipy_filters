@@ -60,8 +60,8 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'fill_holes'
-    _displayname = 'Morphological (binary) fill holes'
-    _outputname = "Morphology: Fill holes" # If set to None, the displayname is used 
+    _displayname = tr('Morphological (binary) fill holes')
+    _outputname = tr("Morphology: Fill holes") # If set to None, the displayname is used 
     _groupid = 'morphological'
     _help = """
             Fill holes in binary shapes by using binary dilations. \

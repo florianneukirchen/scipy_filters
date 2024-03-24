@@ -47,7 +47,7 @@ from ..helpers import str_to_int_or_list, tr
 class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
     # Overwrite constants of base class
     _name = 'median'
-    _displayname = 'Median filter'
+    _displayname = tr('Median filter')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
     _help = """
@@ -97,7 +97,7 @@ class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
 class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
     # Overwrite constants of base class
     _name = 'minimum'
-    _displayname = 'Minimum filter'
+    _displayname = tr('Minimum filter')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
     _help = """
@@ -146,7 +146,7 @@ class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
 class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
     # Overwrite constants of base class
     _name = 'maximum'
-    _displayname = 'Maximum filter'
+    _displayname = tr('Maximum filter')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
     _help = """
@@ -196,8 +196,8 @@ class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
 class SciPyRangeAlgorithm(SciPyStatisticalAlgorithm):
     # Overwrite constants of base class
     _name = 'range'
-    _displayname = 'Local range (difference of min and max)'
-    _outputname = 'Range'
+    _displayname = tr('Local range (difference of min and max)')
+    _outputname = tr('Range')
     _groupid = "statistic" 
     _help = """
             Range filter, returns the difference of min and max within the neighborhood.\
@@ -255,7 +255,7 @@ class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
 
     # Overwrite constants of base class
     _name = 'percentile'
-    _displayname = 'Percentile filter'
+    _displayname = tr('Percentile filter')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
     _help = """
@@ -333,7 +333,7 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
 
     # Overwrite constants of base class
     _name = 'rank'
-    _displayname = 'Rank filter'
+    _displayname = tr('Rank filter')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
     _help = """
@@ -424,8 +424,8 @@ class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
 
     # Overwrite constants of base class
     _name = 'uniform'
-    _displayname = 'Uniform filter (box filter)'
-    _outputname = 'Uniform filter' 
+    _displayname = tr('Uniform filter (box filter)')
+    _outputname = tr('Uniform filter') 
     _groupid = "blur" 
     _help = """
             Uniform filter (a.k.a. box filter or mean filter). \

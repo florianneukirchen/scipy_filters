@@ -67,50 +67,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
     
     _name = 'pca'
-    _displayname = 'Principal Component Analysis (PCA)'
-    # Output layer name: If set to None, the displayname is used 
-    # Can be changed while getting the parameters.
-    _outputname = 'PCA'
-    _groupid = "pca" 
-    _help = """
-            Principal Component Analysis (PCA), \
-            calculated using Singular Value Decomposition (SVD) using svd from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/linalg.html">scipy.linalg</a>.
-
-            With default parameters, all components are kept. Optionally, either the \
-            <i>number of components</i> to keep or the <i>percentage of variance</i> \
-            explained by the kept components can be set. 
-
-            
-            <b>Number of components</b> is only used if the value is greater than 0 and \
-            smaller than the count of original bands and if percentage of variance is \
-            not set.
-
-            <b>Percentage of variance to keep</b> is only used if it is greater than 0 \
-            (typical values would be in the range between 90 and 100).
-
-            <b>Output</b> The output raster contains \
-            the data projected into the principal components \
-            (i.e. the PCA scores).
-
-            <b>Output data type</b> Float32 or Float64
-
-            The following values / vectors are avaible a) in the log tab of \
-            the processing window, b) in JSON format in the "Abstract" field \
-            of the metadata of the output raster layer, eventually to be used \
-            by subsequent transformations, and c) in the output dict if \
-            the tool has been called from the python console or a script:\n
-            <ul>
-            <li>Singular values (of SVD)</li>
-            <li>Variance explained (Eigenvalues)</li>
-            <li>Ratio of variance explained</li>
-            <li>Cumulated sum of variance explained</li>
-            <li>Eigenvectors (V of SVD)</li>
-            <li>Loadings (eigenvectors scaled by sqrt(eigenvalues))</li>
-            <li>Band Mean</li>
-            </ul>
-
-            """
+    _outputname = tr('PCA')
     
     # Init Algorithm
     def initAlgorithm(self, config):
@@ -371,6 +328,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             layer.setMetadata(meta)
     
 
+
     def name(self):
         """
         Returns the algorithm name, used for identifying the algorithm. This
@@ -386,19 +344,14 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         Returns the translated algorithm name, which should be used for any
         user-visible display of the algorithm name.
         """
-        return tr(self._displayname)
+        return tr('Principal Component Analysis (PCA)')
 
     def group(self):
         """
         Returns the name of the group this algorithm belongs to. This string
         should be localised.
         """
-        if self._groupid == "":
-            return ""
-        s = groups.get(self._groupid)
-        if not s:
-            # If group ID is not in dictionary group, return error message for debugging
-            return "Displayname of group must be set in groups dictionary"
+        s = groups.get("pca")
         return tr(s)
 
     def groupId(self):
@@ -409,17 +362,56 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         contain lowercase alphanumeric characters only and no spaces or other
         formatting characters.
         """
-        return self._groupid
+        return "pca"
     
     def shortHelpString(self):
         """
         Returns the help string that is shown on the right side of the 
         user interface.
         """
-        return tr(self._help)
+        return tr(
+            """
+            Principal Component Analysis (PCA), \
+            calculated using Singular Value Decomposition (SVD) using svd from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/linalg.html">scipy.linalg</a>.
 
-    def tr(self, string):
-        return QCoreApplication.translate('Processing', string)
+            With default parameters, all components are kept. Optionally, either the \
+            <i>number of components</i> to keep or the <i>percentage of variance</i> \
+            explained by the kept components can be set. 
+
+            
+            <b>Number of components</b> is only used if the value is greater than 0 and \
+            smaller than the count of original bands and if percentage of variance is \
+            not set.
+
+            <b>Percentage of variance to keep</b> is only used if it is greater than 0 \
+            (typical values would be in the range between 90 and 100).
+
+            <b>Output</b> The output raster contains \
+            the data projected into the principal components \
+            (i.e. the PCA scores).
+
+            <b>Output data type</b> Float32 or Float64
+
+            The following values / vectors are avaible a) in the log tab of \
+            the processing window, b) in JSON format in the "Abstract" field \
+            of the metadata of the output raster layer, eventually to be used \
+            by subsequent transformations, and c) in the output dict if \
+            the tool has been called from the python console or a script:\n
+            <ul>
+            <li>Singular values (of SVD)</li>
+            <li>Variance explained (Eigenvalues)</li>
+            <li>Ratio of variance explained</li>
+            <li>Cumulated sum of variance explained</li>
+            <li>Eigenvectors (V of SVD)</li>
+            <li>Loadings (eigenvectors scaled by sqrt(eigenvalues))</li>
+            <li>Band Mean</li>
+            </ul>
+
+            """
+    
+        )
+
 
     def createInstance(self):
         return SciPyPCAAlgorithm()  

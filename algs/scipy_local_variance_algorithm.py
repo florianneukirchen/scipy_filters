@@ -88,7 +88,7 @@ def estimate_local_variance(raster, size, output=None):
 class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
     # Overwrite constants of base class
     _name = 'estimate_var'
-    _displayname = 'Estimate local variance'
+    _displayname = tr('Estimate local variance')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
     _help = """
@@ -180,7 +180,7 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
 class SciPyEstimateStdAlgorithm(SciPyEstimateVarianceAlgorithm):
     # Overwrite constants of base class
     _name = 'estimate_std'
-    _displayname = 'Estimate local standard deviation'
+    _displayname = tr('Estimate local standard deviation')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
     _help = """

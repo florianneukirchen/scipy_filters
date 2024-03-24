@@ -41,7 +41,7 @@ from ..helpers import tr
 class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
     # Overwrite constants of base class
     _name = 'laplace'
-    _displayname = 'Laplace'
+    _displayname = tr('Laplace')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
 
@@ -85,7 +85,7 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
 class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
     # Overwrite constants of base class
     _name = 'sobel'
-    _displayname = 'Sobel'
+    _displayname = tr('Sobel')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
 
@@ -144,7 +144,7 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
 class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
     # Overwrite constants of base class
     _name = 'prewitt'
-    _displayname = 'Prewitt'
+    _displayname = tr('Prewitt')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "edges" 
 

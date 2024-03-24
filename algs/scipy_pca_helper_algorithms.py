@@ -469,7 +469,7 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
 
     """
     _name = 'transform_to_PC'
-    _displayname = 'Transform to principal components'
+    _displayname = tr('Transform to principal components')
     _outputname = _displayname
 
     _help = """
@@ -566,7 +566,7 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
     """
 
     _name = 'transform_from_PC'
-    _displayname = 'Transform from principal components'
+    _displayname = tr('Transform from principal components')
     _outputname = _displayname
 
     _help = """

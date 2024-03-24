@@ -164,8 +164,8 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
     # Overwrite constants of base class
     _name = 'binary_morphology'
-    _displayname = 'Binary dilation, erosion, closing, opening'
-    _outputname = 'Binary morphology' # If set to None, the displayname is used 
+    _displayname = tr('Binary dilation, erosion, closing, opening')
+    _outputname = tr('Binary morphology') # If set to None, the displayname is used 
     _help = """
             Binary morphological filters: dilation, erosion, closing, and opening. \
             Calculated with binary_dilation, \
@@ -271,8 +271,8 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
     # Overwrite constants of base class
     _name = 'grey_morphology'
-    _displayname = 'Grey dilation, erosion, closing, opening'
-    _outputname = 'Grey morphology' # If set to None, the displayname is used 
+    _displayname = tr('Grey dilation, erosion, closing, opening')
+    _outputname = tr('Grey morphology') # If set to None, the displayname is used 
     _help = """
             Grey morphological filters: dilation, erosion, closing, and opening. \
             Calculated for every band with grey_dilation, \
@@ -445,8 +445,8 @@ class SciPyTophatAlgorithm(SciPyGreyMorphologicalAlgorithm):
 
     # Overwrite constants of base class
     _name = 'tophat'
-    _displayname = 'Tophat or morphological gradient/laplace'
-    _outputname = 'Tophat' # If set to None, the displayname is used 
+    _displayname = tr('Tophat or morphological gradient/laplace')
+    _outputname = tr('Tophat') # If set to None, the displayname is used 
     _help = """
             Morphological filters: black/white tophat, morphological gradient/laplace. \
             Calculated with black_tophat, \

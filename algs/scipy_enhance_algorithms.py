@@ -57,7 +57,7 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'wiener'
-    _displayname = 'Wiener filter'
+    _displayname = tr('Wiener filter')
     _outputname = None
     _groupid = "enhance" 
     _help = """
@@ -176,7 +176,7 @@ class SciPyUnsharpMaskAlgorithm(SciPyAlgorithmWithSigma):
 
     # Overwrite constants of base class
     _name = 'unsharp_mask'
-    _displayname = 'Unsharp mask'
+    _displayname = tr('Unsharp mask')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "enhance" 
     _help = """

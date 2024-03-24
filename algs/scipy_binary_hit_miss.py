@@ -60,8 +60,8 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
     
     # Overwrite constants of base class
     _name = 'hit_or_miss'
-    _displayname = 'Morphological (binary) hit or miss'
-    _outputname = "Morphology: binary hit or miss"# If set to None, the displayname is used 
+    _displayname = tr('Morphological (binary) hit or miss')
+    _outputname = tr("Hit or miss") # If set to None, the displayname is used 
     _groupid = 'morphological'
     _help = """
             Preserves pixels whose neighbourhood matches structure1, but does not match the (disjoint) structure2.  \

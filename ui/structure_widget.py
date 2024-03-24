@@ -76,7 +76,6 @@ class StructureWidget(BASE, WIDGET):
         self.plainTextEdit.setPlainText(defaultValue)
 
         self.toolButton.setPopupMode(QToolButton.InstantPopup) 
-        self.toolButton.setText('Load')
 
         tool_btn_menu = QMenu(self)
 

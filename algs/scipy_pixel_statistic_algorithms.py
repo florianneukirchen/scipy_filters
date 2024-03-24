@@ -44,8 +44,8 @@ class SciPyPixelMinAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'pixel_min'
-    _displayname = 'Pixel minimum filter'
-    _outputname = 'Pixel minimum'
+    _displayname = tr('Pixel minimum filter')
+    _outputname = tr('Pixel minimum')
     _groupid = "pixel" 
     _outbands = 1
     _help = """
@@ -89,8 +89,8 @@ class SciPyPixelMaxAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'pixel_max'
-    _displayname = 'Pixel maximum filter'
-    _outputname = 'Pixel maximum'
+    _displayname = tr('Pixel maximum filter')
+    _outputname = tr('Pixel maximum')
     _groupid = "pixel" 
     _outbands = 1
     _help = """
@@ -135,8 +135,8 @@ class SciPyPixelMeanAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'pixel_mean'
-    _displayname = 'Pixel mean filter'
-    _outputname = 'Pixel mean'
+    _displayname = tr('Pixel mean filter')
+    _outputname = tr('Pixel mean')
     _groupid = "pixel" 
     _outbands = 1
     _help = """
@@ -178,8 +178,8 @@ class SciPyPixelMedianAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'pixel_median'
-    _displayname = 'Pixel median filter'
-    _outputname = 'Pixel median'
+    _displayname = tr('Pixel median filter')
+    _outputname = tr('Pixel median')
     _groupid = "pixel" 
     _outbands = 1
     _help = """
@@ -221,8 +221,8 @@ class SciPyPixelStdAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'pixel_std'
-    _displayname = 'Pixel standard deviation'
-    _outputname = 'Pixel std'
+    _displayname = tr('Pixel standard deviation')
+    _outputname = tr('Pixel std')
     _groupid = "pixel" 
     _outbands = 1
     _help = """
@@ -264,7 +264,7 @@ class SciPyPixelVarAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'pixel_variance'
-    _displayname = 'Pixel variance'
+    _displayname = tr('Pixel variance')
     _outputname = None
     _groupid = "pixel" 
     _outbands = 1
@@ -306,8 +306,8 @@ class SciPyPixelRangeAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'pixel_range'
-    _displayname = 'Pixel range filter'
-    _outputname = 'Pixel range'
+    _displayname = tr('Pixel range filter')
+    _outputname = tr('Pixel range')
     _groupid = "pixel" 
     _outbands = 1
     _help = """
@@ -352,7 +352,7 @@ class SciPyPixelMinMaxMeanAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'pixel_all'
-    _displayname = 'Complete pixel statistics'
+    _displayname = tr('Complete pixel statistics')
     _outputname = None
     _groupid = "pixel" 
     _outbands = 5
