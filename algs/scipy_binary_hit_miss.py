@@ -111,7 +111,7 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
         struct2_param = SciPyParameterStructure(
             self.STRUCTURE2,
-            tr('Structure 2'),
+            tr('Structure 2 (if empty: use complementary of structure 1)'),
             defaultValue="",
             multiLine=True,
             optional=True,
@@ -147,7 +147,7 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
         origin2_param = SciPyParameterOrigin(
             self.ORIGIN2,
-            tr('Origin Structure 2 (if empty: use complementary of structure 1)'),
+            tr('Origin Structure 2'),
             defaultValue="0",
             optional=False,
             watch="STRUCTURE2"
