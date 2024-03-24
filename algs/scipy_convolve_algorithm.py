@@ -240,7 +240,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
                   + (np.where(self.kernel < 0, 0, self.kernel)  # positive part of kernel
                      * min(0, inmin)).sum()).astype("int")      # multiplied with negative input
         
-        msg = tr(f"Expected output range is {outmin}...{outmax}")
+        msg = tr("Expected output range is {}...{}").format(outmin, outmax)
         feedback.pushInfo(msg)
         
         if self._outdtype in (1,2,4) and np.any(self.kernel < 0):
