@@ -355,7 +355,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         self.addParameter(QgsProcessingParameterEnum(
             self.MODE,
             tr('Border Mode'),
-            [mode.capitalize() for mode in self.modes],
+            self.mode_labels,
             defaultValue=0)) 
         
         self.addParameter(QgsProcessingParameterNumber(

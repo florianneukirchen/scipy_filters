@@ -133,9 +133,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     # otherwise it must be handled by the custom function
 
     _default_dtype = 0 # Optionally change default output dtype (value = idx of combobox)
-
-    modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
-
     
     # Dimensions the algorithm is working on. 
     # The numbers match the index in the list of GUI strings (below).
@@ -148,10 +145,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
     _dimension = Dimensions.nD
     _ndim = None # to be set while getting parameters
-
-    # Strings for the GUI
-    _dimension_options = ['2D (Separate for each band)',
-                          '3D (All bands as a 3D data cube)']
 
 
     # Return the function to be called, to be overwritten
@@ -168,6 +161,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         Here we define the inputs and output of the algorithm, along
         with some other properties.
         """
+        # Border modes and labels (needs to be done here for translation to work)
+        self.modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
+        self.mode_labels = [tr('Reflect'), tr('Constant'), tr('Nearest'), tr('Mirror'), tr('Wrap')]
 
         # Some Algorithms will add a masklayer
         self.masklayer = None
@@ -180,12 +176,16 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             )
         )
 
+        # Strings for the GUI
+        dimension_options = [tr('2D (Separate for each band)'),
+                            tr('3D (All bands as a 3D data cube)')]
+
         if self._dimension == Dimensions.nD:
             # Algorithms based on scipy.ndimage can have any number of dimensions
             dim_param = SciPyParameterDims(
                 self.DIMENSION,
                 tr('Dimension'),
-                self._dimension_options,
+                dimension_options,
                 defaultValue=0,
                 optional=False,)
 
@@ -522,7 +522,7 @@ class SciPyAlgorithmWithMode(SciPyAlgorithm):
         self.addParameter(QgsProcessingParameterEnum(
             self.MODE,
             tr('Border Mode'),
-            [mode.capitalize() for mode in self.modes],
+            self.mode_labels,
             defaultValue=0)) 
         
         self.addParameter(QgsProcessingParameterNumber(

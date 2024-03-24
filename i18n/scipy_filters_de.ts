@@ -4,32 +4,32 @@
 <context>
     <name>@default</name>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="176"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="169"/>
         <source>Input layer</source>
         <translation>Eingabe-Layer</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="185"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="182"/>
         <source>Dimension</source>
         <translation>Dimensionen</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="205"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="202"/>
         <source>Output data type</source>
         <translation>Ausgabe-Datentyp</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="291"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="288"/>
         <source>Failed to open Mask Layer</source>
         <translation>Konnte Maskenlayer nicht öffnen</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="416"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="413"/>
         <source>3D only possible if input layer has more than 1 bands</source>
         <translation>3D ist nur bei Layern mit mehr als einem Band möglich</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="440"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="437"/>
         <source>Warning, the range of output datatype is not in the range of the input datatype. Clipping is likely.</source>
         <translation>Warnung, der Wertebereich des Ausgabedatentyps ist nicht innerhalb desjenigen des Eingabedatentyps. Die Werte werden vermutlich beschnitten.</translation>
     </message>
@@ -41,7 +41,7 @@
     <message>
         <location filename="../scipy_algorithm_baseclasses.py" line="528"/>
         <source>Constant value past edges for border mode &quot;constant&quot;</source>
-        <translation>Konstanter Wert für Randmodus &amp;quot;constant&amp;quot;</translation>
+        <translation type="unfinished">Konstanter Wert für Randmodus Konstante</translation>
     </message>
     <message>
         <location filename="../scipy_algorithm_baseclasses.py" line="561"/>
@@ -192,6 +192,46 @@
         <location filename="../algs/scipy_statistical_algorithms.py" line="428"/>
         <source>Uniform filter</source>
         <translation>Gleichförmiger Filter</translation>
+    </message>
+    <message>
+        <location filename="../helpers/gdal_dtype.py" line="5"/>
+        <source>Same as input</source>
+        <translation>Wie Eingabe</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="177"/>
+        <source>2D (Separate for each band)</source>
+        <translation>2D (für jedes Band einzeln)</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="178"/>
+        <source>3D (All bands as a 3D data cube)</source>
+        <translation>3D (alle Bänder als 3D data cube)</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="520"/>
+        <source>Reflect</source>
+        <translation>Reflexion</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="520"/>
+        <source>Constant</source>
+        <translation>Konstante</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="520"/>
+        <source>Nearest</source>
+        <translation>Nächster</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="520"/>
+        <source>Mirror</source>
+        <translation>Spiegel</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="520"/>
+        <source>Wrap</source>
+        <translation>Einwickeln</translation>
     </message>
 </context>
 <context>
