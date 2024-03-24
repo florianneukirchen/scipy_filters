@@ -381,7 +381,10 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
         # Close the dataset to write file to disk
         self.out_ds = None 
-    
+
+        self.ds = None
+        a = None
+        new_array = None
        
         if self._inverse:
             return {
@@ -710,6 +713,7 @@ class SciPyKeepN(QgsProcessingAlgorithm):
 
         # Close the dataset to write file to disk
         self.out_ds = None 
+
 
         # Copy Metadata and set name
         global postprocess

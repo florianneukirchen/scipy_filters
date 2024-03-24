@@ -75,6 +75,7 @@ groups = {
     'pca': tr('PCA'),
 }
 
+# Dimensions the algorithm is working on, more info see below
 class Dimensions(enum.Enum):
     nD = 2         # users can decide between 1D, 2D, 3D
     twoD = 0       # Seperate for each band
@@ -88,7 +89,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     The function to be called is returned by the function
     get_fct(), needs to be overwritten by inheriting classes.
     Name, displayname, help are set as class variables, to be 
-    overwritten by inheriting classes.
+    overwritten by inheriting classes. Some of them must be
+    put in tr() for translation.
 
     In inheriting classes, parameters can be added by:
     1) setting constants as class variables
@@ -411,7 +413,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
 
     def checkParameterValues(self, parameters, context):
-       
+        # Check parameters before starting processing, eventually giving feedback and stopping
         dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         # 3D only possible with more than 1 bands

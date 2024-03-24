@@ -284,6 +284,12 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # Close the dataset to write file to disk
         self.out_ds = None 
 
+        # Free some memory
+        self.ds = None
+        a = None
+        new_array = None
+
+        # Save loadings etc as json in the metadata abstract of the layer
         encoded = json.dumps({
                 'singular values': S.tolist(),
                 'eigenvectors': VT.T.tolist(),
@@ -294,7 +300,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 'band mean': col_mean.tolist(),
                 })
 
-        # Save loadings etc as json in the metadata abstract of the layer
+        
         global updatemetadata
         updatemetadata = self.UpdateMetadata(encoded)
         context.layerToLoadOnCompletionDetails(self.output_raster).setPostProcessor(updatemetadata)
