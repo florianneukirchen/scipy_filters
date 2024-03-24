@@ -238,7 +238,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         if V is None:
             V = eigenvectors
         if V is None:
-            return False, tr("The layer does not contain valid eigenvactors and no eigenvectors where provided")
+            return False, tr("The layer does not contain valid eigenvectors and no eigenvectors where provided")
 
         # Check dimensions and shape of eigenvectors
         if V.ndim != 2 or V.shape[0] != V.shape[1]:
