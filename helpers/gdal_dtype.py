@@ -2,7 +2,7 @@ import numpy as np
 
 from .i18n import tr
 
-dtype_options = [tr('Same as input'), 
+dtype_options = [tr('Same as input'),
                  'Byte (unsigned 8 bit integer)',
                  'UInt16 (unsigned 16 bit integer)',
                  'Int16 (signed 16 bit integer)',

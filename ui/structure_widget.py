@@ -32,7 +32,7 @@ from qgis.PyQt.QtWidgets import QToolButton, QMenu, QAction
 from qgis.core import QgsProcessingParameterString
 
 
-from ..helpers import array_to_str, check_structure
+from ..helpers import array_to_str, check_structure, tr
 
 
 uipath = os.path.dirname(__file__)
@@ -69,7 +69,7 @@ class StructureWidget(BASE, WIDGET):
         self.isoptional = isoptional
         self.to_int = to_int
         self.ndim = 2
-        self.ok_txt = "OK"
+        self.ok_txt = tr("OK")
         self.three_d_items = []
         self.setupUi(self)
 
@@ -84,7 +84,7 @@ class StructureWidget(BASE, WIDGET):
                 tool_btn_menu.addSeparator()
                 continue
 
-            action = QAction(k, self)
+            action = QAction(tr(k), self)
             if isinstance(v, np.ndarray):
                 if self.to_int:
                     v = array_to_str(v.astype("int"))

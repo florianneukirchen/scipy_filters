@@ -253,6 +253,111 @@
         <source>{} not possible in 2D</source>
         <translation>{} in 2D nicht möglich</translation>
     </message>
+    <message>
+        <location filename="../helpers/structures.py" line="102"/>
+        <source>Array has wrong number of dimensions</source>
+        <translation>Anzahl der Dimensionen des Arrays ist falsch</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="106"/>
+        <source>Every element in size must be odd.</source>
+        <translation>Jedes Element in Größe muss ungerade sein.</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="115"/>
+        <source>Invalid origin</source>
+        <translation>Ungültiger Ursprung</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="191"/>
+        <source>3 × 3 Square</source>
+        <translation>3 × 3 Quadrat</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="208"/>
+        <source>5 × 5 Square</source>
+        <translation>5 × 5 Quadrat</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="208"/>
+        <source>7 × 7 Square</source>
+        <translation>7 × 7 Quadrat</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="179"/>
+        <source>Cross</source>
+        <translation>Kreuz</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="191"/>
+        <source>3 × 3 × 3 Cube</source>
+        <translation>3 × 3 × 3 Würfel</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="208"/>
+        <source>5 × 5 × 5 Cube</source>
+        <translation>5 × 5 × 5 Würfel</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="191"/>
+        <source>7 × 7 × 7 Cube</source>
+        <translation>7 × 7 × 7 Würfel</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="191"/>
+        <source>3 × 3 Gaussian</source>
+        <translation>3 × 3 Gauss</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="191"/>
+        <source>5 × 5 Gaussian</source>
+        <translation>5 × 5 Gauss</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="191"/>
+        <source>5 × 5 Laplacian of Gaussian</source>
+        <translation>5 × 5 Laplace- von Gauss-Funktion</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="191"/>
+        <source>3 × 3 Sobel horizontal edges</source>
+        <translation>3 × 3 Sobel waagrechte Kanten</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="191"/>
+        <source>3 × 3 Sobel vertical edges</source>
+        <translation>3 × 3 Sobel senkrechte Kanten</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="191"/>
+        <source>3 × 1 × 1 Across bands of pixel</source>
+        <translation>3 × 1 × 1 Alle Bänder eines Pixels</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="208"/>
+        <source>Cross 2D</source>
+        <translation>Kreuz 2D</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="208"/>
+        <source>Square 2D</source>
+        <translation>Quadrat 2D</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="208"/>
+        <source>Cross 3D</source>
+        <translation>Kreuz 3D</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="208"/>
+        <source>Ball 3D</source>
+        <translation>Ball 3D</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="208"/>
+        <source>Cube 3D</source>
+        <translation>Würfel 3D</translation>
+    </message>
 </context>
 <context>
     <name>Form</name>

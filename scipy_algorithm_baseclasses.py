@@ -201,11 +201,14 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         # Insert Parameters 
         self.insert_parameters(config)
 
+        # Force translation of first dtype option ("same as input")
+        dtype_options_tr = dtype_options
+        dtype_options_tr[0] = tr(dtype_options_tr[0])
         
         dtype_param = QgsProcessingParameterEnum(
             self.DTYPE,
             tr('Output data type'),
-            dtype_options,
+            dtype_options_tr,
             defaultValue=self._default_dtype,
             optional=True)
         
