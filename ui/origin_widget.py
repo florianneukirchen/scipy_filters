@@ -179,9 +179,7 @@ class OriginWidgetWrapper(WidgetWrapper):
             return
         structure = self.structurewrapper.value()
 
-        print("stru", structure)
         ok, s, shape = check_structure(structure, dims=self.widget.ndim, optional=True)
-        print(ok, shape)
 
         self.widget.setShape(shape)
 
