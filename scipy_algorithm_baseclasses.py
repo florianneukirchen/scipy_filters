@@ -403,7 +403,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         # Optionally rename the output layer
         if self._outputname:
             global renamer
-            renamer = self.Renamer(self._outputname)
+            renamer = self.Renamer(tr(self._outputname))
             context.layerToLoadOnCompletionDetails(self.output_raster).setPostProcessor(renamer)
 
 
