@@ -87,11 +87,11 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         self.addParameter(QgsProcessingParameterNumber(
             self.NCOMPONENTS,
-            tr('Number of components to keep. Set to 0 for all components.'),
+            tr('Number of components to keep. Set to 0 for all components; negative for number of components to remove.'),
             QgsProcessingParameterNumber.Type.Integer,
             defaultValue=0, 
             optional=True, 
-            minValue=0, 
+            # minValue=0, 
             # maxValue=100
             ))      
     
@@ -243,6 +243,9 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # How many bands to keep?
         bands = self.bandcount
 
+        if self.ncomponents <= 0:
+            self.ncomponents = self.bandcount + self.ncomponents
+
         if 0 < self.percentvariance < 100:
             fraction = self.percentvariance / 100
             # get index with >= fraction and add 1 (bands is not zero indexed)
@@ -378,10 +381,9 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             <i>number of components</i> to keep or the <i>percentage of variance</i> \
             explained by the kept components can be set. 
 
-            
-            <b>Number of components</b> is only used if the value is greater than 0 and \
-            smaller than the count of original bands and if percentage of variance is \
-            not set.
+            <b>Number of components</b> to keep. 0 for all components. If negative: \
+            number of components to remove. \
+            Ignored if percentage of variance is set.
 
             <b>Percentage of variance to keep</b> is only used if it is greater than 0 \
             (typical values would be in the range between 90 and 100).

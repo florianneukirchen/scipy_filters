@@ -508,7 +508,7 @@ Falsche (gegebene) Band-Mittelwerte:</translation>
         <translation type="unfinished">Lese Eigenvektoren aus Metadaten eines PCA-Layers</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="88"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="529"/>
         <source>Number of components to keep. Set to 0 for all components.</source>
         <translation type="unfinished">Anzahl der zu behaltenen Komponenten. 0 für alle Komponenten.</translation>
     </message>
@@ -528,12 +528,12 @@ Falsche (gegebene) Band-Mittelwerte:</translation>
         <translation type="unfinished">Prozentsatz der Varianz, der erhalten werden soll (wenn gesetzt und &amp;gt; 0: überschreibt Anzahl der Komponenten)</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="313"/>
+        <location filename="../algs/scipy_pca_algorithm.py" line="316"/>
         <source>PCA only possible if input layer has more than 1 bands</source>
         <translation type="unfinished">PCA ist nur möglich, wenn das Eingabe-Layer mehr als 1 Band hat</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="347"/>
+        <location filename="../algs/scipy_pca_algorithm.py" line="350"/>
         <source>Principal Component Analysis (PCA)</source>
         <translation type="unfinished">Hauptkomponentenanalyse (PCA)</translation>
     </message>
@@ -951,6 +951,11 @@ Falsche (gegebene) Band-Mittelwerte:</translation>
         <location filename="../scipy_filters.py" line="130"/>
         <source>SciPy Filters: Installing SciPy failed.</source>
         <translation type="unfinished">SciPy Filter: Installation von SciPy ist fehlgeschlagen.</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_pca_algorithm.py" line="88"/>
+        <source>Number of components to keep. Set to 0 for all components; negative for number of components to remove.</source>
+        <translation type="unfinished">Anzahl der Komponenten, die behalten werden sollen. 0 für alle Komponenten. Negativ: Anzahl der Komponenten, die verworfen werden soll.</translation>
     </message>
 </context>
 <context>
