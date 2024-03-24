@@ -13,8 +13,6 @@ Includes raster filters such as:
 
 Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html), a library to filter images (or arrays, rasters) in *n* dimensions. These are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands.  For more information, see the SciPy tutorial on [Multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html). In most cases, the plugin simply provides a user interface for a single SciPy function, gets the raster data using GDAL, calls the SciPy function with the provided parameters and loads the result back into QGIS. A few filters (PCA, unsharp mask, pixel statistics etc.) use custom functions that where implemented using SciPy and/or Numpy.
 
-
-
 For many filters, a custom footprint and/or structure or kernel can be provided, adjusting the size and shape of the filter.
 
 For more information, see the help in the window of the respective processing tool.
@@ -57,6 +55,10 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 - In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). Exception: PCA (only float32/float64 as options).
 
 ## Changelog
+### Git main
+- Get translation working (except for help strings)
+- Add German translation
+- new algorithm to keep only n components of PCA
 
 ### 0.3 (03/2024)
 - New: Principal Component Analysis (PCA)
