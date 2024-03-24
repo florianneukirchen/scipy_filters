@@ -34,6 +34,7 @@ from osgeo import gdal
 import numpy as np
 import json
 from qgis.PyQt.QtCore import QCoreApplication
+from qgis._core import QgsProcessingContext, QgsProcessingFeedback
 from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterString,
                        QgsProcessingParameterDefinition,
@@ -599,7 +600,7 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
         return SciPyTransformFromPCAlgorithm()  
     
 
-class SciPyKeepNBands(QgsProcessingAlgorithm):
+class SciPyKeepN(QgsProcessingAlgorithm):
     """
     Keep only n bands (or principal components), utility algorithm for PCA.
 
@@ -610,7 +611,168 @@ class SciPyKeepNBands(QgsProcessingAlgorithm):
     NCOMPONENTS = 'NCOMPONENTS'
 
     _name = 'keep_only'
-    _displayname = 'Keep only n bands (n components)'
-    _outputname = 'Keep only n bands'
-    _groupid = "pca" 
+    _displayname = tr('Keep only n components')
 
+    # Init Algorithm
+    def initAlgorithm(self, config):
+        """
+        Here we define the inputs and output of the algorithm, along
+        with some other properties.
+        """
+
+        # Add parameters
+        self.addParameter(
+            QgsProcessingParameterRasterLayer(
+                self.INPUT,
+                tr('Input layer'),
+            )
+        )
+
+        self.addParameter(QgsProcessingParameterNumber(
+            self.NCOMPONENTS,
+            tr('Number of components to keep (negative: number of components to remove)'),
+            QgsProcessingParameterNumber.Type.Integer,
+            defaultValue=-1, 
+            optional=False, 
+            # minValue=1, 
+            # maxValue=100
+            ))      
+    
+        self.addParameter(
+            QgsProcessingParameterRasterDestination(
+                self.OUTPUT,
+            tr(self._displayname)))
+        
+    def processAlgorithm(self, parameters, context, feedback):
+
+        # Get Parameters
+        self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
+
+        self.ncomponents = self.parameterAsInt(parameters, self.NCOMPONENTS,context)
+
+        # Open Raster with GDAL
+        self.ds = gdal.Open(self.inputlayer.source())
+
+        if not self.ds:
+            raise Exception("Failed to open Raster Layer")
+        
+        self.bandcount = self.ds.RasterCount
+
+        if self.bandcount < abs(self.ncomponents):
+            feedback.pushInfo(tr("Number of components can't be larger than band count, keeping all bands."))
+            self.ncomponents = self.bandcount
+
+        if self.ncomponents <= 0:
+            self.ncomponents = self.bandcount + self.ncomponents
+
+        self.indatatype = self.ds.GetRasterBand(1).DataType
+       
+        a = self.ds.ReadAsArray()
+
+        driver = gdal.GetDriverByName('GTiff')
+        self.out_ds = driver.Create(self.output_raster,
+                                    xsize=self.ds.RasterXSize,
+                                    ysize=self.ds.RasterYSize,
+                                    bands=self.ncomponents,
+                                    eType=self.ds.GetRasterBand(1).DataType)
+
+        self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
+        self.out_ds.SetProjection(self.ds.GetProjection())
+
+        self.out_ds.WriteArray(a[0:self.ncomponents,:,:])
+
+        # Calculate and write band statistics (min, max, mean, std)
+        for b in range(1, self.ncomponents + 1):
+            band = self.out_ds.GetRasterBand(b)
+            stats = band.GetStatistics(0,1)
+            band.SetStatistics(*stats)
+
+        # Copy band description
+        for i in range(self.ncomponents):
+            band_out = self.out_ds.GetRasterBand(i + 1)
+            band_in = self.ds.GetRasterBand(i + 1)
+            band_out.SetDescription(band_in.GetDescription())
+
+        # Close the dataset to write file to disk
+        self.out_ds = None 
+
+        # Copy Metadata and set name
+        global postprocess
+        meta = self.inputlayer.metadata()
+        name = tr("{} components of {}").format(self.ncomponents, self.inputlayer.name())
+        print(name)
+        print(meta)
+        postprocess = self.PostProcess(meta, name)
+        context.layerToLoadOnCompletionDetails(self.output_raster).setPostProcessor(postprocess)
+
+
+        return {self.OUTPUT: self.output_raster}
+    
+
+    class PostProcess(QgsProcessingLayerPostProcessorInterface):
+        """
+        To add metadata in the postprocessing step.
+        """
+        def __init__(self, meta, name):
+            self.meta = meta
+            self.name = name
+            print(name)
+            super().__init__()
+            
+        def postProcessLayer(self, layer, context, feedback):
+            layer.setMetadata(self.meta)
+            layer.setName(self.name)
+            print(self.name)
+
+    def shortHelpString(self):
+        """
+        Returns the help string that is shown on the right side of the 
+        user interface.
+        """
+        return """
+            Keep only n components. Utility to remove components of lesser importance \
+            after a principal components analysis (PCA).
+            
+            <b>Number of components</b> to keep. Negative numbers for \
+            numbers of components to remove.
+
+            """
+    
+    def name(self):
+        """
+        Returns the algorithm name, used for identifying the algorithm. This
+        string should be fixed for the algorithm, and must not be localised.
+        The name should be unique within each provider. Names should contain
+        lowercase alphanumeric characters only and no spaces or other
+        formatting characters.
+        """
+        return self._name
+
+    def displayName(self):
+        """
+        Returns the translated algorithm name, which should be used for any
+        user-visible display of the algorithm name.
+        """
+        return tr(self._displayname)
+
+    def group(self):
+        """
+        Returns the name of the group this algorithm belongs to. This string
+        should be localised.
+        """
+        s = groups.get("pca")
+        return tr(s)
+
+    def groupId(self):
+        """
+        Returns the unique ID of the group this algorithm belongs to. This
+        string should be fixed for the algorithm, and must not be localised.
+        The group id should be unique within each provider. Group id should
+        contain lowercase alphanumeric characters only and no spaces or other
+        formatting characters.
+        """
+        return "pca"
+
+    def createInstance(self):
+        return SciPyKeepN()  
