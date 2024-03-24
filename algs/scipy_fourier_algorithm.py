@@ -500,7 +500,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
         
         self.addParameter(QgsProcessingParameterNumber(
             self.NORMALIZATION,
-            tr('Normalization (devide kernel values by number). Set to 0 to devide by sum of absolute values of the kernel.'),
+            tr('Normalization (devide kernel values by given number). Set to 0 to devide by sum of absolute values of the kernel.'),
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=0, 
             optional=True, 
