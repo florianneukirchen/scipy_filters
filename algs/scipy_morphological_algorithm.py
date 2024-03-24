@@ -253,7 +253,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         if bordervalue:
             kwargs['border_value'] = bordervalue
 
-        self._outputname = 'Binary ' + self.algorithms[self.alg]
+        self._outputname = tr('Binary ') + self.algorithms[self.alg]
 
         return kwargs
     
@@ -432,7 +432,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         if isinstance(self, SciPyTophatAlgorithm):
             self._outputname = self.algorithms[self.alg]
         else:
-            self._outputname = 'Grey ' + self.algorithms[self.alg]
+            self._outputname = tr('Grey ') + self.algorithms[self.alg]
 
         return kwargs
     
