@@ -175,7 +175,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         n_pixels = flattened.shape[0]
 
-        # Get loadings with SVD
+        # Get eigenvectors, eigenvalues, loadings with SVD
 
         # For info on relation of SVD and PCA see:
         # https://stats.stackexchange.com/a/134283
@@ -185,12 +185,13 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # Note: U, S, VT = svd(X) followed by S = S * constant
         # is identical to U, S, VT = svd(x * constant)
         # U and VT do not change.
-        # The constant used for normalization in PCA is: 1 / sqrt(n_samples) 
-        # or 1 / sqrt(n_samples - 1)
+        # The factor usually used for normalization in PCA is: 1 / sqrt(n_samples - 1)
+
 
 
         U, S, VT = linalg.svd(centered,full_matrices=False)
 
+        # loadings = eigenvectors scaled by sqrt(eigenvalues)
         loadings = VT.T @ np.diag(S) / np.sqrt(n_pixels - 1)
 
         # variance_explained = eigenvalues

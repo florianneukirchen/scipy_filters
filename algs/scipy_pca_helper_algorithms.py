@@ -56,7 +56,7 @@ from ..scipy_algorithm_baseclasses import groups
 
 class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     """
-    Transform to principal components
+    Basclass: Transform to/from principal components
 
     """
 
@@ -87,6 +87,8 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     abstract = ""
 
     def initAlgorithm(self, config):
+
+        # Add parameters
 
         self.addParameter(
             QgsProcessingParameterRasterLayer(
@@ -333,7 +335,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
         # Transform to PC
         if self._inverse:
-            components = self.V.T
+            components = self.V.T # Same as VT from the SVD in the PCA algorithm
             # If not all PC bands were kept
             if self.bandcount < components.shape[0]:
                 bands = components.shape[0]
@@ -344,11 +346,14 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         else:
             components = self.V
 
+        # Transformation is dot product of data array (shape: n_pixels x bands) with V (forward) or VT (inverse)
         new_array = a @ components
 
+        # Add the original band means
         if self._inverse:
             new_array = new_array + self._bandmean
 
+        # Flattened array back to normal shape
         new_array = new_array.T.reshape(orig_shape)
 
         if feedback.isCanceled():
@@ -402,6 +407,14 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
                 
 
     def json_to_parameters(self, s):
+        """
+        Get eigenvectors and means from json string
+        
+        Returns: 
+        
+        eigenvectors: np.array | None, 
+        means: np.array | None
+        """
         s = s.strip()
         if s == "":
             return None, None
@@ -670,6 +683,7 @@ class SciPyKeepN(QgsProcessingAlgorithm):
        
         a = self.ds.ReadAsArray()
 
+        # Prepare output and write array
         driver = gdal.GetDriverByName('GTiff')
         self.out_ds = driver.Create(self.output_raster,
                                     xsize=self.ds.RasterXSize,
