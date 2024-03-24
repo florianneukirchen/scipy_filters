@@ -226,7 +226,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
         inmin = min(self.inmin)
         inmax = max(self.inmax)
 
-        msg = tr(f"Input values are in the range {inmin}...{inmax}")
+        msg = tr("Input values are in the range {}...{}").format(inmin, inmax)
         feedback.pushInfo(msg)
 
         # Calculate the possible range after applying the kernel
@@ -244,7 +244,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
         feedback.pushInfo(msg)
         
         if self._outdtype in (1,2,4) and np.any(self.kernel < 0):
-            msg = tr(f"WARNING: With a kernel containing negative values, output values can be negative. But output data type is unsigned integer!")
+            msg = tr("WARNING: With a kernel containing negative values, output values can be negative. But output data type is unsigned integer!")
             feedback.reportError(msg, fatalError = False)
 
         if 1 <= self._outdtype <= 5: # integer types

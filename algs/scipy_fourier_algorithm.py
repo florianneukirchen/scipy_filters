@@ -555,7 +555,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
         if np.issubdtype(dtype, np.integer):
             info = np.iinfo(dtype)
             if a.min() < info.min or a.max() > info.max:
-                self.error = (f"Values ({a.min().round(1)}...{a.max().round(1)}) are out of bounds of new dtype, clipping to {info.min}...{info.max}", False)
+                self.error = (tr("Values ({}...{}) are out of bounds of new dtype, clipping to {}...{}").format(a.min().round(1), a.max().round(1), info.min, info.max), False)
                 a = np.clip(a, info.min, info.max)
         return a
 
@@ -564,7 +564,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
         inmin = min(self.inmin)
         inmax = max(self.inmax)
 
-        msg = tr(f"Input values are in the range {inmin}...{inmax}")
+        msg = tr("Input values are in the range {}...{}").format(inmin, inmax)
         feedback.pushInfo(msg)
 
         # Calculate the possible range after applying the kernel
@@ -578,11 +578,11 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
                   + (np.where(self.kernel < 0, 0, self.kernel)  # positive part of kernel
                      * min(0, inmin)).sum()).astype("int")      # multiplied with negative input
         
-        msg = tr(f"Expected output range is {outmin}...{outmax}")
+        msg = tr("Expected output range is {}...{}").format(outmin, outmax)
         feedback.pushInfo(msg)
         
         if self._outdtype in (1,2,4) and np.any(self.kernel < 0):
-            msg = tr(f"WARNING: With a kernel containing negative values, output values can be negative. But output data type is unsigned integer!")
+            msg = tr("WARNING: With a kernel containing negative values, output values can be negative. But output data type is unsigned integer!")
             feedback.reportError(msg, fatalError = False)
 
         if 1 <= self._outdtype <= 5: # integer types
