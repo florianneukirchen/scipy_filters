@@ -369,8 +369,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         Returns the help string that is shown on the right side of the 
         user interface.
         """
-        return tr(
-            """
+        return """
             Principal Component Analysis (PCA), \
             calculated using Singular Value Decomposition (SVD) using svd from \
             <a href="https://docs.scipy.org/doc/scipy/reference/linalg.html">scipy.linalg</a>.
@@ -410,7 +409,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
             """
     
-        )
+        
 
 
     def createInstance(self):
