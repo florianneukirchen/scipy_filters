@@ -298,7 +298,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     and self.mask_ds.RasterXSize == self.ds.RasterXSize
                     and self.mask_ds.RasterYSize == self.ds.RasterYSize
                     and self.mask_ds.GetGeoTransform() == self.ds.GetGeoTransform()):
-                feedback.pushInfo("Mask layer does not match input layer, reprojecting mask.")
+                feedback.pushInfo(tr("Mask layer does not match input layer, reprojecting mask."))
 
                 geoTransform = self.ds.GetGeoTransform()
 
@@ -316,7 +316,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 warped_mask = gdal.Warp("/vsimem/tmpmask", self.mask_ds, **kwargs_w)
                 kwargs['mask'] = warped_mask.GetRasterBand(1).ReadAsArray()
             else:
-                feedback.pushInfo("Mask layer does match input layer.")
+                feedback.pushInfo(tr("Mask layer does match input layer."))
                 kwargs['mask'] = self.mask_ds.GetRasterBand(1).ReadAsArray()
 
 
