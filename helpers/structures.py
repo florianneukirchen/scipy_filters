@@ -26,6 +26,7 @@ from scipy import ndimage
 from qgis.core import QgsProcessingException
 from collections import OrderedDict
 
+from .i18n import tr
 
 def str_to_array(s, dims=2, to_int=True):
     s = s.strip()
@@ -79,30 +80,30 @@ def check_structure(s, dims=2, odd=False, optional=True):
         else:
             return (True, "", (0,0,0))
     if s == "" and not optional:
-        return (False, "Argument is not optional", None)
+        return (False, tr("Argument is not optional"), None)
     if s in ["square", "cross"]:
         return (True, "", (3,3))
     if s in ["cross3D", "ball", "cube"]:
         if dims == 3:
             return(True, "", (3, 3, 3))
         else:
-            return (False, f'{s} not possible in 2D', None)
+            return (False, tr('{} not possible in 2D').format(s), None)
 
     # Get it as array
     try:
         decoded = json.loads(s)
         a = np.array(decoded, dtype=np.float32)
     except (json.decoder.JSONDecodeError, ValueError, TypeError):
-        return (False, 'Can not parse string to array', None)
+        return (False, tr('Invalid input'), None)
 
     # Array must have same number of dims as the filter input,
     # but for 3D input and 2D structure I automatically add one axis
     if not (a.ndim == 2 or a.ndim == dims):
-        return (False, 'Array has wrong number of dimensions', None)
+        return (False, tr('Array has wrong number of dimensions'), None)
 
     # Wiener filter: values must be odd
     if odd and np.any(a % 2 == 0):
-        return (False, 'Every element in size must be odd.', None)
+        return (False, tr('Every element in size must be odd.'), None)
     
     if a.ndim == 2 and dims == 3:
         a = a[np.newaxis,:]
@@ -111,24 +112,25 @@ def check_structure(s, dims=2, odd=False, optional=True):
 
 
 def check_origin(s, shape):
+    msg =  tr('Invalid origin')
     try:
         int_or_list = str_to_int_or_list(s)
     except ValueError:
-        return (False, 'Invalid origin')
+        return (False, msg)
     
     if isinstance(int_or_list, int):
         if (-(min(shape) // 2) <= int_or_list <= (min(shape) -1 ) // 2):
             return (True, "")
         else:
-            return (False, 'Invalid origin')
+            return (False, msg)
     
     if not len(shape) == len(int_or_list):
-        return (False, 'Invalid origin')
+        return (False, msg)
 
     for i in range(len(shape)):
         # origin must satisfy -(weights.shape[k] // 2) <= origin[k] <= (weights.shape[k]-1) // 2
         if not (-(shape[i] // 2) <= int_or_list[i] <= (shape[i] - 1) // 2):
-            return (False, 'Invalid origin')
+            return (False, msg)
 
     return (True, '')
 

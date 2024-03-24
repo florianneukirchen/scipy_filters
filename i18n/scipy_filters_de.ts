@@ -4,32 +4,32 @@
 <context>
     <name>@default</name>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="169"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="172"/>
         <source>Input layer</source>
         <translation>Eingabe-Layer</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="182"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="185"/>
         <source>Dimension</source>
         <translation>Dimensionen</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="202"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="205"/>
         <source>Output data type</source>
         <translation>Ausgabe-Datentyp</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="288"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="291"/>
         <source>Failed to open Mask Layer</source>
         <translation>Konnte Maskenlayer nicht öffnen</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="413"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="416"/>
         <source>3D only possible if input layer has more than 1 bands</source>
         <translation>3D ist nur bei Layern mit mehr als einem Band möglich</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="437"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="440"/>
         <source>Warning, the range of output datatype is not in the range of the input datatype. Clipping is likely.</source>
         <translation>Warnung, der Wertebereich des Ausgabedatentyps ist nicht innerhalb desjenigen des Eingabedatentyps. Die Werte werden vermutlich beschnitten.</translation>
     </message>
@@ -41,7 +41,7 @@
     <message>
         <location filename="../scipy_algorithm_baseclasses.py" line="528"/>
         <source>Constant value past edges for border mode &quot;constant&quot;</source>
-        <translation type="unfinished">Konstanter Wert für Randmodus Konstante</translation>
+        <translation>Konstanter Wert für Randmodus Konstante</translation>
     </message>
     <message>
         <location filename="../scipy_algorithm_baseclasses.py" line="561"/>
@@ -199,39 +199,59 @@
         <translation>Wie Eingabe</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="177"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="180"/>
         <source>2D (Separate for each band)</source>
         <translation>2D (für jedes Band einzeln)</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="178"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="181"/>
         <source>3D (All bands as a 3D data cube)</source>
         <translation>3D (alle Bänder als 3D data cube)</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="520"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="166"/>
         <source>Reflect</source>
         <translation>Reflexion</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="520"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="166"/>
         <source>Constant</source>
         <translation>Konstante</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="520"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="166"/>
         <source>Nearest</source>
         <translation>Nächster</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="520"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="166"/>
         <source>Mirror</source>
         <translation>Spiegel</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="520"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="166"/>
         <source>Wrap</source>
         <translation>Einwickeln</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="97"/>
+        <source>Can not parse string to array</source>
+        <translation type="obsolete">Kann Eingabe nicht zu einem Array parsen</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="97"/>
+        <source>Invalid input</source>
+        <translation>Ungültige Eingabe</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="83"/>
+        <source>Argument is not optional</source>
+        <translation>Parameter ist nicht optional</translation>
+    </message>
+    <message>
+        <location filename="../helpers/structures.py" line="90"/>
+        <source>{} not possible in 2D</source>
+        <translation>{} in 2D nicht möglich</translation>
     </message>
 </context>
 <context>
