@@ -116,8 +116,8 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
 
     def my_fct_2D(self, input_raster, **kwargs):
         dtype = kwargs.pop("output")
-        input_fft = fft.fft2(input_raster)
-        a = ndimage.fourier_gaussian(input_fft, **kwargs)
+        a = fft.fft2(input_raster)
+        a = ndimage.fourier_gaussian(a, **kwargs)
         a = fft.ifft2(a).real
 
         if np.issubdtype(dtype, np.integer):
@@ -130,8 +130,8 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
 
     def my_fct_3D(self, input_raster, **kwargs):
         dtype = kwargs.pop("output")
-        input_fft = fft.fftn(input_raster)
-        a = ndimage.fourier_gaussian(input_fft, **kwargs)
+        a = fft.fftn(input_raster)
+        a = ndimage.fourier_gaussian(a, **kwargs)
         a = fft.ifftn(a).real
 
         if np.issubdtype(dtype, np.integer):
@@ -255,8 +255,8 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
 
     def my_fct_2D(self, input_raster, **kwargs):
         dtype = kwargs.pop("output")
-        input_fft = fft.fft2(input_raster)
-        a = ndimage.fourier_ellipsoid(input_fft, **kwargs)
+        a = fft.fft2(input_raster)
+        a = ndimage.fourier_ellipsoid(a, **kwargs)
         a = fft.ifft2(a).real
 
         if np.issubdtype(dtype, np.integer):
@@ -268,8 +268,8 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
 
     def my_fct_3D(self, input_raster, **kwargs):
         dtype = kwargs.pop("output")
-        input_fft = fft.fftn(input_raster)
-        a = ndimage.fourier_ellipsoid(input_fft, **kwargs)
+        a = fft.fftn(input_raster)
+        a = ndimage.fourier_ellipsoid(a, **kwargs)
         a = fft.ifftn(a).real
 
         if np.issubdtype(dtype, np.integer):
@@ -394,8 +394,8 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
 
     def my_fct_2D(self, input_raster, **kwargs):
         dtype = kwargs.pop("output")
-        input_fft = fft.fft2(input_raster)
-        a = ndimage.fourier_uniform(input_fft, **kwargs)
+        a = fft.fft2(input_raster)
+        a = ndimage.fourier_uniform(a, **kwargs)
         a = fft.ifft2(a).real
 
         if np.issubdtype(dtype, np.integer):
@@ -407,8 +407,8 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
 
     def my_fct_3D(self, input_raster, **kwargs):
         dtype = kwargs.pop("output")
-        input_fft = fft.fftn(input_raster)
-        a = ndimage.fourier_uniform(input_fft, **kwargs)
+        a = fft.fftn(input_raster)
+        a = ndimage.fourier_uniform(a, **kwargs)
         a = fft.ifftn(a).real
 
         if np.issubdtype(dtype, np.integer):
