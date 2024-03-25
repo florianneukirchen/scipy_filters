@@ -10,7 +10,7 @@ Includes raster filters such as:
 - Unsharp mask for sharpening, Wiener filter for noise reduction
 - Pixel statistics (std, mean, min ... of all bands for individual pixels)
 
-> Version 0.3 is already quite stable, as long as everything fits into the memory. However, with very large rasters it may crash QGIS. 
+> Version 0.3 is already quite stable, as long as everything fits into the memory. However, with very large rasters (tens of thousand pixels wide and high), it fails with an exception and sometimes it even crashes QGIS. 
 
 Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html), a library to filter images (or arrays, rasters) in *n* dimensions. These are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands.  For more information, see the SciPy tutorial on [Multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html). In most cases, the plugin simply provides a user interface for a single SciPy function, gets the raster data using GDAL, calls the SciPy function with the provided parameters and loads the result back into QGIS. A few filters (PCA, unsharp mask, pixel statistics etc.) use custom functions that where implemented using SciPy and/or Numpy.
 
