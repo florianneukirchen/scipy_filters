@@ -87,6 +87,8 @@ from .algs.scipy_pca_helper_algorithms import (SciPyTransformToPCAlgorithm,
                                                SciPyTransformFromPCAlgorithm,
                                                SciPyKeepN)
 
+from processing.core.ProcessingConfig import Setting, ProcessingConfig
+
 class SciPyFiltersProvider(QgsProcessingProvider):
 
     def __init__(self):
@@ -95,12 +97,25 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         """
         QgsProcessingProvider.__init__(self)
 
+    def load(self):
+        ProcessingConfig.addSetting(
+            Setting(self.name(), 
+                    'WINDOWSIZE', 
+                    tr('Window size for processing of large rasters'),
+                    2048,))
+
+        ProcessingConfig.readSettings()
+        self.refreshAlgorithms()
+        return True
+    
+
     def unload(self):
         """
         Unloads the provider. Any tear-down steps required by the provider
         should be implemented here.
         """
-        pass
+        # pass
+        ProcessingConfig.removeSetting('WINDOWSIZE')
 
     def loadAlgorithms(self):
         """

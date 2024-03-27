@@ -47,6 +47,8 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingException,
                         )
 
+from processing.core.ProcessingConfig import ProcessingConfig
+
 from .ui.sizes_widget import (SizesWidgetWrapper)
 from .ui.dim_widget import (DimsWidgetWrapper, SciPyParameterDims)
 from .ui.structure_widget import (StructureWidgetWrapper, 
@@ -137,7 +139,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
     # window size for moving window: e.g. 2048 or None
     # None = always work with full raster
-    windowsize = 2048
+    # This value will be overwritten if it is set in settings
+    # windowsize = 2048
 
     # Margin to be included in the window used for calculation
     # Must always be set according to the filter size when getting params
@@ -181,6 +184,13 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         Here we define the inputs and output of the algorithm, along
         with some other properties.
         """
+        try:
+            self.windowsize = int(ProcessingConfig.getSetting('WINDOWSIZE'))
+        except TypeError:
+            self.windowsize = 2048
+        if self.windowsize == 0:
+            self.windowsize = None
+
         # Border modes and labels (needs to be done here for translation to work)
         self.modes = ['reflect', 'constant', 'nearest', 'mirror', 'wrap']
         self.mode_labels = [tr('Reflect'), tr('Constant'), tr('Nearest'), tr('Mirror'), tr('Wrap')]
@@ -302,7 +312,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         # Get Parameters
         kwargs = self.get_parameters(parameters, context)
         # print("kwargs\n", kwargs)
-        print("wrapping", self.wrapping, kwargs.get("mode", None))
 
         self.fct = self.get_fct()
 
@@ -445,7 +454,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         # Calculate and write band statistics (min, max, mean, std)
         if self.bandstats:
-            print("stats")
             for b in range(1, self._outbands + 1):
                 band = self.out_ds.GetRasterBand(b)
                 stats = band.GetStatistics(0,1)
