@@ -105,6 +105,7 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
         kwargs['sigma'] = self.parameterAsDouble(parameters, self.SIGMA, context)
+        self.margin = int(4 * kwargs['sigma'] + 1)
         return kwargs
     
     # The function to be called, to be overwritten
@@ -223,11 +224,14 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
         sizes = self.parameterAsString(parameters, self.SIZES, context)
         if sizes:
             size = str_to_int_or_list(sizes)
+            self.margin = int(max(size))
         else:
             size = self.parameterAsDouble(parameters, self.SIZE, context)
+            self.margin = size
         if not size:
             # Just in case it is called from python and neither size or sizes or footprint is set
             size = 3
+            self.margin = 3
         kwargs['size'] = size
 
 
@@ -362,11 +366,14 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
         sizes = self.parameterAsString(parameters, self.SIZES, context)
         if sizes:
             size = str_to_int_or_list(sizes)
+            self.margin = int(max(size))
         else:
             size = self.parameterAsDouble(parameters, self.SIZE, context)
+            self.margin = size
         if not size:
             # Just in case it is called from python and neither size or sizes or footprint is set
             size = 3
+            self.margin = 3
         kwargs['size'] = size
 
 
@@ -530,6 +537,8 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
         self.kernel = kernel # For feedback
 
         kwargs['mode'] = 'same' # size must be the same as input raster
+
+        self.margin = int(np.ceil(max(kernel.shape) / 2).max())
 
         return kwargs
     
