@@ -27,7 +27,7 @@ import os
 from processing.gui.wrappers import WidgetWrapper
 from processing.tools import dataobjects
 from qgis.PyQt import uic
-
+from ..helpers import str_to_int_or_list
 
 uipath = os.path.dirname(__file__)
 
@@ -94,6 +94,29 @@ class SizesWidget(BASE, WIDGET):
         self.mSizeRowsQgsSpinBox.setClearValue(size)
         self.mSizeColsQgsSpinBox.setClearValue(size)
 
+    def setValue(self, s):
+        if not s:
+            return False
+        print(s)
+        try:
+            l = str_to_int_or_list(s)
+        except ValueError:
+            return False
+        print(l)
+        if isinstance(l, int):
+            self.mSizeQgsSpinBox.setValue(self.clearvalue)
+            self.sizeAllChanged()
+            return True
+        
+        if not 1 < len(l) < 4:
+            return False
+        
+        self.mSizeColsQgsSpinBox.setValue(l[-1])
+        self.mSizeRowsQgsSpinBox.setValue(l[-2])
+        if len(l) == 3:
+            self.mSizeBandsQgsSpinBox.setValue(l[0])
+        return True
+
     def value(self):
         rows = self.mSizeRowsQgsSpinBox.value()
         cols = self.mSizeColsQgsSpinBox.value()
@@ -124,6 +147,8 @@ class SizesWidgetWrapper(WidgetWrapper):
         else:
             self.widget.setDim(2)
 
+    def setValue(self, value):
+        return self.widget.setValue(value)
 
     def value(self):
         return self.widget.value()
