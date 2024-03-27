@@ -151,3 +151,66 @@ def number_of_windows(rasterXSize, rasterYSize, windowsize):
         y = y - 1
     return int(x * y)
     
+def wrap_margin(a, dataset, win: RasterWindow, band=None):
+    # Shortcut: Nothing to do if we are not on edge
+    if win.xshift == win.yshift == 0:
+        return
+    
+    # No wrapping needed if window is full raster
+    if win.xsize == win.rasterXSize:
+        return
+    
+    # If band, get the array of the band, otherwise of the complete ds
+    if band:
+        dataset = dataset.GetRasterBand(band)
+
+    # Prepare slices (for tile array) and offsets (for full dataset)
+        
+    n_slice = slice(None, None)
+
+    # Small sides
+    if win.xshift > 0:
+        x_slice = slice(-win.margin, None)
+        xoff = ds.RasterXSize - win.margin
+    else:
+        x_slice = slice(0, win.margin)
+        xoff = 0
+
+    if win.yshift > 0:
+        y_slice = slice(-win.margin, None)
+        yoff = ds.RasterYSize - win.margin
+    else:
+        y_slice = slice(0, win.margin)
+        yoff = 0
+
+    # Long sides
+    x_long_slice = slice(0, win.m_xsize)
+    y_long_slice = slice(0, win.m_ysize)
+
+    # Do the wrapping
+        
+    # left or right side    
+    if win.xshift != 0:
+        if a.ndim == 3:
+            slicer = (n_slice, y_long_slice, x_slice)
+        else:
+            slicer = (y_long_slice, x_slice)
+        a[slicer] = dataset.ReadAsArray(xoff, win.m_yoff, win.margin, win.m_ysize)
+
+    # upper or lower side
+    if win.yshift != 0:
+        if a.ndim == 3:
+            slicer = (n_slice, y_slice, x_long_slice)
+        else:
+            slicer = (y_slice, x_long_slice)
+
+        a[slicer] = dataset.ReadAsArray(win.m_xoff, yoff, win.m_xsize, win.margin)    
+    
+    # corners
+    if win.yshift != 0 and win.xshift != 0:
+        if a.ndim == 3:
+            slicer = (n_slice, y_slice, x_slice)
+        else:
+            slicer = (y_slice, x_slice)
+
+        a[slicer] = dataset.ReadAsArray(xoff, yoff, win.margin, win.margin)     
