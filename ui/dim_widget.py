@@ -56,7 +56,6 @@ class DimsWidgetWrapper(WidgetWrapper):
                 self.parentLayerChanged(wrapper)
                 wrapper.widgetValueHasChanged.connect(self.parentLayerChanged)
 
-    
 
 
     def parentLayerChanged(self, wrapper):
@@ -73,7 +72,8 @@ class DimsWidgetWrapper(WidgetWrapper):
             self.widget.setCurrentIndex(0)
             self.widget.model().item(1).setEnabled(False)
 
-
+    def setValue(self, value):
+        return self.widget.setCurrentIndex(value)
 
     def value(self):
         return self.widget.currentIndex()
