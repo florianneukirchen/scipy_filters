@@ -57,6 +57,8 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 
 ## Changelog
 ### Git main
+- For large rasters: calculate in a moving window to avoid crashes
+- add setValue() to the custom widgets to get loading from history working
 - Get translation working (except for help strings)
 - new algorithm to keep only n components of PCA
 
