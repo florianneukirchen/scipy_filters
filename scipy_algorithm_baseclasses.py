@@ -54,7 +54,10 @@ from .ui.structure_widget import (StructureWidgetWrapper,
 from .ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
 
-from .helpers import (array_to_str, 
+from .helpers import (RasterWindow,
+                      get_windows,
+                      number_of_windows,
+                      wrap_margin,
                       str_to_int_or_list, 
                       check_structure,
                       str_to_array, 
@@ -129,6 +132,19 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     
     _outbands = None # Optionally change the number of output bands
     _band_desc = None # Option to set description of bands (provide list with names)
+
+    # window size for moving window: e.g. 1024 or 2048 or None
+    # None = always work with full raster
+    windowsize = None
+
+    # Margin to be included in the window used for calculation
+    # Must always be set according to the filter size
+    margin = 100
+
+    # Must be set to True if bordermode is "wrap" and we are using windows
+    wrapping = False
+
+    # output default data type
 
     # Note: the np.dtype of the output array is added as "output" 
     # to the kwargs. This works for ndimage filters,
@@ -335,8 +351,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         # ndimage filters have a parameter for output dtype
         # For other function, it must be converted by hand
         kwargs['output'] = get_np_dtype(self._outdtype)
-        # print(kwargs['output'])
 
+        # print(kwargs['output'])
 
         self.out_ds = driver.Create(
             self.output_raster, 
@@ -352,30 +368,59 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             return {}
         
         feedback.setProgress(0)
+        total = number_of_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize)
+
+        print(total, "windows")
 
         # Start the actual work
 
         if self._dimension == Dimensions.twoD:
             # Iterate over bands and calculate 
+            total = total * self.bandcount
+            counter = 1
             for i in range(1, self.bandcount + 1):
-                a = self.ds.GetRasterBand(i).ReadAsArray()
+                windows = get_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize, margin=self.margin)
+
+                for win in windows:
+                    print(".", end="")
+                    a = self.ds.GetRasterBand(i).ReadAsArray(*win.gdalin)
+
+                    if self.wrapping:
+                        # Make shure that border mode "wrap" gets the far side of the complete array
+                        wrap_margin(a, self.ds, win)
+
+                    # The actual function
+                    filtered = self.fct(a, **kwargs)
+
+                    slices = win.getslice(a.ndim)
+                    self.out_ds.GetRasterBand(i).WriteArray(filtered[slices], *win.gdalout)
+
+                    feedback.setProgress(counter * 100 / total)
+                    counter += 1
+                    if feedback.isCanceled():
+                        return {}
+                
+        elif self._dimension == Dimensions.threeD:
+            counter = 1
+            windows = get_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize, margin=self.margin)
+
+            for win in windows:
+                a = self.ds.ReadAsArray(*win.gdalin)       
+
+                if self.wrapping:
+                    # Make shure that border mode "wrap" gets the far side of the complete array
+                    wrap_margin(a, self.ds, win)
 
                 # The actual function
                 filtered = self.fct(a, **kwargs)
 
-                self.out_ds.GetRasterBand(i).WriteArray(filtered)
+                slices = win.getslice(a.ndim)
+                self.out_ds.WriteArray(filtered[slices], *win.gdalout)
 
-                feedback.setProgress(i * 100 / self.bandcount)
+                feedback.setProgress(counter * 100 / total)
+                counter += 1
                 if feedback.isCanceled():
                     return {}
-                
-        elif self._dimension == Dimensions.threeD:
-            a = self.ds.ReadAsArray()          
-
-            # The actual function
-            filtered = self.fct(a, **kwargs)
-
-            self.out_ds.WriteArray(filtered)
 
         # Calculate and write band statistics (min, max, mean, std)
         for b in range(1, self._outbands + 1):
