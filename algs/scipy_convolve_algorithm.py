@@ -193,6 +193,8 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
         origin = self.parameterAsString(parameters, self.ORIGIN, context)
         kwargs['origin'] = str_to_int_or_list(origin)
 
+        self.margin = int(np.ceil(max(weights.shape) / 2) + np.abs(kwargs['origin']).max())
+
         return kwargs
     
     
