@@ -73,7 +73,10 @@ class DimsWidgetWrapper(WidgetWrapper):
             self.widget.model().item(1).setEnabled(False)
 
     def setValue(self, value):
-        return self.widget.setCurrentIndex(value)
+        if not value in (0,1):
+            return False
+        self.widget.setCurrentIndex(value)
+        return True
 
     def value(self):
         return self.widget.currentIndex()

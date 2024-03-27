@@ -97,12 +97,11 @@ class SizesWidget(BASE, WIDGET):
     def setValue(self, s):
         if not s:
             return False
-        print(s)
         try:
             l = str_to_int_or_list(s)
         except ValueError:
             return False
-        print(l)
+        
         if isinstance(l, int):
             self.mSizeQgsSpinBox.setValue(self.clearvalue)
             self.sizeAllChanged()

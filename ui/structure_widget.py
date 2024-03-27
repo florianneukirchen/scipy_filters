@@ -123,6 +123,7 @@ class StructureWidget(BASE, WIDGET):
 
     def setValue(self, s):
         self.plainTextEdit.setPlainText(s)
+        return True
 
 
     def value(self):

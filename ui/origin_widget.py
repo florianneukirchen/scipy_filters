@@ -28,7 +28,7 @@ from qgis.PyQt import uic
 
 from qgis.core import QgsProcessingParameterString
 
-from ..helpers import check_structure
+from ..helpers import check_structure, str_to_int_or_list
 
 uipath = os.path.dirname(__file__)
 
@@ -129,6 +129,28 @@ class OriginWidget(BASE, WIDGET):
             self.mOriginBandsQgsSpinBox.setMinimum(0)
             self.mOriginBandsQgsSpinBox.setMaximum(0)
 
+    def setValue(self, s):
+        if not s:
+            return False
+        try:
+            l = str_to_int_or_list(s)
+        except ValueError:
+            return False
+        
+        if isinstance(l, int):
+            self.mOriginColsQgsSpinBox.setValue(l)
+            self.mOriginRowsQgsSpinBox.setValue(l)
+            self.mOriginBandsQgsSpinBox.setValue(l)
+            return True
+        
+        if not 1 < len(l) < 4:
+            return False
+        self.mOriginColsQgsSpinBox.setValue(l[-1])
+        self.mOriginRowsQgsSpinBox.setValue(l[-2])
+        if len(l) == 3:
+            self.mOriginBandsQgsSpinBox.setValue(l[0])
+        return True
+
 
     def value(self):
         if self.ndim == None:
@@ -170,6 +192,8 @@ class OriginWidgetWrapper(WidgetWrapper):
         else:
             self.widget.setDim(2)
 
+    def setValue(self, value):
+        return self.widget.setValue(value)
 
     def value(self):
         return self.widget.value()
