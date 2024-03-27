@@ -135,11 +135,11 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
     # window size for moving window: e.g. 2048 or None
     # None = always work with full raster
-    windowsize = 2000
+    windowsize = 500
 
     # Margin to be included in the window used for calculation
     # Must always be set according to the filter size
-    margin = 5
+    margin = 0
 
     # Must be set to True if bordermode is "wrap" and we are using windows
     wrapping = False
@@ -370,6 +370,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             return {}
         
         total = number_of_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize) + 1
+        print("margin", self.margin)
+        print(total - 1, "windows")
 
 
         # Start the actual work
@@ -580,7 +582,9 @@ class SciPyAlgorithmWithMode(SciPyAlgorithm):
             optional=True, 
             minValue=0, 
             # maxValue=100
-            ))      
+            ))    
+
+        self.margin = 1  
     
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
@@ -775,23 +779,26 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
         kwargs = super().get_parameters(parameters, context)
 
         sizes = self.parameterAsString(parameters, self.SIZES, context)
+
         if sizes:
             size = str_to_int_or_list(sizes)
+            sizelist = size # used to calculate margin
         else:
             size = self.parameterAsInt(parameters, self.SIZE, context)
+            sizelist = [size]
+
         if not size:
             # Just in case it is called from python and neither size or sizes or footprint is set
             size = 3
+            sizelist = [3]
         kwargs['size'] = size
 
 
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
         if footprint:
             kwargs['footprint'] = str_to_array(footprint, self._ndim)
-        else:
-            if not size:
-                # Either size or footprint must be set
-                kwargs['size'] = 1
+            sizelist = sizelist.extend(footprint.shape)
+
 
         mode = self.parameterAsInt(parameters, self.MODE, context) 
 
@@ -803,6 +810,12 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
         cval = self.parameterAsDouble(parameters, self.CVAL, context)
         if cval:
             kwargs['cval'] = cval
+
+        # Margin for moving window
+        self.margin = int(np.ceil(max(sizelist) / 2))
+        print("origin", origin)
+
+        self.margin = self.margin + max(kwargs['origin'])
 
         return kwargs
     
