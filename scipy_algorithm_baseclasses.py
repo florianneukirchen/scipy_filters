@@ -393,7 +393,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     # The actual function
                     filtered = self.fct(a, **kwargs)
 
-                    slices = win.getslice(a.ndim)
+                    slices = win.getslice(2)
                     self.out_ds.GetRasterBand(i).WriteArray(filtered[slices], *win.gdalout)
 
                     feedback.setProgress(counter * 100 / total)
@@ -403,6 +403,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 
         elif self._dimension == Dimensions.threeD:
             counter = 1
+            dims = 3
+            if self._outbands == 1:
+                dims = 2
+
             windows = get_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize, margin=self.margin)
 
             for win in windows:
@@ -415,7 +419,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 # The actual function
                 filtered = self.fct(a, **kwargs)
 
-                slices = win.getslice(a.ndim)
+                slices = win.getslice(dims)
                 self.out_ds.WriteArray(filtered[slices], *win.gdalout)
 
                 feedback.setProgress(counter * 100 / total)
@@ -813,7 +817,6 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
 
         # Margin for moving window
         self.margin = int(np.ceil(max(sizelist) / 2))
-        print("origin", origin)
 
         self.margin = self.margin + max(kwargs['origin'])
 
