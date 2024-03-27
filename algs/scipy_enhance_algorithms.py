@@ -131,6 +131,8 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
         kwargs['mysize'] = sizes
         kwargs['noise'] = self.parameterAsDouble(parameters, self.NOISE, context)
 
+        self.margin = int(np.ceil(max(sizes) / 2))
+
         return kwargs
 
 
