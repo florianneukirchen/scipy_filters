@@ -31,6 +31,7 @@ __revision__ = '$Format:%H$'
 
 import numpy as np
 
+DEFAULTWINDOWSIZE = 5000
 
 class RasterWindow():
     def __init__(self, rasterXSize, rasterYSize, xoff, yoff, xsize, ysize, margin=0):

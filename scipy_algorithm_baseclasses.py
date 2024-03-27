@@ -60,6 +60,7 @@ from .ui.origin_widget import (OriginWidgetWrapper,
 from .helpers import (RasterWindow,
                       get_windows,
                       number_of_windows,
+                      DEFAULTWINDOWSIZE,
                       wrap_margin,
                       str_to_int_or_list, 
                       check_structure,
@@ -137,11 +138,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     _outbands = None # Optionally change the number of output bands
     _band_desc = None # Option to set description of bands (provide list with names)
 
-    # window size for moving window: e.g. 2048 or None
-    # None = always work with full raster
-    # This value will be overwritten if it is set in settings
-    # windowsize = 2048
-
     # Margin to be included in the window used for calculation
     # Must always be set according to the filter size when getting params
     margin = 0
@@ -187,7 +183,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         try:
             self.windowsize = int(ProcessingConfig.getSetting('WINDOWSIZE'))
         except TypeError:
-            self.windowsize = 2048
+            self.windowsize = DEFAULTWINDOWSIZE
         if self.windowsize == 0:
             self.windowsize = None
 
