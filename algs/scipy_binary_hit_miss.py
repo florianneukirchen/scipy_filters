@@ -166,21 +166,26 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
 
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
+        sizelist = [3] # used for margin
 
         structure1 = self.parameterAsString(parameters, self.STRUCTURE1, context)
         if structure1.strip() != "":
             kwargs['structure1'] = str_to_array(structure1, self._ndim)
+            sizelist.extend(kwargs['structure1'].shape)
 
 
         structure2 = self.parameterAsString(parameters, self.STRUCTURE2, context)
         if structure2.strip() != "":
             kwargs['structure2'] = str_to_array(structure2, self._ndim)
+            sizelist.extend(kwargs['structure2'].shape)
 
         origin1 = self.parameterAsString(parameters, self.ORIGIN1, context)
         kwargs['origin1'] = str_to_int_or_list(origin1)
 
         origin2 = self.parameterAsString(parameters, self.ORIGIN2, context)
         kwargs['origin2'] = str_to_int_or_list(origin2)
+
+        self.margin = max(sizelist)
 
         return kwargs
     
