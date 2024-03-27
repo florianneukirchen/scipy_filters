@@ -816,9 +816,7 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             kwargs['cval'] = cval
 
         # Margin for moving window
-        self.margin = int(np.ceil(max(sizelist) / 2))
-
-        self.margin = self.margin + max(kwargs['origin'])
+        self.margin = int(np.ceil(max(sizelist) / 2) + np.abs(kwargs['origin']).max())
 
         return kwargs
     
