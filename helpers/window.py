@@ -153,6 +153,8 @@ def number_of_windows(rasterXSize, rasterYSize, windowsize):
     
 
 def wrap_margin(a, dataset, win: RasterWindow, band=None):
+    rasterXSize = dataset.RasterXSize
+    rasterYSize = dataset.RasterYSize
     # Shortcut: Nothing to do if we are not on edge
     if win.xshift == win.yshift == 0:
         return
@@ -172,14 +174,14 @@ def wrap_margin(a, dataset, win: RasterWindow, band=None):
     # Small sides
     if win.xshift > 0:
         x_slice = slice(-win.margin, None)
-        xoff = dataset.RasterXSize - win.margin
+        xoff = rasterXSize - win.margin
     else:
         x_slice = slice(0, win.margin)
         xoff = 0
 
     if win.yshift > 0:
         y_slice = slice(-win.margin, None)
-        yoff = dataset.RasterYSize - win.margin
+        yoff = rasterYSize - win.margin
     else:
         y_slice = slice(0, win.margin)
         yoff = 0

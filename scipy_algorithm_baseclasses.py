@@ -302,6 +302,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         # Get Parameters
         kwargs = self.get_parameters(parameters, context)
         # print("kwargs\n", kwargs)
+        print("wrapping", self.wrapping, kwargs.get("mode", None))
 
         self.fct = self.get_fct()
 
@@ -403,7 +404,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
                     if self.wrapping:
                         # Make shure that border mode "wrap" gets the far side of the complete array
-                        wrap_margin(a, self.ds, win)
+                        wrap_margin(a, self.ds, win, band=i)
 
                     # The actual function
                     filtered = self.fct(a, **kwargs)
@@ -613,6 +614,9 @@ class SciPyAlgorithmWithMode(SciPyAlgorithm):
         mode = self.parameterAsInt(parameters, self.MODE, context) 
         kwargs['mode'] = self.modes[mode]
 
+        if kwargs['mode'] == 'wrap':
+            self.wrapping = True
+
         cval = self.parameterAsDouble(parameters, self.CVAL, context)
         if cval:
             kwargs['cval'] = cval
@@ -821,12 +825,12 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             sizelist = sizelist.extend(footprint.shape)
 
 
-        mode = self.parameterAsInt(parameters, self.MODE, context) 
+        # mode = self.parameterAsInt(parameters, self.MODE, context) 
 
         origin = self.parameterAsString(parameters, self.ORIGIN, context)
         kwargs['origin'] = str_to_int_or_list(origin)
 
-        kwargs['mode'] = self.modes[mode]
+        # kwargs['mode'] = self.modes[mode]
 
         cval = self.parameterAsDouble(parameters, self.CVAL, context)
         if cval:
