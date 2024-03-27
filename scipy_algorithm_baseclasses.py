@@ -137,10 +137,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
     # window size for moving window: e.g. 2048 or None
     # None = always work with full raster
-    windowsize = 500
+    windowsize = 2048
 
     # Margin to be included in the window used for calculation
-    # Must always be set according to the filter size
+    # Must always be set according to the filter size when getting params
     margin = 0
 
     # Must be set to True if bordermode is "wrap" and we are using windows
