@@ -433,6 +433,8 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
         mode = self.parameterAsInt(parameters, self.MODE, context) 
         kwargs['mode'] = self.modes[mode]
+        if kwargs['mode'] == 'wrap':
+            self.wrapping = True
 
         cval = self.parameterAsDouble(parameters, self.CVAL, context)
         if cval:
