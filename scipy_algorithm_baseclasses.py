@@ -133,13 +133,13 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     _outbands = None # Optionally change the number of output bands
     _band_desc = None # Option to set description of bands (provide list with names)
 
-    # window size for moving window: e.g. 1024 or 2048 or None
+    # window size for moving window: e.g. 2048 or None
     # None = always work with full raster
-    windowsize = None
+    windowsize = 2000
 
     # Margin to be included in the window used for calculation
     # Must always be set according to the filter size
-    margin = 100
+    margin = 5
 
     # Must be set to True if bordermode is "wrap" and we are using windows
     wrapping = False
@@ -282,6 +282,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         Here is where the processing itself takes place.
         """
 
+        feedback.setProgress(0)
+
         # Get Parameters
         kwargs = self.get_parameters(parameters, context)
         # print("kwargs\n", kwargs)
@@ -367,10 +369,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         if feedback.isCanceled():
             return {}
         
-        feedback.setProgress(0)
-        total = number_of_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize)
+        total = number_of_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize) + 1
 
-        print(total, "windows")
 
         # Start the actual work
 
@@ -382,7 +382,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 windows = get_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize, margin=self.margin)
 
                 for win in windows:
-                    print(".", end="")
                     a = self.ds.GetRasterBand(i).ReadAsArray(*win.gdalin)
 
                     if self.wrapping:
@@ -437,7 +436,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 band = self.out_ds.GetRasterBand(i + 1)
                 band.SetDescription(self._band_desc[i])
 
-
         # Free some memory
         self.ds = None
         a = None
@@ -446,7 +444,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         self.out_ds = None 
 
         feedback.setProgress(100)
-
         # Optionally rename the output layer
         if self._outputname:
             global renamer
