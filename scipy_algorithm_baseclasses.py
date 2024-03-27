@@ -43,6 +43,7 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterString,
                        QgsProcessingLayerPostProcessorInterface,
                        QgsProcessingParameterDefinition,
+                       QgsProcessingParameterBoolean,
                        QgsProcessingException,
                         )
 
@@ -118,6 +119,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     DIMENSION = 'DIMENSION'
     DTYPE = 'DTYPE'
+    BANDSTATS = 'BANDSTATS'
     
     # The following constants are supposed to be overwritten
     _name = 'name, short, lowercase without spaces'
@@ -219,6 +221,18 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         # Insert Parameters 
         self.insert_parameters(config)
 
+        stats_param = QgsProcessingParameterBoolean(
+            self.BANDSTATS,
+            tr('Calculate band statistics'),
+            optional=True,
+            defaultValue=True,
+        )
+
+                
+        stats_param.setFlags(stats_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+      
+        self.addParameter(stats_param)
+
         # Force translation of first dtype option ("same as input")
         dtype_options_tr = dtype_options
         dtype_options_tr[0] = tr(dtype_options_tr[0])
@@ -258,6 +272,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         """
         self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
+        self.bandstats = self.parameterAsBool(parameters, self.BANDSTATS, context)
  
         self._outdtype = self.parameterAsInt(parameters, self.DTYPE, context)
         if not self._outdtype:
@@ -428,10 +443,12 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     return {}
 
         # Calculate and write band statistics (min, max, mean, std)
-        for b in range(1, self._outbands + 1):
-            band = self.out_ds.GetRasterBand(b)
-            stats = band.GetStatistics(0,1)
-            band.SetStatistics(*stats)
+        if self.bandstats:
+            print("stats")
+            for b in range(1, self._outbands + 1):
+                band = self.out_ds.GetRasterBand(b)
+                stats = band.GetStatistics(0,1)
+                band.SetStatistics(*stats)
 
         # Check and feedback
         self.checkAndComplain(feedback)
