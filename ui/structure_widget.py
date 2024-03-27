@@ -121,6 +121,10 @@ class StructureWidget(BASE, WIDGET):
     def menu_triggered(self, checked):
         self.plainTextEdit.setPlainText(checked.data())
 
+    def setValue(self, s):
+        self.plainTextEdit.setPlainText(s)
+
+
     def value(self):
         return self.plainTextEdit.toPlainText()
 
@@ -140,6 +144,7 @@ class StructureWidget(BASE, WIDGET):
     def threeDEnabled(self, yes):
         for action in self.three_d_items:
             action.setEnabled(yes)
+
 
 class StructureWidgetWrapper(WidgetWrapper):
 
@@ -171,6 +176,9 @@ class StructureWidgetWrapper(WidgetWrapper):
         widget = StructureWidget(examples, to_int, defaultValue=defaultValue, isoptional=optional)
         return widget
 
+    def setValue(self, value):
+        return self.widget.setValue(value)
+    
     def value(self):
         return self.widget.value()
     
