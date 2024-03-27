@@ -370,7 +370,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     return {}
                 
         elif self._dimension == Dimensions.threeD:
-            a = self.ds.ReadAsArray()               
+            a = self.ds.ReadAsArray()          
 
             # The actual function
             filtered = self.fct(a, **kwargs)

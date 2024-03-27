@@ -112,35 +112,42 @@ def get_windows(rasterXSize, rasterYSize, margin=0, windowsize=1024):
     if windowsize == None:
         # get 1 window with full raster 
         yield RasterWindow(rasterXSize, rasterYSize, 0, 0, rasterXSize, rasterYSize, margin=0)
+        return
 
-    if (rasterXSize * rasterYSize) < (windowsize**2 * 4):
-        # Only create windows if the area is >= 4 * windowsize
+    if (np.min((rasterXSize, rasterYSize))  < 2 * windowsize):
+        # print("only one")
+        # get 1 window with full raster 
         yield RasterWindow(rasterXSize, rasterYSize, 0, 0, rasterXSize, rasterYSize, margin=0)
+        return
     
     for x in range(0, rasterXSize, windowsize):
 
-        if x + windowsize > rasterXSize:
+        if x + 1.5 * windowsize > rasterXSize:
             xsize = rasterXSize - x 
         else:
             xsize = windowsize
 
         for y in range(0, rasterYSize, windowsize):
 
-            if y + windowsize > rasterYSize:
+            if y + 1.5 * windowsize > rasterYSize:
                 ysize = rasterYSize - y 
             else:
                 ysize = windowsize
                 
-            yield RasterWindow(rasterXSize, rasterYSize, x, y, xsize, ysize, margin)
+            if (xsize > windowsize / 2) and (ysize > windowsize / 2):
+                yield RasterWindow(rasterXSize, rasterYSize, x, y, xsize, ysize, margin)
 
 
 def number_of_windows(rasterXSize, rasterYSize, windowsize):
     if windowsize == None:
         return 1
-    # Only create windows if the area is >= 4 * windowsize
-    if rasterXSize * rasterYSize < (windowsize**2 * 4):
+    if (np.min((rasterXSize, rasterYSize))  < 2 * windowsize):
         return 1
     x = np.ceil(rasterXSize / windowsize)
     y = np.ceil(rasterYSize / windowsize)
+    if (rasterXSize % windowsize) < (windowsize / 2):
+        x = x - 1
+    if (rasterYSize % windowsize) < (windowsize / 2):
+        y = y - 1
     return int(x * y)
     
