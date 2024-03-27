@@ -158,11 +158,14 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
         sizes = self.parameterAsString(parameters, self.SIZES, context)
         if sizes:
             size = str_to_int_or_list(sizes)
+            self.margin = max(size)
+            self.margin = size
         else:
             size = self.parameterAsInt(parameters, self.SIZE, context)
         if not size:
             # Just in case it is called from python and neither size or sizes or footprint is set
             size = 3
+            self.margin = 3
 
         kwargs['size'] = size
 
