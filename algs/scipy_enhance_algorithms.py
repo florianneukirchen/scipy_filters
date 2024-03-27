@@ -188,7 +188,8 @@ class SciPyUnsharpMaskAlgorithm(SciPyAlgorithmWithSigma):
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
 
-            <b>Sigma</b> Radius of the filter (standard deviation of the gaussian filter).
+            <b>Sigma</b> Standard deviation of the gaussian filter. \
+            The size of the gaussian kernel is 4 * sigma.
 
             <b>Amount</b> Amplification factor.
 
