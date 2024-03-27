@@ -62,6 +62,7 @@ class SciPyAlgorithmWithSigma(SciPyAlgorithmWithMode):
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
         kwargs['sigma'] = self.parameterAsDouble(parameters, self.SIGMA, context)
+        self.margin = int(4 * kwargs['sigma'] + 1) # truncate default = 4
         return kwargs
 
 
@@ -187,8 +188,16 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
         kwargs['order'] = self.parameterAsInt(parameters, self.ORDER, context) 
        
         truncate = self.parameterAsDouble(parameters, self.TRUNCATE, context)
-        if truncate and truncate > 0:
+        if truncate:
             kwargs['truncate'] = truncate
+            self._truncate = truncate
+
+        # Calculate margin
+        if not truncate:
+            truncate = 4 # default of scipy
+
+        # See https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.gaussian_filter.html
+        self.margin = int(truncate * kwargs['sigma'] + 1)
 
         return kwargs
 
