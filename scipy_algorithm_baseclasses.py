@@ -825,12 +825,8 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             sizelist = sizelist.extend(footprint.shape)
 
 
-        # mode = self.parameterAsInt(parameters, self.MODE, context) 
-
         origin = self.parameterAsString(parameters, self.ORIGIN, context)
         kwargs['origin'] = str_to_int_or_list(origin)
-
-        # kwargs['mode'] = self.modes[mode]
 
         cval = self.parameterAsDouble(parameters, self.CVAL, context)
         if cval:
