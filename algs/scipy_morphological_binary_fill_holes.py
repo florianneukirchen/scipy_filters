@@ -55,7 +55,6 @@ from ..ui.origin_widget import (OriginWidgetWrapper,
 class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
 
     STRUCTURE = 'STRUCTURE'
-    CUSTOMSTRUCTURE = 'CUSTOMSTRUCTURE'
     ORIGIN = 'ORIGIN'
 
     # Overwrite constants of base class
@@ -132,8 +131,13 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
 
+        sizelist = [3]
+
         structure = self.parameterAsString(parameters, self.STRUCTURE, context)
         kwargs['structure'] = str_to_array(structure, self._ndim)
+
+        sizelist.extend(kwargs['structure'].shape)
+        self.margin = max(sizelist)
 
         return kwargs
     
