@@ -255,6 +255,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
         self._outputname = tr('Binary ') + self.algorithms[self.alg]
 
+        self.margin = max(kwargs['structure'].shape)
         return kwargs
     
     def createInstance(self):
@@ -407,20 +408,28 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
+
+        sizelist = list(kwargs['structure'].shape)
      
         size = self.parameterAsString(parameters, self.SIZES, context)
         size = str_to_int_or_list(size)
         if not size:
             size = self.parameterAsInt(parameters, self.SIZE, context)
+            sizelist.append(size)
+        else:
+            sizelist.extend(size)
         kwargs['size'] = size
 
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
         if footprint.strip() != "":
             kwargs['footprint'] = str_to_array(footprint, self._ndim)
+            sizelist.extend(kwargs['footprint'].shape)
         else:
             if not size:
                 # Either size or footprint must be set
                 kwargs['size'] = 1
+
+        self.margin = max(sizelist)
 
         mode = self.parameterAsInt(parameters, self.MODE, context) 
         kwargs['mode'] = self.modes[mode]
