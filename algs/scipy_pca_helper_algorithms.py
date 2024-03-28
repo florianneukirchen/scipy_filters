@@ -46,10 +46,12 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterRasterDestination)
 
+from processing.core.ProcessingConfig import ProcessingConfig
 
 
 from ..helpers import (str_to_array, 
-                      tr)
+                      tr,
+                      MAXSIZE)
 
 from ..scipy_algorithm_baseclasses import groups
 
@@ -87,6 +89,10 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     abstract = ""
 
     def initAlgorithm(self, config):
+        try:
+            self.maxsize = int(ProcessingConfig.getSetting('MAXSIZE'))
+        except TypeError:
+            self.maxsize = MAXSIZE
 
         # Add parameters
 
@@ -198,6 +204,12 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
         inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         bands = inputlayer.bandCount()
+
+        # Check maxsize
+        size = inputlayer.width() * inputlayer.height() / 1000000 # megapixels
+        if size > self.maxsize:
+            return False, tr("Raster size is larger than maxsize (see settings).")
+
 
         V = self.parameterAsString(parameters, self.EIGENVECTORS, context)
         V = V.strip()
