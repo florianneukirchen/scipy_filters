@@ -32,7 +32,7 @@ __revision__ = '$Format:%H$'
 
 from qgis.core import QgsProcessingProvider
 
-from .helpers import tr, DEFAULTWINDOWSIZE
+from .helpers import tr, DEFAULTWINDOWSIZE, MAXSIZE
                                    
 from .algs.scipy_convolve_algorithm import SciPyConvolveAlgorithm
 from .algs.scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm, 
@@ -101,9 +101,15 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         ProcessingConfig.addSetting(
             Setting(self.name(), 
                     'WINDOWSIZE', 
-                    tr('Window size for processing of large rasters'),
+                    tr('Window size for processing of large rasters (edge length in pixels)'),
                     DEFAULTWINDOWSIZE,))
 
+        ProcessingConfig.addSetting(
+            Setting(self.name(), 
+                    'MAXSIZE', 
+                    tr('Maximum size (megapixels) for algorithms not working in a moving window (avoids crashes).'),
+                    MAXSIZE,))
+        
         ProcessingConfig.readSettings()
         self.refreshAlgorithms()
         return True

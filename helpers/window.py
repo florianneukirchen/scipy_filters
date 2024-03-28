@@ -31,7 +31,8 @@ __revision__ = '$Format:%H$'
 
 import numpy as np
 
-DEFAULTWINDOWSIZE = 5000
+DEFAULTWINDOWSIZE = 5000 # Large is faster, but must be small enought for RAM
+MAXSIZE = 200 # Max size in Mpixels for algs that can't use a window 
 
 class RasterWindow():
     def __init__(self, rasterXSize, rasterYSize, xoff, yoff, xsize, ysize, margin=0):

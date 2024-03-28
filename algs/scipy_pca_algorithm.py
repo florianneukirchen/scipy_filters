@@ -46,8 +46,10 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterBoolean,
                         )
 
+from processing.core.ProcessingConfig import ProcessingConfig
+
 from ..scipy_algorithm_baseclasses import groups
-from ..helpers import tr
+from ..helpers import tr, MAXSIZE
 
 
 class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
@@ -75,6 +77,10 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         Here we define the inputs and output of the algorithm, along
         with some other properties.
         """
+        try:
+            self.maxsize = int(ProcessingConfig.getSetting('MAXSIZE'))
+        except TypeError:
+            self.maxsize = MAXSIZE
 
         # Add parameters
         self.addParameter(
@@ -319,6 +325,11 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
     def checkParameterValues(self, parameters, context):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        # Check maxsize
+        size = layer.width() * layer.height() / 1000000 # megapixels
+        if size > self.maxsize:
+            return False, tr("Raster size is larger than maxsize (see settings).")
+
         # PCA only possible with more than 1 bands
         if layer.bandCount() == 1:
             return (False, tr("PCA only possible if input layer has more than 1 bands"))
