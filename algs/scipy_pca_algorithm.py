@@ -191,6 +191,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         U, S, VT = linalg.svd(centered,full_matrices=False)
 
+        U = None # Save memory, not needed anymore
+
         # loadings = eigenvectors scaled by sqrt(eigenvalues)
         loadings = VT.T @ np.diag(S) / np.sqrt(n_pixels - 1)
 
