@@ -189,8 +189,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # U and VT do not change.
         # The factor usually used for normalization in PCA is: 1 / sqrt(n_samples - 1)
 
-
-
         U, S, VT = linalg.svd(centered,full_matrices=False)
 
         U = None # Save memory, not needed anymore
@@ -240,7 +238,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         # Get the scores, i.e. the data in principal components
         new_array = centered @ VT.T
-
+        centered = None
 
         # Reshape to original shape
         new_array = new_array.T.reshape(orig_shape)
@@ -290,7 +288,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         # Free some memory
         self.ds = None
-        a = None
         new_array = None
 
         # Save loadings etc as json in the metadata abstract of the layer
