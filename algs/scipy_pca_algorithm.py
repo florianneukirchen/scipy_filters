@@ -164,6 +164,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         orig_shape = a.shape
         flattened = a.reshape(orig_shape[0], -1)
 
+        a = None # Save memory
+
         flattened = flattened.T
         # Now shape is number of pixels, bands
 
