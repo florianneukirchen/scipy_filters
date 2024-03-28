@@ -167,15 +167,15 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         a = None # Save memory
 
         flattened = flattened.T
-        # Now shape is number of pixels, bands
+
+        n_pixels = flattened.shape[0]
 
         # substract mean
 
         col_mean = flattened.mean(axis=0)
-
         centered = flattened - col_mean[np.newaxis, :]
 
-        n_pixels = flattened.shape[0]
+        flattened = None
 
         # Get eigenvectors, eigenvalues, loadings with SVD
 
