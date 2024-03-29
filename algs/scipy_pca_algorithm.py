@@ -66,7 +66,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     NCOMPONENTS = 'NCOMPONENTS'
     PERCENTVARIANCE = 'PERCENTVARIANCE'
     DTYPE = 'DTYPE'
-
+    BANDSTATS = 'BANDSTATS'
     
     _name = 'pca'
     _outputname = tr('PCA')
@@ -111,6 +111,18 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
             minValue=0, 
             maxValue=100
             ))      
+        
+        stats_param = QgsProcessingParameterBoolean(
+            self.BANDSTATS,
+            tr('Calculate band statistics'),
+            optional=True,
+            defaultValue=True,
+        )
+
+                
+        stats_param.setFlags(stats_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+      
+        self.addParameter(stats_param)
     
         dtype_param = QgsProcessingParameterEnum(
             self.DTYPE,
@@ -144,6 +156,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         self.outdtype = self.parameterAsInt(parameters, self.DTYPE, context)
         self.outdtype = self.outdtype + 6 # float32 and float64 in gdal
+
+        self.bandstats = self.parameterAsBool(parameters, self.BANDSTATS, context)
 
         # Open Raster with GDAL
         self.ds = gdal.Open(self.inputlayer.source())
@@ -279,10 +293,11 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         self.out_ds.WriteArray(new_array[0:bands,:,:])    
 
         # Calculate and write band statistics (min, max, mean, std)
-        for b in range(1, bands + 1):
-            band = self.out_ds.GetRasterBand(b)
-            stats = band.GetStatistics(0,1)
-            band.SetStatistics(*stats)
+        if self.bandstats:
+            for b in range(1, bands + 1):
+                band = self.out_ds.GetRasterBand(b)
+                stats = band.GetStatistics(0,1)
+                band.SetStatistics(*stats)
 
         # Add band description
         for i in range(bands):
