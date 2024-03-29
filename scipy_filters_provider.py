@@ -34,7 +34,9 @@ from qgis.core import QgsProcessingProvider
 
 from .helpers import tr, DEFAULTWINDOWSIZE, MAXSIZE
                                    
-from .algs.scipy_convolve_algorithm import SciPyConvolveAlgorithm
+from .algs.scipy_convolve_algorithm import (SciPyConvolveAlgorithm,
+                                            SciPyCorrelateAlgorithm)
+
 from .algs.scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm, 
                                             SciPyGreyMorphologicalAlgorithm,
                                             SciPyTophatAlgorithm)
@@ -130,6 +132,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyGaussianAlgorithm())
 
         self.addAlgorithm(SciPyConvolveAlgorithm())
+        self.addAlgorithm(SciPyCorrelateAlgorithm())
 
         self.addAlgorithm(SciPyBinaryMorphologicalAlgorithm())
         self.addAlgorithm(SciPyGreyMorphologicalAlgorithm())  
