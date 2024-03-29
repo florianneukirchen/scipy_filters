@@ -62,8 +62,9 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 - Calculating band statistics after completion is optional now
 - Get translation working (except for help strings)
 - New algorithms: 
-    - gradient (x,y and for pixels across bands)
-    - difference (for pixels, across bands) 
+    - correlate with a given kernel (classic and FFT versions)
+    - gradient (x,y axes and for pixels across bands)
+    - difference (each pixel across bands) 
     - keep only n components of PCA
 
 ### 0.3 (03/2024)
