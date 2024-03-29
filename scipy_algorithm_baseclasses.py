@@ -78,7 +78,7 @@ groups = {
     'blur': tr('Blur'),
     'convolution': tr('Convolution'),
     'enhance': tr('Enhance'),
-    'pixel': tr('Pixel Statistics'),
+    'pixel': tr('Pixel Based Filters'),
     'pca': tr('PCA'),
 }
 
