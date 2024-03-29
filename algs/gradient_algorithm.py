@@ -32,16 +32,8 @@ __revision__ = '$Format:%H$'
 
 import numpy as np
 
-from qgis.core import (QgsProcessingAlgorithm,
-                QgsProcessingParameterString,
-                QgsProcessingParameterDefinition,
-                QgsProcessingParameterNumber,
-                QgsProcessingException,
-                QgsProcessingLayerPostProcessorInterface,
-                QgsProcessingParameterBoolean,
-                QgsProcessingParameterRasterLayer,
-                QgsProcessingParameterEnum,
-                QgsProcessingParameterRasterDestination)
+from qgis.core import (QgsProcessingParameterBoolean,
+                QgsProcessingParameterEnum,)
                
 from ..scipy_algorithm_baseclasses import SciPyAlgorithm, Dimensions
 from ..helpers import tr
