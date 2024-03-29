@@ -607,3 +607,69 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
     def createInstance(self):
         return SciPyFFTConvolveAlgorithm()
+    
+
+
+
+
+
+class SciPyFFTCorrelateAlgorithm(SciPyFFTConvolveAlgorithm):
+    """
+    Correlate raster band(s) with custom kernel using FFT
+
+    
+    """
+
+    # Overwrite constants of base class
+    _name = 'fft_correlate'
+    _displayname = tr('FFT Correlate')
+    _outputname = None # If set to None, the displayname is used 
+    _groupid = "convolution" 
+
+    _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
+
+    _help = """
+            Correlate raster band(s) with custom kernel using FFT. This is faster for large kernels. \
+            Both, raster band(s) and kernel are transformed into the frequency domain \
+            with fast fourier transform (FFT), the results are multiplied and the product \
+            is converted back using FFT.
+
+            Calculated using correlate from \
+            <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>\
+            using method "fft".
+
+            <b>Kernel</b> String representation of array. \
+            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
+            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
+            but a 2D array is also excepted (a new axis is added as first \
+            axis and the result is the same as calculating each band \
+            seperately).
+            <b>Normalization</b> Normalize the kernel by dividing through \
+            given value; set to 0 to devide through the sum of the absolute \
+            values of the kernel.
+
+            <b>Dtype</b> Data type of output. Beware of clipping \
+            and potential overflow errors if min/max of output does \
+            not fit. Default is Float32.
+            """
+    
+    def my_fct(self, a, **kwargs):
+        dtype = kwargs.pop("output")
+
+        # Used for feedback
+        self.inmin.append(a.min())
+        self.inmax.append(a.max())
+
+        kwargs["method"] = "fft"
+        
+        a = signal.correlate(a, **kwargs)
+
+        if np.issubdtype(dtype, np.integer):
+            info = np.iinfo(dtype)
+            if a.min() < info.min or a.max() > info.max:
+                self.error = (tr("Values ({}...{}) are out of bounds of new dtype, clipping to {}...{}").format(a.min().round(1), a.max().round(1), info.min, info.max), False)
+                a = np.clip(a, info.min, info.max)
+        return a
+
+    def createInstance(self):
+        return SciPyFFTCorrelateAlgorithm()
