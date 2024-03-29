@@ -123,6 +123,7 @@ class SciPyGradientAlgorithm(SciPyAlgorithm):
     def initAlgorithm(self, config):
         # Set dimensions to 3, even if we calculate along axis
         self._dimension = Dimensions.threeD
+        self.margin = 3
         super().initAlgorithm(config)
 
     def getModes(self):
