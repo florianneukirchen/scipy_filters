@@ -163,7 +163,12 @@ class SciPyGradientAlgorithm(SciPyAlgorithm):
         self.absolute = self.parameterAsBool(parameters, self.ABSOLUTE, context)
 
         return kwargs 
-           
+
+    def checkAndComplain(self, feedback):
+        if self._outdtype in (1,2,4) and not self.absolute:
+            msg = tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            feedback.reportError(msg, fatalError = False)
+
     def createInstance(self):
         return SciPyGradientAlgorithm()
 
@@ -235,7 +240,12 @@ class SciPyPixelGradientAlgorithm(SciPyAlgorithm):
         if layer.bandCount() == 1:
             return (False, tr("Only possible if layer has more than 1 band."))
         return super().checkParameterValues(parameters, context)
-    
+
+    def checkAndComplain(self, feedback):
+        if self._outdtype in (1,2,4) and not self.absolute:
+            msg = tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            feedback.reportError(msg, fatalError = False)
+
     def createInstance(self):
         return SciPyPixelGradientAlgorithm()
     
@@ -310,7 +320,12 @@ class SciPyPixelDiffAlgorithm(SciPyAlgorithm):
         if layer.bandCount() == 1:
             return (False, tr("Only possible if layer has more than 1 band."))
         return super().checkParameterValues(parameters, context)
-    
+
+    def checkAndComplain(self, feedback):
+        if self._outdtype in (1,2,4) and not self.absolute:
+            msg = tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
+            feedback.reportError(msg, fatalError = False)
+            
     def createInstance(self):
         return SciPyPixelDiffAlgorithm()
     
