@@ -58,10 +58,13 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 ## Changelog
 ### Git main
 - For large rasters: calculate in a moving window to avoid crashes
-- add setValue() to the custom widgets to get loading from history working
-- calculating band statistics after completion is optional now
+- Add setValue() to the custom widgets to get loading from history working
+- Calculating band statistics after completion is optional now
 - Get translation working (except for help strings)
-- new algorithm to keep only n components of PCA
+- New algorithms: 
+    - gradient (x,y and for pixels across bands)
+    - difference (for pixels, across bands) 
+    - keep only n components of PCA
 
 ### 0.3 (03/2024)
 - New: Principal Component Analysis (PCA)
