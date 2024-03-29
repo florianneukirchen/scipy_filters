@@ -209,6 +209,8 @@ class SciPyUnsharpMaskAlgorithm(SciPyAlgorithmWithSigma):
             QgsProcessingParameterNumber.Type.Double,
             defaultValue=1.0, 
             optional=False, 
+            minValue=0,
+            maxValue=5,
             ))   
         
         super().insert_parameters(config)
