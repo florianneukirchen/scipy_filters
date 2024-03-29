@@ -138,7 +138,7 @@ class SciPyGradientAlgorithm(SciPyAlgorithm):
             self.AXIS,
             tr('Axis'),
             self.modes,
-            defaultValue=0)) 
+            defaultValue=2)) 
     
         self.addParameter(QgsProcessingParameterBoolean(
             self.MAPUNITS,
