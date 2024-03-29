@@ -146,7 +146,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         """
         Here is where the processing itself takes place.
         """
-
         # Get Parameters
         self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
@@ -171,7 +170,6 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         if feedback.isCanceled():
             return {}
-        
         feedback.setProgress(0)
 
         # Start the actual work
@@ -212,6 +210,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         U, S, VT = linalg.svd(centered,full_matrices=False)
 
         U = None # Save memory, not needed anymore
+        feedback.setProgress(15)
 
         # loadings = eigenvectors scaled by sqrt(eigenvalues)
         loadings = VT.T @ np.diag(S) / np.sqrt(n_pixels - 1)
@@ -252,7 +251,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         feedback.pushInfo(str(loadings.tolist()))
         feedback.pushInfo("\nBand Mean:")
         feedback.pushInfo(str(col_mean.tolist()) + "\n")
-
+        feedback.setProgress(30)
         if feedback.isCanceled():
             return {}
 
@@ -291,7 +290,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         self.out_ds.SetProjection(self.ds.GetProjection())
 
         self.out_ds.WriteArray(new_array[0:bands,:,:])    
-
+        feedback.setProgress(80)
         # Calculate and write band statistics (min, max, mean, std)
         if self.bandstats:
             for b in range(1, bands + 1):
@@ -326,6 +325,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         global updatemetadata
         updatemetadata = self.UpdateMetadata(encoded)
         context.layerToLoadOnCompletionDetails(self.output_raster).setPostProcessor(updatemetadata)
+
+        feedback.setProgress(100)
 
         return {self.OUTPUT: self.output_raster,
                 'singular values': S,
