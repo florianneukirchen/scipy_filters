@@ -166,4 +166,151 @@ class SciPyGradientAlgorithm(SciPyAlgorithm):
            
     def createInstance(self):
         return SciPyGradientAlgorithm()
+
+
+class SciPyPixelGradientAlgorithm(SciPyAlgorithm):
+    """
+    Pixel gradient band to band
+
+    """
+
+    ABSOLUTE = "ABSOLUTE"
+
+    # Overwrite constants of base class
+    _name = 'pixel_gradient'
+    _displayname = tr('Pixel gradient filter')
+    _outputname = tr('Pixel gradient')
+    _groupid = "pixel" 
+    _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
+
+    _help = """
+            Pixel gradient filter
+
+            Returns band to band gradient, calculated with \
+            <a href="https://numpy.org/doc/stable/reference/generated/numpy.gradient.html">numpy.gradient</a>.
+
+            
+            <b>Return absolute values</b> Gradient is calculated band to band, starting with band 1.
+            The result contains also negative values, optionally the absolute values are returned.
+            """
+    
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.myfnct
+    
+    def myfnct(self, a, **kwargs):
+        dtype = kwargs.pop("output")
+        a = a.astype(dtype)
+
+        a = np.gradient(a, axis=0)
+
+        if self.absolute:
+            a = np.abs(a)
+        
+        return a
+    
+
+    def initAlgorithm(self, config):
+        # Set dimensions to 3
+        self._dimension = Dimensions.threeD
+
+        super().initAlgorithm(config)
+
+        self.addParameter(QgsProcessingParameterBoolean(
+            self.ABSOLUTE,
+            tr('Return absolute values'),
+            optional=True,
+            defaultValue=False,
+        ))
+            
+        
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
+        self.absolute = self.parameterAsBool(parameters, self.ABSOLUTE, context)
+        return kwargs     
+
+    def checkParameterValues(self, parameters, context):
+        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        if layer.bandCount() == 1:
+            return (False, tr("Only possible if layer has more than 1 band."))
+        return super().checkParameterValues(parameters, context)
+    
+    def createInstance(self):
+        return SciPyPixelGradientAlgorithm()
+    
+
+class SciPyPixelDiffAlgorithm(SciPyAlgorithm):
+    """
+    Difference of values band to band
+
+    """
+
+    ABSOLUTE = "ABSOLUTE"
+
+    # Overwrite constants of base class
+    _name = 'pixel_difference'
+    _displayname = tr('Pixel difference band to band')
+    _outputname = tr('Pixel difference')
+    _groupid = "pixel" 
+    _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
+
+    _help = """
+            Difference band to band
+
+            Returns band to band difference, calculated with \
+            <a href="https://numpy.org/doc/stable/reference/generated/numpy.diff.html">numpy.diff</a>.
+
+            The number of bands in the output is the number of input bands minus one. 
+
+            <b>Return absolute values</b> Difference is calculated band to band, starting with band 1.
+            The result contains also negative values, optionally the absolute values are returned.
+            """
+    
+    
+    # The function to be called, to be overwritten
+    def get_fct(self):
+        return self.myfnct
+    
+    def myfnct(self, a, **kwargs):
+        dtype = kwargs.pop("output")
+        a = a.astype(dtype)
+
+        a = np.diff(a, axis=0)
+
+        if self.absolute:
+            a = np.abs(a)
+        
+        return a
+    
+
+    def initAlgorithm(self, config):
+        # Set dimensions to 3
+        self._dimension = Dimensions.threeD
+
+        super().initAlgorithm(config)
+
+        self.addParameter(QgsProcessingParameterBoolean(
+            self.ABSOLUTE,
+            tr('Return absolute values'),
+            optional=True,
+            defaultValue=False,
+        ))
+            
+        
+    def get_parameters(self, parameters, context):
+        kwargs = super().get_parameters(parameters, context)
+        self._outbands = self.inputlayer.bandCount() - 1
+
+        self.absolute = self.parameterAsBool(parameters, self.ABSOLUTE, context)
+        return kwargs     
+
+    def checkParameterValues(self, parameters, context):
+        layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        if layer.bandCount() == 1:
+            return (False, tr("Only possible if layer has more than 1 band."))
+        return super().checkParameterValues(parameters, context)
+    
+    def createInstance(self):
+        return SciPyPixelDiffAlgorithm()
     

@@ -90,7 +90,9 @@ from .algs.scipy_pca_helper_algorithms import (SciPyTransformToPCAlgorithm,
                                                SciPyTransformFromPCAlgorithm,
                                                SciPyKeepN)
 
-from .algs.gradient_algorithm import (SciPyGradientAlgorithm)
+from .algs.gradient_algorithm import (SciPyGradientAlgorithm,
+                                      SciPyPixelGradientAlgorithm,
+                                      SciPyPixelDiffAlgorithm)
 
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
 
@@ -186,7 +188,8 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyKeepN())
 
         self.addAlgorithm(SciPyGradientAlgorithm())        
-        
+        self.addAlgorithm(SciPyPixelGradientAlgorithm())
+        self.addAlgorithm(SciPyPixelDiffAlgorithm())
 
     def id(self):
         """
