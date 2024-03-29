@@ -90,6 +90,8 @@ from .algs.scipy_pca_helper_algorithms import (SciPyTransformToPCAlgorithm,
                                                SciPyTransformFromPCAlgorithm,
                                                SciPyKeepN)
 
+from .algs.gradient_algorithm import (SciPyGradientAlgorithm)
+
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
 
 class SciPyFiltersProvider(QgsProcessingProvider):
@@ -182,6 +184,8 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyTransformToPCAlgorithm())
         self.addAlgorithm(SciPyTransformFromPCAlgorithm())
         self.addAlgorithm(SciPyKeepN())
+
+        self.addAlgorithm(SciPyGradientAlgorithm())        
         
 
     def id(self):
