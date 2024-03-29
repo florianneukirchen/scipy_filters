@@ -260,7 +260,7 @@ class SciPyPixelDiffAlgorithm(SciPyAlgorithm):
 
     # Overwrite constants of base class
     _name = 'pixel_difference'
-    _displayname = tr('Pixel difference band to band')
+    _displayname = tr('Difference band to band')
     _outputname = tr('Pixel difference')
     _groupid = "pixel" 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
@@ -325,7 +325,7 @@ class SciPyPixelDiffAlgorithm(SciPyAlgorithm):
         if self._outdtype in (1,2,4) and not self.absolute:
             msg = tr(f"WARNING: Output contains negative values, but output data type is unsigned integer!")
             feedback.reportError(msg, fatalError = False)
-            
+
     def createInstance(self):
         return SciPyPixelDiffAlgorithm()
     
