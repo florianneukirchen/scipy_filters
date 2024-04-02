@@ -10,11 +10,10 @@ Includes raster filters such as:
 - Unsharp mask for sharpening, Wiener filter for noise reduction
 - Pixel statistics (std, mean, min ... of all bands for individual pixels)
 
-> Version 0.3 is already quite stable, as long as everything fits into the memory. However, with very large rasters (tens of thousand pixels wide and high), it fails with an exception and sometimes it even crashes QGIS. 
 
-Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html), a library to filter images (or arrays, rasters) in *n* dimensions. These are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands.  For more information, see the SciPy tutorial on [Multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html). In most cases, the plugin simply provides a user interface for a single SciPy function, gets the raster data using GDAL, calls the SciPy function with the provided parameters and loads the result back into QGIS. A few filters (PCA, unsharp mask, pixel statistics etc.) use custom functions that where implemented using SciPy and/or Numpy.
+Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/reference/ndimage.html), a library to filter images (or arrays, rasters) in *n* dimensions. These are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands.  For more information, see the SciPy tutorial on [Multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html). In most cases, the plugin simply provides a user interface for a single SciPy function, gets the raster data using GDAL, calls the SciPy function with the provided parameters and loads the result back into QGIS. A few filters (PCA, unsharp mask, pixel statistics etc.) use custom functions that where implemented using SciPy and/or Numpy. Very large rasters are processed using a moving window (i.e. in tiles).
 
-For many filters, a custom footprint and/or structure or kernel can be provided, adjusting the size and shape of the filter.
+For many filters, a custom footprint and/or structure or kernel can be provided, adjusting the size and shape of the filter. 
 
 For more information, see the help in the window of the respective processing tool.
 
@@ -33,6 +32,10 @@ The plugin requires [SciPy](https://scipy.org/), wich can be installed with pip:
 pip install scipy
 ```
 Since version 0.2, the plugin offers an automatic installation of SciPy (using pip) if it is not yet installed in the python environment used by QGIS.
+
+## Settings
+The plugin settings can be found in the processing section of the QGIS settings. The window size should be large (SciPy is optimized to process large arrays), but not too large (SciPy / QGIS becomes unstable if the data does not fit into the memory). 
+The maximum size is only used for algorithms that can't use the windowing function, notably PCA. It only exists to prevent crashes when trying to process very large rasters. 
 
 ## Tips for python users
 
@@ -56,11 +59,12 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 - In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). Exception: PCA (only float32/float64 as options).
 
 ## Changelog
-### Git main
+### 1.0 (03/2024)
 - For large rasters: calculate in a moving window to avoid crashes
 - Add setValue() to the custom widgets to get loading from history working
 - Calculating band statistics after completion is optional now
 - Get translation working (except for help strings)
+- Add German translation
 - New algorithms: 
     - correlate with a given kernel (classic and FFT versions)
     - gradient (x,y axes and for pixels across bands)
