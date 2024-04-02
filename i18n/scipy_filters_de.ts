@@ -51,7 +51,7 @@
     <message>
         <location filename="../scipy_algorithm_baseclasses.py" line="671"/>
         <source>Band axis not possible in 2D case</source>
-        <translation>Achse &amp;quot;Band&amp;quot; ist in 2D nicht möglich</translation>
+        <translation type="unfinished">Achse &quot;Band&quot; ist in 2D nicht möglich</translation>
     </message>
     <message>
         <location filename="../algs/scipy_statistical_algorithms.py" line="462"/>
