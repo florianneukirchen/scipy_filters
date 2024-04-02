@@ -30,7 +30,9 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 
 __revision__ = '$Format:%H$'
 
+import os
 from qgis.core import QgsProcessingProvider
+from qgis.PyQt.QtGui import QIcon
 
 from .helpers import tr, DEFAULTWINDOWSIZE, MAXSIZE
                                    
@@ -105,6 +107,9 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         QgsProcessingProvider.__init__(self)
 
     def load(self):
+
+        ProcessingConfig.settingIcons[self.name()] = self.icon()
+
         ProcessingConfig.addSetting(
             Setting(self.name(), 
                     'WINDOWSIZE', 
@@ -213,7 +218,8 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         Should return a QIcon which is used for your provider inside
         the Processing toolbox.
         """
-        return QgsProcessingProvider.icon(self)
+        # return QgsProcessingProvider.icon(self)
+        return QIcon(os.path.join(os.path.dirname(__file__) + '/_static/icon/logo.png'))
 
     def longName(self):
         """
