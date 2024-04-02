@@ -112,8 +112,8 @@ class StructureWidget(BASE, WIDGET):
         """check string or np.array, return bool"""
         if isinstance(check, str):
             check = json.loads(check)
-            a = np.array(check)
-        if a.ndim == 3:
+            check = np.array(check)
+        if check.ndim == 3:
             return True
         return False
 
