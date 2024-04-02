@@ -192,6 +192,7 @@ kernelexamples = OrderedDict([
     (tr("3 × 3 Square"), np.ones((3,3))),
     (tr("5 × 5 Square"), np.ones((5,5))),
     (tr("7 × 7 Square"), np.ones((7,7))),
+    (tr("Cross 2D"), ndimage.generate_binary_structure(2, 1).astype(float)),
     ("sep1", "---"), 
     (tr("3 × 3 Gaussian"), "[[1, 2, 1],\n[2, 4, 2],\n[1, 2, 1]]"),
     (tr("5 × 5 Gaussian"), "[[0,1,2,1,0],\n[1,3,5,3,1],\n[2,5,9,5,2],\n[1,3,5,3,1],\n[0,1,2,1,0]]"),
@@ -202,6 +203,9 @@ kernelexamples = OrderedDict([
     (tr("3 × 3 × 3 Cube"), np.ones((3,3,3))),
     (tr("5 × 5 × 5 Cube"), np.ones((5,5,5))),
     (tr("7 × 7 × 7 Cube"), np.ones((7,7,7))),
+    (tr("Cross 3D"), ndimage.generate_binary_structure(3, 1).astype(float)),
+    (tr("Ball 3D"), ndimage.generate_binary_structure(3, 2).astype(float)),
+    (tr("Cube 3D"), ndimage.generate_binary_structure(3, 3).astype(float)),
     (tr("3 × 1 × 1 Across bands of pixel"), np.ones((3,1,1)))
 ])
 
