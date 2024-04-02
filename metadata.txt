@@ -93,7 +93,7 @@ tags=python,raster,filter,analysis,principal components analysis,pca,edge,smooth
 homepage=https://github.com/florianneukirchen/scipy_filters
 icon=icon.png
 # experimental flag
-experimental=True
+experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
