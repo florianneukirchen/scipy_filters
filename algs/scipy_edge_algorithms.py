@@ -34,7 +34,8 @@ import numpy as np
 from scipy import ndimage
 
 from ..scipy_algorithm_baseclasses import (SciPyAlgorithmWithMode,
-                                          SciPyAlgorithmWithModeAxis,)
+                                          SciPyAlgorithmWithModeAxis,
+                                          Dimensions)
 
 from ..helpers import tr
 
@@ -124,7 +125,7 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
             horiz = ndimage.sobel(input, axis=-2, **kwargs)
             vertical = ndimage.sobel(input, axis=-1, **kwargs)
             magnitude = np.hypot(horiz, vertical)
-            if self._dimension == self.Dimensions.threeD:
+            if self._dimension == Dimensions.threeD:
                 third = ndimage.sobel(input, axis=-3, **kwargs)
                 magnitude = np.hypot(magnitude, third)
             return magnitude
@@ -184,7 +185,7 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
             horiz = ndimage.prewitt(input, axis=-2, **kwargs)
             vertical = ndimage.prewitt(input, axis=-1, **kwargs)
             magnitude = np.hypot(horiz, vertical)
-            if self._dimension == self.Dimensions.threeD:
+            if self._dimension == Dimensions.threeD:
                 third = ndimage.prewitt(input, axis=-3, **kwargs)
                 magnitude = np.hypot(magnitude, third)
             return magnitude
