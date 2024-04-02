@@ -6,7 +6,7 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=0.3
+version=1.0
 author=Florian Neukirchen
 email=mail@riannek.de
 
@@ -45,7 +45,18 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=0.3
+changelog=1.0
+    - For large rasters: calculate in a moving window to avoid crashes
+    - Add setValue() to the custom widgets to get loading from history working
+    - Calculating band statistics after completion is optional now
+    - Get translation working (except for help strings)
+    - Add German translation
+    - New algorithms: 
+        - correlate with a given kernel (classic and FFT versions)
+        - gradient (x,y axes and for pixels across bands)
+        - difference (each pixel across bands) 
+        - keep only n components of PCA
+    0.3
     - New: Principal Component Analysis (PCA)
     - Advanced option to change the dtype of the output 
     - For filters where negative values are expected in the output, use float32 as default output dtype (instead of dtype of input layer) to avoid clipping and overflow errors 
