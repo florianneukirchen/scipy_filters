@@ -391,7 +391,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             return {}
         
         total = number_of_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize) + 1
-        print(total)
         if total > 2:
             feedback.pushInfo(tr("Calculating in {} windows with a margin of {} pixels.").format(total - 1, self.margin))
 
