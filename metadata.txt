@@ -10,10 +10,7 @@ version=1.0
 author=Florian Neukirchen
 email=mail@riannek.de
 
-about=QGIS plugin providing access to filters via the processing toolbox. \
-    SciPy offers a range of highly optimised algorithms for i.e. \
-    multidimensional image processing and signal processing, \
-    and some can be useful to analyze raster layers.
+about=QGIS plugin providing access to filters via the processing toolbox. SciPy offers a range of highly optimised algorithms for i.e. multidimensional image processing and signal processing, and some can be useful to analyze raster layers.
     Includes raster filters such as:
     - binary/grey morphology (dilation, erosion, closing, opening; tophat etc.)
     - principal component analysis (PCA)
@@ -24,16 +21,8 @@ about=QGIS plugin providing access to filters via the processing toolbox. \
     - noise removal with Wiener filter
     - blurring (gaussian, box filter etc.)
     - Pixel statistics (std, mean, min ... of all bands for individual pixels)
-    Most filters are based on scipy.ndimage, a library to filter images (or arrays, rasters) \
-    in n dimensions. These are either applied on each layer seperately in 2D, \
-    or in 3D on a 3D datacube consisting of all bands. \
-    In most cases, the plugin simply provides a user interface for a single SciPy function, \
-    gets the raster data using GDAL, calls the SciPy function with the provided parameters \
-    and loads the result back into QGIS. \
-    A few filters (PCA, unsharp mask, pixel statistics etc.) use custom functions \
-    that where implemented using SciPy and/or Numpy.
-    For many filters, a custom footprint and/or structure or kernel can be provided, \
-    adjusting the size and shape of the filter.
+    Most filters are based on scipy.ndimage, a library to filter images (or arrays, rasters) in n dimensions. These are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands. In most cases, the plugin simply provides a user interface for a single SciPy function, gets the raster data using GDAL, calls the SciPy function with the provided parameters and loads the result back into QGIS. A few filters (PCA, unsharp mask, pixel statistics etc.) use custom functions that where implemented using SciPy and/or Numpy.
+    For many filters, a custom footprint and/or structure or kernel can be provided, adjusting the size and shape of the filter.
 
     
 
