@@ -35,6 +35,26 @@ DEFAULTWINDOWSIZE = 5000 # Large is faster, but must be small enought for RAM
 MAXSIZE = 200 # Max size in Mpixels for algs that can't use a window 
 
 class RasterWindow():
+    """
+    Class for window (tiles) of a large raster, to be created with get_windows().
+    Does not contain any data, only the parameters to read/write data with gdal
+    and to slice off the margin.
+
+    Properties:
+    ===========
+
+    gdalin: tuple with x_offset, y_offset, x_size, y_size including the margins
+            of the window. To be used as parameters with gdal.Open() for input.
+    gdalout: tuple with x_offset, y_offset without the margins of the window.
+            To be used as parameter with gdal.Open() for output.
+
+    Methods:
+    ========
+
+    getslice(ndim=3): Returns tuple of slice objects to be used directly with
+            numpy to slice of the margin of the window. 
+            ndim: int, number of dimensions of the numpy array, either 2 or 3.
+    """
     def __init__(self, rasterXSize, rasterYSize, xoff, yoff, xsize, ysize, margin=0):
         self.rasterXSize = rasterXSize
         self.rasterYSize = rasterYSize
@@ -83,6 +103,7 @@ class RasterWindow():
     def gdalout(self):
         return self.xoff, self.yoff
     
+    # Only for debugging:
     @property
     def gdalin_no_margin(self):
         return self.xoff, self.yoff, self.xsize, self.ysize
@@ -111,6 +132,10 @@ class RasterWindow():
 
 
 def get_windows(rasterXSize, rasterYSize, margin=0, windowsize=1024):
+    """
+    Generator yielding RasterWindow classes, dividing a large raster into smaller
+    windows (tiles).
+    """
     if windowsize == None:
         # get 1 window with full raster 
         yield RasterWindow(rasterXSize, rasterYSize, 0, 0, rasterXSize, rasterYSize, margin=0)
@@ -141,6 +166,7 @@ def get_windows(rasterXSize, rasterYSize, margin=0, windowsize=1024):
 
 
 def number_of_windows(rasterXSize, rasterYSize, windowsize):
+    """Returns the number of windows that would be created with get_windows(). Used for progress bar."""
     if windowsize == None:
         return 1
     if (np.min((rasterXSize, rasterYSize))  < 2 * windowsize):
@@ -155,6 +181,13 @@ def number_of_windows(rasterXSize, rasterYSize, windowsize):
     
 
 def wrap_margin(a, dataset, win: RasterWindow, band=None):
+    """
+    Fills the margin of windows (tiles) that are situated on the edge
+    of the original dataset with the data of the far side of the dataset.
+    This makes mode="wrap" (offered by some scipy filters) possible.
+    The wrapping itself is done by scipy, this function only fills the
+    data needed for wrapping to work.
+    """
     rasterXSize = dataset.RasterXSize
     rasterYSize = dataset.RasterYSize
     # Shortcut: Nothing to do if we are not on edge
