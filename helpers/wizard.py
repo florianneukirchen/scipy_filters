@@ -70,6 +70,23 @@ class Wizard():
 
     def __repr__(self):
         return f"<MyRaster: '{self._name}' (gdal)>"
+    
+    def __getitem__(self, items):
+        """Returns 1-D numpy array with pixel values of all bands at indices x and y"""
+        try:
+            x, y = items
+        except (ValueError, TypeError):
+            raise IndexError("Two indices of type int are required: x and y")
+        
+        if not (isinstance(x, int) and isinstance(x, int)):
+            raise IndexError("Two indices of type int are required: x and y")
+        
+        if x < 0 or y < 0 or x > self._ds.RasterYSize or y > self._ds.RasterXSize:
+            # Return nans if out of bounds
+            a = np.empty(self._ds.RasterCount)
+            a[:] = np.nan
+            return a
+        return self._ds.ReadAsArray(x,y,1,1).reshape(-1)
 
     @property
     def countbands(self):
