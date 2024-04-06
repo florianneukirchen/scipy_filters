@@ -144,14 +144,20 @@ class Wizard():
     def mapUnits(self):
         return self._layer.crs().mapUnits()
     
-    def toarray(self):
-        return self._ds.ReadAsArray()
+    def toarray(self, band=None, win=None):
+        if band is None:
+            ds = self._ds
+        else:
+            band = int(band) # just in case
+            if band < 1 or band > self._ds.RasterCount:
+                raise IndexError("Band index out of range")
+            ds = self._ds.GetRasterBand(band)
+        if win is None:
+            return ds.ReadAsArray()
+        if not isinstance(win, RasterWindow):
+            raise TypeError("Window must be instance of RasterWindow")
+        return ds.ReadAsArray(*win.gdalin)
     
-    def band(self, idx):
-        idx = int(idx) # just in case
-        if idx < 1 or idx > self._ds.RasterCount:
-            raise IndexError("Band index out of range")
-        return self._ds.GetRasterBand(idx).ReadAsArray()
 
     def datatype(self, band=1, as_int=False):
         band = int(band) # just in case
