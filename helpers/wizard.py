@@ -244,5 +244,5 @@ class Wizard():
         return layer
         
 
-    def number_of_windows(self, windowsize):
-        return number_of_windows(rasterXSize, rasterYSize, windowsize)
+    def number_of_windows(self, windowsize=5000):
+        return number_of_windows(self._ds.RasterXSize, self._ds.RasterYSize, windowsize)
