@@ -152,7 +152,7 @@ class Wizard():
             if band < 1 or band > self._ds.RasterCount:
                 raise IndexError("Band index out of range")
             ds = self._ds.GetRasterBand(band)
-            
+
         if win is None:
             return ds.ReadAsArray()
         
@@ -268,7 +268,9 @@ class Wizard():
         return number_of_windows(self._ds.RasterXSize, self._ds.RasterYSize, windowsize)
     
     def get_windows(self, margin=0, windowsize=2048):
-        return get_windows(self._ds.RasterXSize, self._ds.RasterYSize, margin=0, windowsize=windowsize)
+        if margin > windowsize / 2:
+            print("Note: margins are larger than windowsize")
+        return get_windows(self._ds.RasterXSize, self._ds.RasterYSize, margin=margin, windowsize=windowsize)
 
     def write_window(self, array, win, band=None):
         if not isinstance(win, RasterWindow):
