@@ -60,6 +60,8 @@ class Wizard():
     def __init__(self, layer):
         self._layer = layer
         self._filename = layer.source()
+        self._out_filename = None
+        self._dst_ds = None
         self._ds = gdal.Open(self._filename)
         self._name = layer.name()
         if not self._ds:
@@ -116,6 +118,10 @@ class Wizard():
         return self._filename
     
     @property
+    def out_filename(self):
+        return self._out_filename
+    
+    @property
     def geotransform(self):
         return self._ds.GetGeoTransform()
     
@@ -168,9 +174,11 @@ class Wizard():
         return f"/vsimem/{name}.tif"
 
 
-    def outdataset(self, filename=None, bands=None, dtype=None, name=None):
+    def setOutdataset(self, filename=None, bands=None, dtype=None, name=None):
         if not filename:
-            filename = self._memfile()
+            self._out_filename = self._memfile()
+        else:
+            self._out_filename = filename
 
         if (not dtype) or (dtype=="input"):
             dtype = self.datatype(as_int=True)    
@@ -187,7 +195,7 @@ class Wizard():
         driver = gdal.GetDriverByName("GTiff")
 
         dst_ds =  driver.Create(
-            filename,
+            self._out_filename,
             xsize = self._ds.RasterXSize,
             ysize = self._ds.RasterYSize,
             bands = bands,
@@ -200,7 +208,7 @@ class Wizard():
         dst_ds.SetGeoTransform(self.geotransform)
         dst_ds.SetProjection(self._ds.GetProjection())
 
-        return dst_ds, filename
+        self._dst_ds = dst_ds
 
     def tolayer(self, array, name="MyRaster", dtype="auto", filename=None, stats=True):
         if not (array.shape[-1] == self.shape[-1] and array.shape[-2] == self.shape[-2]):
@@ -216,28 +224,28 @@ class Wizard():
             dtype = array.dtype
 
 
-        dst_ds, filename = self.outdataset(filename=filename, bands=bands, dtype=dtype)
+        self.setOutdataset(filename=filename, bands=bands, dtype=dtype)
 
         if bands == 1:
-            dst_ds.GetRasterBand(1).WriteArray(array)
+            self._dst_ds.GetRasterBand(1).WriteArray(array)
         else:
-            dst_ds.WriteArray(array)
+            self._dst_ds.WriteArray(array)
 
         # Calculate and write band statistics (min, max, mean, std)
         if stats:
             for b in range(1, bands + 1):
-                band = dst_ds.GetRasterBand(b)
+                band = self._dst_ds.GetRasterBand(b)
                 stats = band.GetStatistics(0,1)
                 band.SetStatistics(*stats)
         
         # Close (and write) file
-        dst_ds = None
+        self._dst_ds = None
 
-        layer = QgsRasterLayer(filename, name, 'gdal')
+        layer = QgsRasterLayer(self._out_filename, name, 'gdal')
 
         if not layer.isValid():
-            print("Loading the layer failed. Filename: {filename}")
-            return filename
+            print("Loading the layer failed. Filename: {self._out_filename}")
+            return self._out_filename
 
         QgsProject.instance().addMapLayer(layer)
 
