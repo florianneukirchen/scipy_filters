@@ -262,7 +262,7 @@ class Wizard():
         return number_of_windows(self._ds.RasterXSize, self._ds.RasterYSize, windowsize)
     
     def get_windows(self, margin=0, windowsize=2048):
-        return get_windows(self._ds.RasterXSize, self._ds.RasterYSize, margin=0, windowsize=1024)
+        return get_windows(self._ds.RasterXSize, self._ds.RasterYSize, margin=0, windowsize=windowsize)
 
     def write_window(self, array, win, band=None):
         if not isinstance(win, RasterWindow):
