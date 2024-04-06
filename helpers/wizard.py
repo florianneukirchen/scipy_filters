@@ -216,7 +216,7 @@ class Wizard():
 
         self._dst_ds = dst_ds
 
-    def tolayer(self, array, name="MyRaster", dtype="auto", filename=None, stats=True):
+    def tolayer(self, array, name="Wizard", dtype="auto", filename=None, stats=True):
         if not (array.shape[-1] == self.shape[-1] and array.shape[-2] == self.shape[-2]):
             raise ValueError("Array must have same shape in X and Y directions as the input layer")
         if array.ndim not in (2, 3):
@@ -256,10 +256,57 @@ class Wizard():
         QgsProject.instance().addMapLayer(layer)
 
         return layer
-        
+    
 
     def number_of_windows(self, windowsize=2048):
         return number_of_windows(self._ds.RasterXSize, self._ds.RasterYSize, windowsize)
     
     def get_windows(self, margin=0, windowsize=2048):
         return get_windows(self._ds.RasterXSize, self._ds.RasterYSize, margin=0, windowsize=1024)
+
+    def write_window(self, array, win, band=None):
+        if not isinstance(win, RasterWindow):
+            raise TypeError("Window must be instance of RasterWindow")
+        
+        if self._dst_ds is None:
+            # We create a output ds matching the first array as default option
+            # Otherwise setOutdataset() should be called first
+            if array.ndim == 2:
+                bands = 1
+            else:
+                bands = array.shape[0]
+            self.setOutdataset(bands=bands, dtype=array.dtype)
+
+        if band is None:
+            dst_ds = self._dst_ds
+        else:
+            dst_ds = self._dst_ds.GetRasterBand(band)
+
+        slices = win.getslice(array.ndim)
+        dst_ds.WriteArray(array[slices], *win.gdalout)
+
+        
+    def loadOutdataset(self, name="Wizard", stats=True):
+        if self._dst_ds is None:
+            raise Exception("No output dataset")
+        
+
+        # Calculate and write band statistics (min, max, mean, std)
+        if stats:
+            for b in range(1, self._dst_ds.RasterCount + 1):
+                band = self._dst_ds.GetRasterBand(b)
+                stats = band.GetStatistics(0,1)
+                band.SetStatistics(*stats)
+        
+        # Close (and write) file
+        self._dst_ds = None
+
+        layer = QgsRasterLayer(self._out_filename, name, 'gdal')
+
+        if not layer.isValid():
+            print("Loading the layer failed. Filename: {self._out_filename}")
+            return self._out_filename
+
+        QgsProject.instance().addMapLayer(layer)
+
+        return layer
