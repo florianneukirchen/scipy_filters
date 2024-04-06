@@ -218,7 +218,7 @@ class Wizard():
 
         dst_ds, filename = self.outdataset(filename=filename, bands=bands, dtype=dtype)
 
-        if bands == 2:
+        if bands == 1:
             dst_ds.GetRasterBand(1).WriteArray(array)
         else:
             dst_ds.WriteArray(array)
