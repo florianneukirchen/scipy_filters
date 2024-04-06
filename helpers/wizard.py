@@ -198,7 +198,7 @@ class Wizard():
 
         return dst_ds, filename
 
-    def tolayer(self, array, name="MyRaster", dtype="auto", filename=None):
+    def tolayer(self, array, name="MyRaster", dtype="auto", filename=None, stats=True):
         if not (array.shape[-1] == self.shape[-1] and array.shape[-2] == self.shape[-2]):
             raise ValueError("Array must have same shape in X and Y directions as the input layer")
         if array.ndim not in (2, 3):
@@ -220,10 +220,11 @@ class Wizard():
             dst_ds.WriteArray(array)
 
         # Calculate and write band statistics (min, max, mean, std)
-        for b in range(1, bands + 1):
-            band = dst_ds.GetRasterBand(b)
-            stats = band.GetStatistics(0,1)
-            band.SetStatistics(*stats)
+        if stats:
+            for b in range(1, bands + 1):
+                band = dst_ds.GetRasterBand(b)
+                stats = band.GetStatistics(0,1)
+                band.SetStatistics(*stats)
         
         # Close (and write) file
         dst_ds = None
