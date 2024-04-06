@@ -34,6 +34,8 @@ from osgeo import gdal
 import numpy as np
 import uuid
 
+from .window import RasterWindow, get_windows, number_of_windows, wrap_margin
+
 gdal.UseExceptions()
 
 class Wizard():
@@ -81,12 +83,13 @@ class Wizard():
         if not (isinstance(x, int) and isinstance(x, int)):
             raise IndexError("Two indices of type int are required: x and y")
         
-        if x < 0 or y < 0 or x > self._ds.RasterYSize or y > self._ds.RasterXSize:
+        if x < 0 or y < 0 or x >= self._ds.RasterYSize or y >= self._ds.RasterXSize:
             # Return nans if out of bounds
             a = np.empty(self._ds.RasterCount)
             a[:] = np.nan
             return a
-        return self._ds.ReadAsArray(x,y,1,1).reshape(-1)
+        # Numpy x axis is y in gdal and vica versa
+        return self._ds.ReadAsArray(y,x,1,1).reshape(-1)
 
     @property
     def countbands(self):
@@ -101,6 +104,7 @@ class Wizard():
         
     @property
     def shape(self):
+        # Numpy x axis is y in gdal and vica versa
         return (self._ds.RasterCount, self._ds.RasterYSize, self._ds.RasterXSize)
     
     @property
@@ -240,4 +244,5 @@ class Wizard():
         return layer
         
 
-
+    def number_of_windows(self, windowsize):
+        return number_of_windows(rasterXSize, rasterYSize, windowsize)
