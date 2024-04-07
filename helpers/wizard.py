@@ -30,6 +30,7 @@ __copyright__ = '(C) 2024 by Florian Neukirchen'
 __revision__ = '$Format:%H$'
 
 from qgis.core import *
+from qgis.utils import iface
 from osgeo import gdal
 import numpy as np
 import uuid
@@ -57,7 +58,11 @@ class Wizard():
         "complex128": 11,
         }
 
-    def __init__(self, layer):
+    def __init__(self, layer=None):
+
+        if layer is None:
+            layer = iface.activeLayer()
+
         self._layer = layer
         self._filename = layer.source()
         self._out_filename = None
