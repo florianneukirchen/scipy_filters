@@ -74,11 +74,11 @@ class Wizard():
 
 
     def __str__(self):
-        return f"<MyRaster: '{self._name}' (gdal)>"
+        return f"<Wizard: '{self._name}'>"
 
 
     def __repr__(self):
-        return f"<MyRaster: '{self._name}' (gdal)>"
+        return f"<Wizard: '{self._name}' shape: {self.shape}>"
     
     def __getitem__(self, items):
         """Returns 1-D numpy array with pixel values of all bands at indices x and y"""
