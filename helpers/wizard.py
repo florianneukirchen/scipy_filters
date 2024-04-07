@@ -149,7 +149,7 @@ class Wizard():
     def mapUnits(self):
         return self._layer.crs().mapUnits()
     
-    def toarray(self, band=None, win=None, wrapping=False):
+    def toarray(self, band=None, win=None, wrapping=False, bands_last=False):
         if band is None:
             ds = self._ds
         else:
@@ -159,7 +159,10 @@ class Wizard():
             ds = self._ds.GetRasterBand(band)
 
         if win is None:
-            return ds.ReadAsArray()
+            a = ds.ReadAsArray()
+            if bands_last and a.ndim == 3:
+                a = a.transpose(1,2,0)
+            return a
         
         if not isinstance(win, RasterWindow):
             raise TypeError("Window must be instance of RasterWindow")
@@ -167,6 +170,10 @@ class Wizard():
         a = ds.ReadAsArray(*win.gdalin)
         if wrapping:
             wrap_margin(a, self._ds, win, band=band)
+
+        if bands_last and a.ndim == 3:
+            a = a.transpose(1,2,0)
+
         return a
     
 
