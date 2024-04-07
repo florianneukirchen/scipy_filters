@@ -81,7 +81,13 @@ class Wizard():
         return f"<Wizard: '{self._name}' shape: {self.shape}>"
     
     def __getitem__(self, items):
-        """Returns 1-D numpy array with pixel values of all bands at indices x and y"""
+        """
+        Returns 1-D numpy array with pixel values of all bands at indices x and y.
+
+        Usage: 
+        wizard = Wizard()
+        wizard[0,10] # Pixel at x = 0 and y = 10
+        """
         try:
             x, y = items
         except (ValueError, TypeError):
