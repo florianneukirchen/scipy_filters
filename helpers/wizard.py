@@ -135,13 +135,16 @@ class Wizard():
     @property
     def geotransform(self):
         return self._ds.GetGeoTransform()
-    
+
+    @property
     def crs_wkt(self):
         return self._ds.GetProjection()
-    
+
+    @property
     def crs(self):
         return self._layer.crs()
-    
+
+    @property
     def crs_id(self):
         return self._layer.crs().authid()
     
