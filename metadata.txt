@@ -80,7 +80,7 @@ changelog=1.0
 tags=python,raster,filter,analysis,principal components analysis,pca,edge,smoothing,
 
 homepage=https://github.com/florianneukirchen/scipy_filters
-icon=icon.png
+icon=_static/icon/logo32.png
 # experimental flag
 experimental=False
 
