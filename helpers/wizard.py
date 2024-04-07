@@ -140,13 +140,13 @@ class Wizard():
         return self._layer.crs().authid()
     
     @property
-    def hasAxisInverted(self):
+    def has_axis_inverted(self):
         return self._layer.crs().hasAxisInverted()
     
-    def isGeographic(self):
+    def is_geographic(self):
         return self._layer.crs().isGeographic()
     
-    def mapUnits(self):
+    def map_units(self):
         return self._layer.crs().mapUnits()
     
     def toarray(self, band=None, win=None, wrapping=False, bands_last=False):
@@ -198,7 +198,7 @@ class Wizard():
         return f"/vsimem/{name}.tif"
 
 
-    def setOutdataset(self, filename=None, bands=None, dtype=None):
+    def set_out_ds(self, filename=None, bands=None, dtype=None):
         if not filename:
             self._out_filename = self._memfile()
         else:
@@ -251,7 +251,7 @@ class Wizard():
         if dtype == "auto":
             dtype = array.dtype
 
-        self.setOutdataset(filename=filename, bands=bands, dtype=dtype)
+        self.set_out_ds(filename=filename, bands=bands, dtype=dtype)
 
         if bands == 1:
             self._dst_ds.GetRasterBand(1).WriteArray(array)
@@ -297,12 +297,12 @@ class Wizard():
         
         if self._dst_ds is None:
             # We create a output ds matching the first array as default option
-            # Otherwise setOutdataset() should be called first
+            # Otherwise set_out_ds() should be called first
             if array.ndim == 2:
                 bands = 1
             else:
                 bands = array.shape[0]
-            self.setOutdataset(bands=bands, dtype=array.dtype)
+            self.set_out_ds(bands=bands, dtype=array.dtype)
 
         if band is None:
             dst_ds = self._dst_ds
@@ -313,7 +313,7 @@ class Wizard():
         dst_ds.WriteArray(array[slices], *win.gdalout)
 
         
-    def loadOutdataset(self, name="Wizard", stats=True):
+    def load_output(self, name="Wizard", stats=True):
         if self._dst_ds is None:
             raise Exception("No output dataset")
         
