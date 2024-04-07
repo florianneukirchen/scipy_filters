@@ -198,7 +198,7 @@ class Wizard():
         return f"/vsimem/{name}.tif"
 
 
-    def setOutdataset(self, filename=None, bands=None, dtype=None, name=None):
+    def setOutdataset(self, filename=None, bands=None, dtype=None):
         if not filename:
             self._out_filename = self._memfile()
         else:
