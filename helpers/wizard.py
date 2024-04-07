@@ -149,6 +149,14 @@ class Wizard():
     def has_axis_inverted(self):
         return self._layer.crs().hasAxisInverted()
     
+    @property
+    def pixel_width(self):
+        return np.abs(self.geotransform[1])
+    
+    @property
+    def pixel_height(self):
+        return np.abs(self.geotransform[5])
+    
     def is_geographic(self):
         return self._layer.crs().isGeographic()
     
