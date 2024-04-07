@@ -234,7 +234,11 @@ class Wizard():
 
         self._dst_ds = dst_ds
 
-    def tolayer(self, array, name="Wizard", dtype="auto", filename=None, stats=True):
+    def tolayer(self, array, name="Wizard", dtype="auto", filename=None, stats=True, bands_last=False):
+
+        if bands_last and array.ndim == 3:
+            array = array.transpose(2,0,1)
+    
         if not (array.shape[-1] == self.shape[-1] and array.shape[-2] == self.shape[-2]):
             raise ValueError("Array must have same shape in X and Y directions as the input layer")
         if array.ndim not in (2, 3):
@@ -246,7 +250,6 @@ class Wizard():
 
         if dtype == "auto":
             dtype = array.dtype
-
 
         self.setOutdataset(filename=filename, bands=bands, dtype=dtype)
 
@@ -284,9 +287,13 @@ class Wizard():
             print("Note: margins are larger than windowsize")
         return get_windows(self._ds.RasterXSize, self._ds.RasterYSize, margin=margin, windowsize=windowsize)
 
-    def write_window(self, array, win, band=None):
+    def write_window(self, array, win, band=None, bands_last=False):
         if not isinstance(win, RasterWindow):
             raise TypeError("Window must be instance of RasterWindow")
+        
+
+        if bands_last and array.ndim == 3:
+            array = array.transpose(2,0,1)
         
         if self._dst_ds is None:
             # We create a output ds matching the first array as default option
