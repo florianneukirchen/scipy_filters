@@ -338,9 +338,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             feedback.reportError("Error: Complex is not supported", fatalError = True)
             return {}
 
-        # Set fill value(s). Set to zero in the baseclass
-        self.set_fillvalue()
-
         # Set to 2D if layer has only one band
         if self.bandcount == 1:
             self._dimension = Dimensions.twoD
@@ -431,7 +428,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     # Handle no data value
                     nodata = self.ds.GetRasterBand(i).GetNoDataValue()
                     nodata_mask = (a == nodata)
-                    self.fill_nodata(a, nodata) 
+                    self.fill_nodata(a, nodata, i) 
 
                     # The actual function
                     filtered = self.fct(a, **kwargs)
@@ -471,7 +468,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 for i in range(self.bandcount):
                     nodata = self.ds.GetRasterBand(i+1).GetNoDataValue()
                     nodata_mask[i][a[i] == nodata] = True
-                    self.fill_nodata(a[i], nodata)
+                    self.fill_nodata(a[i], nodata, i)
 
                 # The actual function
                 filtered = self.fct(a, **kwargs)
@@ -564,26 +561,21 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 feedback.reportError(msg, fatalError=False)
 
 
-    def setfillvalue(self):
-        """
-        Set fill value(s) to be used by fill_nodata.
-
-        Function can be overwritten in inheriting classes.
-        """
-        self._fillvalue = 0
 
 
-    def fill_nodata(self, array, nodata):
+    def fill_nodata(self, array, nodata, band=None):
         """
-        Replace nodata value with fill value (inplace). 
+        Replace nodata value with zero (inplace). 
         
-        Function can be overwritten in inheriting classes.
+        Function can be overwritten in inheriting classes to support 
+        other fill value(s).
+
         Note: local filters not influenced by neighboring cells do not
         need no data to be filled, as no data values are masked anyway.
         This is only important for pixel in the neighborhood of NaN values,
         if the neighborhood is considered.
         """
-        array[array == nodata] = self._fillvalue
+        array[array == nodata] = 0
 
 
     class Renamer(QgsProcessingLayerPostProcessorInterface):
