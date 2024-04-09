@@ -338,6 +338,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             feedback.reportError("Error: Complex is not supported", fatalError = True)
             return {}
 
+        # Set fill value(s). Set to zero in the baseclass
+        self.set_fillvalue()
+
         # Set to 2D if layer has only one band
         if self.bandcount == 1:
             self._dimension = Dimensions.twoD
@@ -560,9 +563,19 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 msg = tr("Warning, the range of output datatype is not in the range of the input datatype. Clipping is likely.")
                 feedback.reportError(msg, fatalError=False)
 
+
+    def setfillvalue(self):
+        """
+        Set fill value(s) to be used by fill_nodata.
+
+        Function can be overwritten in inheriting classes.
+        """
+        self._fillvalue = 0
+
+
     def fill_nodata(self, array, nodata):
         """
-        Replace nodata value with 0 (inplace). 
+        Replace nodata value with fill value (inplace). 
         
         Function can be overwritten in inheriting classes.
         Note: local filters not influenced by neighboring cells do not
@@ -570,7 +583,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         This is only important for pixel in the neighborhood of NaN values,
         if the neighborhood is considered.
         """
-        array[array == nodata] = 0
+        array[array == nodata] = self._fillvalue
 
 
     class Renamer(QgsProcessingLayerPostProcessorInterface):
