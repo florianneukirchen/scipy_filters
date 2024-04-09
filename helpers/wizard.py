@@ -164,9 +164,11 @@ class Wizard():
     def pixel_height(self):
         return np.abs(self.geotransform[5])
     
+    @property
     def is_geographic(self):
         return self._layer.crs().isGeographic()
     
+    @property
     def map_units(self):
         return self._layer.crs().mapUnits()
     
