@@ -561,8 +561,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 feedback.reportError(msg, fatalError=False)
 
 
-
-
     def fill_nodata(self, array, nodata, band=None):
         """
         Replace nodata value with zero (inplace). 

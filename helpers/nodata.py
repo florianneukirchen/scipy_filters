@@ -58,15 +58,14 @@ def centralvalue(dtype):
         # Float
         return 0
 
-def bandmean(dataset, approx=True):
-    """Return list with bandmeans, estimated with gdal"""
-    means = []
-    for b in range(1, dataset.RasterCount + 1):
-        # GDAL band GetStatistics(): 
-        # Set first parameter bApproxOK to True to get quick approximation
-        # Second parameter: if quick way is not possible, calculate stats,
-        # If False it may throw an exception if quick way is not possible
-        # GDAL Returns (min, max, mean, std)
-        stats = dataset.GetRasterBand(b).GetStatistics(approx,True)
-        means.append(stats[2])
-    return means
+def bandmean(dataset, band, approx=True):
+    """Return band mean, estimated with gdal"""
+    # GDAL band GetStatistics(): 
+    # Set first parameter bApproxOK to True to get quick approximation
+    # Second parameter: if quick way is not possible, calculate stats,
+    # If False it may throw an exception if quick way is not possible
+    # GDAL Returns (min, max, mean, std)
+
+    stats = dataset.GetRasterBand(band).GetStatistics(approx,True)
+
+    return stats[2]

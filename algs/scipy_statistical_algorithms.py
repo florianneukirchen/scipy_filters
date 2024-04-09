@@ -42,7 +42,11 @@ from ..scipy_algorithm_baseclasses import (SciPyAlgorithmWithMode,
 
 from ..ui.sizes_widget import (SizesWidgetWrapper)
 
-from ..helpers import str_to_int_or_list, tr
+from ..helpers import (str_to_int_or_list, 
+                       minimumvalue,
+                       maximumvalue,
+                       bandmean,
+                       tr)
 
 class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
     # Overwrite constants of base class
@@ -89,6 +93,9 @@ class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
     # The function to be called, to be overwritten
     def get_fct(self):
         return ndimage.median_filter
+    
+    def fill_nodata(self, array, nodata, band):
+        array[array == nodata] = bandmean(self.ds, band)
         
     def createInstance(self):
         return SciPyMedianAlgorithm()  
@@ -138,6 +145,10 @@ class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
     # The function to be called, to be overwritten
     def get_fct(self):
         return ndimage.minimum_filter
+    
+    def fill_nodata(self, array, nodata, band=None):
+        fillvalue = maximumvalue(array.dtype)
+        array[array == nodata] = fillvalue
         
     def createInstance(self):
         return SciPyMinimumAlgorithm()      
@@ -187,6 +198,10 @@ class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
     # The function to be called, to be overwritten
     def get_fct(self):
         return ndimage.maximum_filter
+    
+    def fill_nodata(self, array, nodata, band=None):
+        fillvalue = minimumvalue(array.dtype)
+        array[array == nodata] = fillvalue
         
     def createInstance(self):
         return SciPyMaximumAlgorithm() 
@@ -242,7 +257,10 @@ class SciPyRangeAlgorithm(SciPyStatisticalAlgorithm):
         maximum = ndimage.maximum_filter(raster, **kwargs)
         minimum = ndimage.minimum_filter(raster, **kwargs)
         return maximum - minimum
-        
+    
+    def fill_nodata(self, array, nodata, band):
+        array[array == nodata] = bandmean(self.ds, band)
+
     def createInstance(self):
         return SciPyRangeAlgorithm() 
 
@@ -300,6 +318,9 @@ class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
     def get_fct(self):
         return ndimage.percentile_filter
     
+    def fill_nodata(self, array, nodata, band):
+        array[array == nodata] = bandmean(self.ds, band)
+
     def insert_parameters(self, config):
         
         self.addParameter(QgsProcessingParameterNumber(
@@ -406,7 +427,10 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
         kwargs['rank'] = self.parameterAsInt(parameters, self.RANK, context) 
 
         return kwargs
-        
+    
+    def fill_nodata(self, array, nodata, band):
+        array[array == nodata] = bandmean(self.ds, band)
+
     def createInstance(self):
         return SciPyRankAlgorithm() 
     
@@ -490,6 +514,8 @@ class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
         self.addParameter(sizes_param)   
 
 
+    def fill_nodata(self, array, nodata, band):
+        array[array == nodata] = bandmean(self.ds, band)
 
     def checkParameterValues(self, parameters, context): 
         dims = self.getDimsForCheck(parameters, context)
