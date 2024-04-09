@@ -165,7 +165,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
     _dimension = Dimensions.nD
     _ndim = None # to be set while getting parameters
-    _nodata = -9999
 
 
     # Return the function to be called, to be overwritten
@@ -294,7 +293,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
         self.bandstats = self.parameterAsBool(parameters, self.BANDSTATS, context)
         self._nodata = self.parameterAsDouble(parameters, self.NODATA, context)
-        print("no data", self._nodata)
  
         self._outdtype = self.parameterAsInt(parameters, self.DTYPE, context)
         if not self._outdtype:
@@ -426,6 +424,12 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                         # Make shure that border mode "wrap" gets the far side of the complete array
                         wrap_margin(a, self.ds, win, band=i)
 
+
+                    # Handle no data value
+                    nodata = self.ds.GetRasterBand(i).GetNoDataValue()
+                    nodata_mask = (a == nodata)
+                    self.fill_nodata(a, nodata) 
+
                     # The actual function
                     filtered = self.fct(a, **kwargs)
                     
@@ -433,9 +437,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     slices = win.getslice(2)
                     filtered = filtered[slices]
 
-                    # Handle no data value
-                    nodata = self.ds.GetRasterBand(i).GetNoDataValue()
-                    filtered[a == nodata] = self._nodata
+                    # Replace no data cells with output no data value
+                    filtered[nodata_mask] = self._nodata
 
                     self.out_ds.GetRasterBand(i).WriteArray(filtered, *win.gdalout)
 
@@ -459,6 +462,14 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     # Make shure that border mode "wrap" gets the far side of the complete array
                     wrap_margin(a, self.ds, win)
 
+                # Handle no data value 
+                # (for each band seperately, some data formats support different values per band)
+                nodata_mask = np.zeros((2, 2), dtype=bool)
+                for i in range(self.bandcount):
+                    nodata = self.ds.GetRasterBand(i+1).GetNoDataValue()
+                    nodata_mask[i][a[i] == nodata] = True
+                    self.fill_nodata(a[i], nodata)
+
                 # The actual function
                 filtered = self.fct(a, **kwargs)
 
@@ -466,10 +477,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 slices = win.getslice(dims)
                 filtered = filtered[slices]
 
-                # Handle no data value (for each band seperately, some data formats support different values per band)
-                for i in range(self.bandcount):
-                    nodata = self.ds.GetRasterBand(i+1).GetNoDataValue()
-                    filtered[i][a[i] == nodata] = self._nodata
+                # Replace no data cells with output no data value
+                filtered[nodata_mask] = self._nodata
+                nodata_mask = None
                 
                 self.out_ds.WriteArray(filtered, *win.gdalout)
 
@@ -549,6 +559,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             if info_in.min < info_out.min or info_in.max > info_out.max:
                 msg = tr("Warning, the range of output datatype is not in the range of the input datatype. Clipping is likely.")
                 feedback.reportError(msg, fatalError=False)
+
+    def fill_nodata(self, array, nodata):
+        """Replace nodata value with 0 (inplace). Function can be overwritten"""
+        array[array == nodata] = 0
 
 
     class Renamer(QgsProcessingLayerPostProcessorInterface):
