@@ -133,6 +133,10 @@ class Wizard():
         return self._out_filename
     
     @property
+    def ds(self):
+        return self._ds
+       
+    @property
     def geotransform(self):
         return self._ds.GetGeoTransform()
 
@@ -165,6 +169,10 @@ class Wizard():
     
     def map_units(self):
         return self._layer.crs().mapUnits()
+    
+    def nodata(self, band=1):
+        return self._ds.GetRasterBand(band).GetNoDataValue()
+    
     
     def toarray(self, band=None, win=None, wrapping=False, bands_last=False):
         if band is None:
