@@ -561,7 +561,15 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 feedback.reportError(msg, fatalError=False)
 
     def fill_nodata(self, array, nodata):
-        """Replace nodata value with 0 (inplace). Function can be overwritten"""
+        """
+        Replace nodata value with 0 (inplace). 
+        
+        Function can be overwritten in inheriting classes.
+        Note: local filters not influenced by neighboring cells do not
+        need no data to be filled, as no data values are masked anyway.
+        This is only important for pixel in the neighborhood of NaN values,
+        if the neighborhood is considered.
+        """
         array[array == nodata] = 0
 
 
