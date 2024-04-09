@@ -51,6 +51,7 @@ from processing.core.ProcessingConfig import ProcessingConfig
 
 from ..helpers import (str_to_array, 
                       tr,
+                      bandmean,
                       MAXSIZE)
 
 from ..scipy_algorithm_baseclasses import groups
@@ -67,6 +68,9 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
     BANDMEAN = 'BANDMEAN'
     DTYPE = 'DTYPE'
+
+
+    NODATA = -9999
 
     # Overwrite constants of base class
 
@@ -311,11 +315,30 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         if bands == 0 or bands > self.bandcount:
             bands = self.bandcount
 
-        
+        # Get no data value from band 1. 
+        # Geotiff only has one no data value, other formats could have different ones 
+        # per band, so this is not optimal
+        nodatavalue = self.ds.GetRasterBand(1).GetNoDataValue()
+
         if feedback.isCanceled():
             return {}
         
         feedback.setProgress(0)
+
+        # Get band mean
+        if not self._inverse:
+            if not self.falsemean:
+                # Calculate band mean using GDAL
+                means = []
+                for b in range(1, self.ds.RasterCount + 1):
+                    means.append(bandmean(self.ds, b, approx=False))
+                    self._bandmean = np.array(means)
+                    self._bandmean = self._bandmean[np.newaxis, :]
+                feedback.pushInfo(tr("\nBand Mean:"))
+            else:
+                feedback.pushInfo(tr("\nFalse (given) band mean:"))
+            feedback.pushInfo(str(self._bandmean[0].tolist()) + "\n")
+
 
         # Start the actual work
         if self.outdtype == 6:
@@ -331,12 +354,11 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         a = a.reshape(orig_shape[0], -1)
         a = a.T
 
+        nodata_mask = np.any(a == nodatavalue, axis=1)
 
         # substract mean
         if not self._inverse:
             if not self.falsemean:
-                self._bandmean = a.mean(axis=0)
-                self._bandmean = self._bandmean[np.newaxis, :]
                 feedback.pushInfo(tr("\nBand Mean:"))
             else:
                 feedback.pushInfo(tr("\nFalse (given) band mean:"))
@@ -365,6 +387,9 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         if self._inverse:
             new_array = new_array + self._bandmean
 
+        # Set no data value
+        new_array[nodata_mask] = self.NODATA
+
         # Flattened array back to normal shape
         new_array = new_array.T.reshape(orig_shape)
 
@@ -384,6 +409,13 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         self.out_ds.SetProjection(self.ds.GetProjection())
 
         self.out_ds.WriteArray(new_array[0:bands,:,:])    
+
+
+        # Set no data value
+        if nodatavalue:
+            for b in range(1, bands + 1):
+                self.out_ds.GetRasterBand(b).SetNoDataValue(nodatavalue)
+
 
         # Calculate and write band statistics (min, max, mean, std)
         for b in range(1, bands + 1):
