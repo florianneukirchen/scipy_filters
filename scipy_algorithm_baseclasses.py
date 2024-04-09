@@ -123,6 +123,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     DIMENSION = 'DIMENSION'
     DTYPE = 'DTYPE'
     BANDSTATS = 'BANDSTATS'
+    NODATA = 'NODATA'
     
     # The following constants are supposed to be overwritten
     _name = 'name, short, lowercase without spaces'
@@ -164,6 +165,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
     _dimension = Dimensions.nD
     _ndim = None # to be set while getting parameters
+    _nodata = -9999
 
 
     # Return the function to be called, to be overwritten
@@ -254,6 +256,18 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         dtype_param.setFlags(dtype_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
         self.addParameter(dtype_param)
 
+        nodata_param = QgsProcessingParameterNumber(
+            self.NODATA,
+            tr('No data value in output layer'),
+            QgsProcessingParameterNumber.Type.Double,
+            optional=True,
+            defaultValue=-9999,
+        )
+      
+        nodata_param.setFlags(stats_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+      
+        self.addParameter(nodata_param)
+
         # Output
 
         if not self._outputname:
@@ -279,6 +293,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
         self.bandstats = self.parameterAsBool(parameters, self.BANDSTATS, context)
+        self._nodata = self.parameterAsDouble(parameters, self.NODATA, context)
+        print("no data", self._nodata)
  
         self._outdtype = self.parameterAsInt(parameters, self.DTYPE, context)
         if not self._outdtype:
@@ -412,9 +428,16 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
                     # The actual function
                     filtered = self.fct(a, **kwargs)
-
+                    
+                    # chop off margin
                     slices = win.getslice(2)
-                    self.out_ds.GetRasterBand(i).WriteArray(filtered[slices], *win.gdalout)
+                    filtered = filtered[slices]
+
+                    # Handle no data value
+                    nodata = self.ds.GetRasterBand(i).GetNoDataValue()
+                    filtered[a == nodata] = self._nodata
+
+                    self.out_ds.GetRasterBand(i).WriteArray(filtered, *win.gdalout)
 
                     feedback.setProgress(counter * 100 / total)
                     counter += 1
@@ -439,13 +462,26 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 # The actual function
                 filtered = self.fct(a, **kwargs)
 
+                # chop off margin
                 slices = win.getslice(dims)
-                self.out_ds.WriteArray(filtered[slices], *win.gdalout)
+                filtered = filtered[slices]
+
+                # Handle no data value (for each band seperately, some data formats support different values per band)
+                for i in range(self.bandcount):
+                    nodata = self.ds.GetRasterBand(i+1).GetNoDataValue()
+                    filtered[i][a[i] == nodata] = self._nodata
+                
+                self.out_ds.WriteArray(filtered, *win.gdalout)
 
                 feedback.setProgress(counter * 100 / total)
                 counter += 1
                 if feedback.isCanceled():
                     return {}
+
+        # Set no data value on all bands
+        for b in range(1, self._outbands + 1):
+            self.out_ds.GetRasterBand(b).SetNoDataValue(self._nodata)
+
 
         # Calculate and write band statistics (min, max, mean, std)
         if self.bandstats:
