@@ -225,7 +225,10 @@ class Wizard():
         return f"/vsimem/{name}.tif"
 
 
-    def set_out_ds(self, filename=None, bands=None, dtype=None):
+    def set_out_ds(self, filename=None, bands=None, dtype=None, nodata=None):
+        # To be used by other functions
+        self._out_nodata = nodata
+
         if not filename:
             self._out_filename = self._memfile()
         else:
@@ -261,7 +264,11 @@ class Wizard():
 
         self._dst_ds = dst_ds
 
-    def tolayer(self, array, name="Wizard", dtype="auto", filename=None, stats=True, bands_last=False):
+    def tolayer(self, array, name="Wizard", dtype="auto", filename=None, stats=True, bands_last=False, nodata=None):
+
+        if nodata:
+            # Replace nan with no data value
+            array[np.isnan(array)] = nodata
 
         if bands_last and array.ndim == 3:
             array = array.transpose(2,0,1)
@@ -284,6 +291,10 @@ class Wizard():
             self._dst_ds.GetRasterBand(1).WriteArray(array)
         else:
             self._dst_ds.WriteArray(array)
+
+        if nodata:
+            for b in range(1, bands + 1):
+                self._dst_ds.GetRasterBand(b).SetNoDataValue(nodata)
 
         # Calculate and write band statistics (min, max, mean, std)
         if stats:
@@ -318,6 +329,9 @@ class Wizard():
         if not isinstance(win, RasterWindow):
             raise TypeError("Window must be instance of RasterWindow")
         
+        if self._out_nodata:
+            # Replace nan with no data value
+            array[np.isnan(array)] = self._out_nodata
 
         if bands_last and array.ndim == 3:
             array = array.transpose(2,0,1)
@@ -344,6 +358,9 @@ class Wizard():
         if self._dst_ds is None:
             raise Exception("No output dataset")
         
+        if self._out_nodata:
+            for b in range(1, self._dst_ds.RasterCount + 1):
+                self._dst_ds.GetRasterBand(b).SetNoDataValue(self._out_nodata)
 
         # Calculate and write band statistics (min, max, mean, std)
         if stats:
