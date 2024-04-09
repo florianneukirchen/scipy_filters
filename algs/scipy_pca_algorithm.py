@@ -67,6 +67,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     PERCENTVARIANCE = 'PERCENTVARIANCE'
     DTYPE = 'DTYPE'
     BANDSTATS = 'BANDSTATS'
+
+    NODATA = -9999
     
     _name = 'pca'
     _outputname = tr('PCA')
@@ -167,6 +169,10 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         self.bandcount = self.ds.RasterCount
         self.indatatype = self.ds.GetRasterBand(1).DataType
 
+        # Get no data value from band 1. 
+        # Geotiff only has one no data value, other formats could have different ones 
+        # per band, so this is not optimal
+        nodatavalue = self.ds.GetRasterBand(1).GetNoDataValue()
 
         if feedback.isCanceled():
             return {}
@@ -188,6 +194,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         n_pixels = flattened.shape[0]
 
+        nodata_mask = np.any(flattened == nodatavalue, axis=1)
+
         # substract mean
 
         col_mean = flattened.mean(axis=0)
@@ -207,7 +215,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # U and VT do not change.
         # The factor usually used for normalization in PCA is: 1 / sqrt(n_samples - 1)
 
-        U, S, VT = linalg.svd(centered,full_matrices=False)
+        U, S, VT = linalg.svd(centered[~nodata_mask],full_matrices=False)
 
         U = None # Save memory, not needed anymore
         feedback.setProgress(15)
@@ -259,6 +267,9 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         new_array = centered @ VT.T
         centered = None
 
+        # Set no data value
+        new_array[nodata_mask] = self.NODATA
+
         # Reshape to original shape
         new_array = new_array.T.reshape(orig_shape)
 
@@ -289,7 +300,14 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
         self.out_ds.SetProjection(self.ds.GetProjection())
 
-        self.out_ds.WriteArray(new_array[0:bands,:,:])    
+        self.out_ds.WriteArray(new_array[0:bands,:,:])   
+
+        # Set no data value
+        if nodatavalue:
+            for b in range(1, bands + 1):
+                self.out_ds.GetRasterBand(b).SetNoDataValue(nodatavalue)
+
+
         feedback.setProgress(80)
         # Calculate and write band statistics (min, max, mean, std)
         if self.bandstats:

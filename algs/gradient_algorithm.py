@@ -36,7 +36,7 @@ from qgis.core import (QgsProcessingParameterBoolean,
                 QgsProcessingParameterEnum,)
                
 from ..scipy_algorithm_baseclasses import SciPyAlgorithm, Dimensions
-from ..helpers import tr
+from ..helpers import tr, bandmean
 
 
 class SciPyGradientAlgorithm(SciPyAlgorithm):
