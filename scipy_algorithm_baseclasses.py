@@ -459,11 +459,12 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
                 # Handle no data value 
                 # (for each band seperately, some data formats support different values per band)
-                nodata_mask = np.zeros((2, 2), dtype=bool)
+                nodata_mask = np.zeros((a.shape[-2], a.shape[-1]), dtype=bool)
+
                 for i in range(self.bandcount):
                     nodata = self.ds.GetRasterBand(i+1).GetNoDataValue()
-                    nodata_mask[i][a[i] == nodata] = True
-                    self.fill_nodata(a[i], nodata, i)
+                    nodata_mask[a[i] == nodata] = True
+                    self.fill_nodata(a[i], nodata, i+1)
 
                 # The actual function
                 filtered = self.fct(a, **kwargs)
@@ -474,7 +475,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
                 # Replace no data cells with output no data value
                 if self._nodata:
-                    filtered[nodata_mask] = self._nodata 
+                    if dims == 3:
+                        filtered[:,nodata_mask] = self._nodata 
+                    else:
+                        filtered[nodata_mask] = self._nodata 
                 nodata_mask = None
                 
                 self.out_ds.WriteArray(filtered, *win.gdalout)
