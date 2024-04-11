@@ -303,12 +303,9 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         self.out_ds.WriteArray(new_array[0:bands,:,:])   
 
         # Set no data value
-        print("nd",nodatavalue)
-        print(self.NODATA)
         if nodatavalue:
             for b in range(1, bands + 1):
                 self.out_ds.GetRasterBand(b).SetNoDataValue(self.NODATA)
-                print(b)
 
 
         feedback.setProgress(80)
