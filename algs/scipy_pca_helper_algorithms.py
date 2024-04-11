@@ -727,6 +727,7 @@ class SciPyKeepN(QgsProcessingAlgorithm):
             self.ncomponents = self.bandcount + self.ncomponents
 
         self.indatatype = self.ds.GetRasterBand(1).DataType
+        nodatavalue = self.ds.GetRasterBand(1).GetNoDataValue()
        
         a = self.ds.ReadAsArray()
 
@@ -742,6 +743,11 @@ class SciPyKeepN(QgsProcessingAlgorithm):
         self.out_ds.SetProjection(self.ds.GetProjection())
 
         self.out_ds.WriteArray(a[0:self.ncomponents,:,:])
+
+        # Set no data value
+        if nodatavalue:
+            for b in range(1, self.ncomponents + 1):
+                self.out_ds.GetRasterBand(b).SetNoDataValue(nodatavalue)
 
         # Calculate and write band statistics (min, max, mean, std)
         for b in range(1, self.ncomponents + 1):
