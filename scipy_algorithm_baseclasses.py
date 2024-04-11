@@ -81,6 +81,7 @@ groups = {
     'enhance': tr('Enhance'),
     'pixel': tr('Pixel Based Filters'),
     'pca': tr('PCA'),
+    'no_data': tr('No Data')
 }
 
 # Dimensions the algorithm is working on, more info see below
