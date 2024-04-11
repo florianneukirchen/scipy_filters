@@ -68,7 +68,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     DTYPE = 'DTYPE'
     BANDSTATS = 'BANDSTATS'
 
-    NODATA = -9999.0
+    NODATA = -9999
     
     _name = 'pca'
     _outputname = tr('PCA')
@@ -192,9 +192,9 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         flattened = flattened.T
 
-        n_pixels = flattened.shape[0]
-
         nodata_mask = np.any(flattened == nodatavalue, axis=1)
+
+        n_pixels = flattened[~nodata_mask].shape[0]
 
         # substract mean
 
