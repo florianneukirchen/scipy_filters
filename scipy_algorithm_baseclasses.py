@@ -68,6 +68,7 @@ from .helpers import (RasterWindow,
                       footprintexamples,
                       dtype_options,
                       get_np_dtype,
+                      is_in_dtype_range,
                       tr)
 
 # Group IDs and group names
@@ -123,7 +124,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     DIMENSION = 'DIMENSION'
     DTYPE = 'DTYPE'
     BANDSTATS = 'BANDSTATS'
-    NODATA = 'NODATA'
     
     # The following constants are supposed to be overwritten
     _name = 'name, short, lowercase without spaces'
@@ -255,17 +255,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         dtype_param.setFlags(dtype_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
         self.addParameter(dtype_param)
 
-        nodata_param = QgsProcessingParameterNumber(
-            self.NODATA,
-            tr('No data value in output layer'),
-            QgsProcessingParameterNumber.Type.Double,
-            optional=True,
-            defaultValue=-9999,
-        )
-      
-        nodata_param.setFlags(stats_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
-      
-        self.addParameter(nodata_param)
 
         # Output
 
@@ -292,7 +281,6 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT, context)
         self.bandstats = self.parameterAsBool(parameters, self.BANDSTATS, context)
-        self._nodata = self.parameterAsDouble(parameters, self.NODATA, context)
  
         self._outdtype = self.parameterAsInt(parameters, self.DTYPE, context)
         if not self._outdtype:
@@ -401,6 +389,12 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
         self.out_ds.SetProjection(self.ds.GetProjection())
 
+        # output no data value
+        self._nodata = self.ds.GetRasterBand(1).GetNoDataValue()
+        if self._nodata:
+            if not is_in_dtype_range(self._nodata, kwargs['output']):
+                self._nodata = np.iinfo(kwargs['output']).min
+
         if feedback.isCanceled():
             return {}
         
@@ -438,7 +432,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     filtered = filtered[slices]
 
                     # Replace no data cells with output no data value
-                    filtered[nodata_mask] = self._nodata
+                    if self._nodata:
+                        filtered[nodata_mask] = self._nodata
 
                     self.out_ds.GetRasterBand(i).WriteArray(filtered, *win.gdalout)
 
@@ -478,7 +473,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                 filtered = filtered[slices]
 
                 # Replace no data cells with output no data value
-                filtered[nodata_mask] = self._nodata
+                if self._nodata:
+                    filtered[nodata_mask] = self._nodata 
                 nodata_mask = None
                 
                 self.out_ds.WriteArray(filtered, *win.gdalout)
@@ -489,8 +485,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     return {}
 
         # Set no data value on all bands
-        for b in range(1, self._outbands + 1):
-            self.out_ds.GetRasterBand(b).SetNoDataValue(self._nodata)
+        if self._nodata:
+            for b in range(1, self._outbands + 1):
+                self.out_ds.GetRasterBand(b).SetNoDataValue(self._nodata) 
 
 
         # Calculate and write band statistics (min, max, mean, std)

@@ -69,3 +69,10 @@ def bandmean(dataset, band, approx=True):
     stats = dataset.GetRasterBand(band).GetStatistics(approx,True)
 
     return stats[2]
+
+def is_in_dtype_range(value, dtype):
+    if np.issubdtype(dtype, np.integer):
+        info = np.iinfo(dtype)
+        if value < info.min or value > info.max:
+            return False
+    return True  
