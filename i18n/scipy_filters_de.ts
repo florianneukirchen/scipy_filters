@@ -141,7 +141,7 @@
     <message>
         <location filename="../scipy_algorithm_baseclasses.py" line="80"/>
         <source>Enhance</source>
-        <translation>Verbesserung</translation>
+        <translation>Bildverbesserung</translation>
     </message>
     <message>
         <location filename="../algs/scipy_pca_algorithm.py" line="72"/>
