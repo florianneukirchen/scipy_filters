@@ -414,7 +414,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         # Set no data value
         if nodatavalue:
             for b in range(1, bands + 1):
-                self.out_ds.GetRasterBand(b).SetNoDataValue(nodatavalue)
+                self.out_ds.GetRasterBand(b).SetNoDataValue(self.NODATA)
 
 
         # Calculate and write band statistics (min, max, mean, std)
