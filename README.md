@@ -59,6 +59,10 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 - In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). Exception: PCA (only float32/float64 as options).
 
 ## Changelog
+### Git Main
+- Mask no data cells
+- Fill no data cells to smooth the leaking into the neighborhood
+- Add filter to calculate a no data mask
 ### 1.0 (03/2024)
 - For large rasters: calculate in a moving window to avoid crashes
 - Add setValue() to the custom widgets to get loading from history working
