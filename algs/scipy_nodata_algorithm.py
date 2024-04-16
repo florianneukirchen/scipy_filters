@@ -53,6 +53,9 @@ from processing.core.ProcessingConfig import ProcessingConfig
 from ..helpers import (str_to_array, 
                       tr,
                       bandmean,
+                      minimumvalue,
+                      maximumvalue,
+                      centralvalue,
                       number_of_windows,
                       get_windows,
                       is_in_dtype_range,
@@ -486,3 +489,233 @@ class SciPyFilterApplyNoDataMask(QgsProcessingAlgorithm):
     
     def createInstance(self):
         return SciPyFilterApplyNoDataMask()
+    
+
+
+class SciPyFilterFillNoData(QgsProcessingAlgorithm):
+    VALUE = 'VALUE'
+    MODE = 'MODE'
+    OUTPUT = 'OUTPUT'
+    INPUT = 'INPUT'
+
+    _name = 'fill_no_data'
+    _displayname = tr('Fill no data')
+
+    def initAlgorithm(self, config):
+
+        try:
+            self.windowsize = int(ProcessingConfig.getSetting('WINDOWSIZE'))
+        except TypeError:
+            self.windowsize = DEFAULTWINDOWSIZE
+        if self.windowsize == 0:
+            self.windowsize = None
+
+        self.addParameter(
+            QgsProcessingParameterRasterLayer(
+                self.INPUT,
+                tr('Input layer'),
+            )
+        )
+
+        mode_labels = [tr('Fill with 0'), tr('Fill with value'), tr('Fill with approximate band mean'), tr('Fill with exact band mean'), tr('Fill with minimum of dtype range'), tr('Fill with maximum of dtype range'), tr('Fill with central value of dtype range')]
+
+        self.addParameter(QgsProcessingParameterEnum(
+            self.MODE,
+            tr('Filling Mode'),
+            mode_labels,
+            defaultValue=0)) 
+        
+        self.addParameter(QgsProcessingParameterNumber(
+            self.VALUE,
+            tr('Value'),
+            QgsProcessingParameterNumber.Type.Double,
+            defaultValue=0, 
+            optional=False, 
+            ))  
+
+        self.addParameter(
+            QgsProcessingParameterRasterDestination(
+                self.OUTPUT,
+                self.displayName(),
+            ))
+    
+    
+    def checkParameterValues(self, parameters, context):
+        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        mode = self.parameterAsInt(parameters, self.MODE, context)
+        value = self.parameterAsDouble(parameters, self.VALUE, context)
+
+        ds = gdal.Open(inputlayer.source())
+        if not ds:
+            raise Exception("Failed to open Raster Layer")
+        
+        
+        if mode == 1: # Fill with value
+            dtype = ds.GetRasterBand(1).DataType
+            if dtype == 0:
+                return False, tr("Unkown data type")
+            if dtype <= 5:
+                npdtype = get_np_dtype(dtype)
+                # Integer
+                if not is_in_dtype_range(int(value), npdtype):
+                    return False, tr("No data value is out of range of data type")
+
+        return super().checkParameterValues(parameters, context)
+    
+
+    def get_parameters(self, parameters, context):
+        
+        self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
+        self.mode = self.parameterAsInt(parameters, self.MODE, context)
+        self.value = self.parameterAsDouble(parameters, self.VALUE, context)
+
+
+    def processAlgorithm(self, parameters, context, feedback):
+        """
+        Here is where the processing itself takes place.
+        """
+        feedback.setProgress(0)
+
+        self.get_parameters(parameters, context)
+
+        self.ds = gdal.Open(self.inputlayer.source())
+
+        if not self.ds:
+            raise Exception("Failed to open Raster Layer")
+        
+        self.bandcount = self.ds.RasterCount
+        self.dtype = self.ds.GetRasterBand(1).DataType
+        npdtype = get_np_dtype(self.dtype)
+
+        if 0 < self.dtype <= 5: # integer
+            self.value = int(self.value)
+
+        # Set fill no data values (np.array with shape == bandcount)
+        if self.mode == 0:
+            self.fillvalue = np.zeros(self.bandcount)
+        elif self.mode == 1:
+            self.fillvalue = np.zeros(self.bandcount)
+            self.fillvalue[:] = self.value
+        elif self.mode == 2:
+            # approx band mean
+            self.fillvalue = np.zeros(self.bandcount)
+            for i in range(self.bandcount):
+                self.fillvalue[i] = bandmean(self.ds, i+1, True)
+        elif self.mode == 3:
+            # exact band mean
+            self.fillvalue = np.zeros(self.bandcount)
+            for i in range(self.bandcount):
+                self.fillvalue[i] = bandmean(self.ds, i+1, False)
+        elif self.mode == 4:
+            self.fillvalue = np.zeros(self.bandcount)
+            self.fillvalue[:] = minimumvalue(npdtype)
+        elif self.mode == 5:
+            self.fillvalue = np.zeros(self.bandcount)
+            self.fillvalue[:] = maximumvalue(npdtype)
+        else:
+            self.fillvalue = np.zeros(self.bandcount)
+            self.fillvalue[:] = centralvalue(npdtype)
+
+        feedback.pushInfo(tr("Fill value (each band): {} ").format(self.fillvalue))
+
+        # Prepare output
+        driver = gdal.GetDriverByName('GTiff')
+
+        self.out_ds = driver.Create(
+            self.output_raster, 
+            xsize = self.ds.RasterXSize,
+            ysize = self.ds.RasterYSize,
+            bands = self.bandcount,
+            eType = self.dtype) # Data type is Byte (uint8)
+        
+        self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
+        self.out_ds.SetProjection(self.ds.GetProjection())
+
+        if feedback.isCanceled():
+            return {}
+        
+        total = self.bandcount * number_of_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize) + 1
+        counter = 1
+
+        windows = get_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize, margin=0)
+
+        for win in windows:
+            # Just in case get no data value of each band seperately
+            for i in range(self.bandcount):
+                band = self.ds.GetRasterBand(i+1)
+                a = band.ReadAsArray(*win.gdalin)
+                nodata = band.GetNoDataValue()
+
+                a[a == nodata] = self.fillvalue[i]
+
+                self.out_ds.GetRasterBand(i+1).WriteArray(a, *win.gdalout)
+                               
+                feedback.setProgress(counter * 100 / total)
+                counter += 1
+                if feedback.isCanceled():
+                    return {}
+                
+        # Free some memory
+        self.ds = None
+        a = None
+
+        # Close the dataset to write file to disk
+        self.out_ds = None 
+
+        feedback.setProgress(100)
+
+        return {
+            self.OUTPUT: self.output_raster, 
+            "fill values": self.fillvalue.tolist(),
+            }
+    
+    def shortHelpString(self):
+        """
+        Returns the help string that is shown on the right side of the 
+        user interface.
+        """
+        return """
+            Fill no data cells (all bands).
+
+            <b>Mode</b> Fill with 0, fill with value, fill with approximate band mean, \
+            fill with exact band mean, fill with minimum of dtype range, \
+            fill with maximum of dtype range, fill with central value of dtype range.
+
+            <b>Value</b> Used for mode <i>fill with value</i>
+
+
+            """
+    
+
+    def name(self):
+        return self._name
+    
+    def displayName(self):
+        """
+        Returns the translated algorithm name, which should be used for any
+        user-visible display of the algorithm name.
+        """
+        return tr(self._displayname)
+    
+    def group(self):
+        """
+        Returns the name of the group this algorithm belongs to. This string
+        should be localised.
+        """
+        s = groups.get(self.groupId())
+        return tr(s)
+    
+    def groupId(self):
+        """
+        Returns the unique ID of the group this algorithm belongs to. This
+        string should be fixed for the algorithm, and must not be localised.
+        The group id should be unique within each provider. Group id should
+        contain lowercase alphanumeric characters only and no spaces or other
+        formatting characters.
+        """
+        return "no_data"
+    
+    def createInstance(self):
+        return SciPyFilterFillNoData()
+    
