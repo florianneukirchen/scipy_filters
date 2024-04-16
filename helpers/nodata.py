@@ -53,7 +53,7 @@ def maximumvalue(dtype):
 def centralvalue(dtype):
     """Return the difference of max and min of possible dtype values"""
     if np.issubdtype(dtype, np.integer):
-        return np.iinfo(dtype).max - np.iinfo(dtype).min
+        return (np.iinfo(dtype).max - np.iinfo(dtype).min) // 2
     else: 
         # Float
         return 0
