@@ -6,7 +6,7 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=1.0
+version=1.1
 author=Florian Neukirchen
 email=mail@riannek.de
 
@@ -21,6 +21,8 @@ about=QGIS plugin providing access to SciPy filters via the processing toolbox. 
     - noise removal with Wiener filter
     - blurring (gaussian, box filter etc.)
     - Pixel statistics (std, mean, min ... of all bands for individual pixels)
+    - Get no data mask, apply no data mask (i.e. set cells to no data)
+    - fill no data cells of all bands with value, band mean or minimum, maximum or central value of the data type
     Most filters are based on scipy.ndimage, a library to filter images (or arrays, rasters) in n dimensions. These are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands. In most cases, the plugin simply provides a user interface for a single SciPy function, gets the raster data using GDAL, calls the SciPy function with the provided parameters and loads the result back into QGIS. A few filters (PCA, unsharp mask, pixel statistics etc.) use custom functions that where implemented using SciPy and/or Numpy.
     For many filters, a custom footprint and/or structure or kernel can be provided, adjusting the size and shape of the filter.
 
@@ -34,7 +36,13 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=1.0
+changelog=1.1
+    - Mask no data cells (no data pixels remain no data pixels)
+    - Fill no data cells to smooth the leaking into the neighborhood
+    - Add filter to calculate a no data mask
+    - Add filter to apply a no data mask (set corresponding cells to no data)
+    - Add filter to fill no data cells of all bands with either a value, the band mean or the minimum, maximum or the central value of the data type 
+    1.0
     - For large rasters: calculate in a moving window to avoid crashes
     - Add setValue() to the custom widgets to get loading from history working
     - Calculating band statistics after completion is optional now
@@ -77,7 +85,7 @@ changelog=1.0
         - Convolve: ORIGIN has been removed. (An improved version is on the todo list)
 
 # Tags are comma separated with spaces allowed
-tags=python,raster,filter,analysis,principal components analysis,pca,edge,smoothing,
+tags=python,raster,filter,analysis,principal components analysis,pca,edge,smoothing,image,no data
 
 homepage=https://github.com/florianneukirchen/scipy_filters
 icon=_static/icon/logo32.png

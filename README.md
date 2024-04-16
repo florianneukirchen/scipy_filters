@@ -69,13 +69,13 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 - In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). Exception: PCA (only float32/float64 as options).
 
 ## Changelog
-### Git Main
+### 1.1 (04/2024)
 - Mask no data cells (no data pixels remain no data pixels)
 - Fill no data cells to smooth the leaking into the neighborhood
 - Add filter to calculate a no data mask
 - Add filter to apply a no data mask (set corresponding cells to no data)
 - Add filter to fill no data cells of all bands with either 0, a given value, the band mean, the minimum value of the data type, the maximum value of the data type or the central value of the data type 
-### 1.0 (03/2024)
+### 1.0 (04/2024)
 - For large rasters: calculate in a moving window to avoid crashes
 - Add setValue() to the custom widgets to get loading from history working
 - Calculating band statistics after completion is optional now
