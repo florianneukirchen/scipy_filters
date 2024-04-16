@@ -86,6 +86,8 @@ class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
             Calculated with gaussian_laplace from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+            Note: No data cells within the filter radius are filled with 0.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
@@ -135,6 +137,9 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
             Gaussian filter (blur with a gaussian kernel). \
             Calculated with gaussian_filter from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            Note: No data cells within the filter radius are filled with 0.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
@@ -227,6 +232,8 @@ class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
             Gradient magnitude using Gaussian derivatives. \
             Calculated with gaussian_gradient_magnitude from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            Note: No data cells within the filter radius are filled with 0.
 
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \

@@ -96,6 +96,8 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
             <a href="https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615">source code of scipy.signal.wiener</a> \
             using correlate from <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
 
+            Note: No data cells within the filter radius are filled with 0.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
@@ -191,6 +193,8 @@ class SciPyEstimateStdAlgorithm(SciPyEstimateVarianceAlgorithm):
             <a href="https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615">source code of scipy.signal.wiener</a> \
             using correlate from <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
 
+            Note: No data cells within the filter radius are filled with 0.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
@@ -235,6 +239,8 @@ class SciPyStdAlgorithm(SciPyStatisticalAlgorithm):
             and numpy.std.
 
             Warning: Very slow! 
+
+            Note: No data cells within the filter radius are filled with 0.
 
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \

@@ -53,6 +53,8 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
             Calculated with gaussian_laplace from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+            Note: No data cells within the filter radius are filled with 0.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
@@ -96,6 +98,8 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
             Sobel filter. \
             Calculated with sobel from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            Note: No data cells within the filter radius are filled with 0.
 
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
@@ -155,6 +159,8 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
             Prewitt filter.\
             Calculated with prewitt from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            Note: No data cells within the filter radius are filled with 0.
 
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \

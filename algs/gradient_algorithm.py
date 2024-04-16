@@ -46,6 +46,8 @@ class SciPyGradientAlgorithm(SciPyAlgorithm):
 
     See also Pixel Gradient in Pixel Based Filters.
 
+    Note: No data cells within the filter radius are filled with 0.
+
     <b>Axis</b> Calculate along x-axis, y-axis or both (returning the hypotenuse of both vectors.)
 
     <b>Return absolute values</b> Gradient is calculated left to right along x-axis \
@@ -185,7 +187,6 @@ class SciPyPixelGradientAlgorithm(SciPyAlgorithm):
 
             Returns band to band gradient, calculated with \
             <a href="https://numpy.org/doc/stable/reference/generated/numpy.gradient.html">numpy.gradient</a>.
-
             
             <b>Return absolute values</b> Gradient is calculated band to band, starting with band 1.
             The result contains also negative values, optionally the absolute values are returned.

@@ -77,6 +77,8 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
             Only the real part of the resulting complex \
             numbers is returned.
 
+            Note: No data cells within the filter radius are filled with 0.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
@@ -171,6 +173,8 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
             The product is transformed back with ifft2 or ifftn, respectively. \
             Only the real part of the resulting complex \
             numbers is returned.
+
+            Note: No data cells within the filter radius are filled with 0.
 
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
@@ -314,6 +318,8 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
             Only the real part of the resulting complex \
             numbers is returned.
 
+            Note: No data cells within the filter radius are filled with 0.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
@@ -455,6 +461,8 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
             Calculated using fftconvolve from \
             <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
+
+            Note: No data cells within the filter radius are filled with 0.
 
             <b>Kernel</b> String representation of array. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \
@@ -637,6 +645,8 @@ class SciPyFFTCorrelateAlgorithm(SciPyFFTConvolveAlgorithm):
             Calculated using correlate from \
             <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>\
             using method "fft".
+
+            Note: No data cells within the filter radius are filled with 0.
 
             <b>Kernel</b> String representation of array. \
             Must have 2 dimensions if <i>dimension</i> is set to 2D. \

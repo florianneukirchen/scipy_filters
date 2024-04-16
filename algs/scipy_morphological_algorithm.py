@@ -172,6 +172,8 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             binary_erosion, binary_closing, binary_opening respectively from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+            Note: No data cells within the filter radius are filled with 0.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
@@ -279,6 +281,8 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             Calculated for every band with grey_dilation, \
             grey_erosion, gey_closing or grey_opening, respectively from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            Note: No data cells within the filter radius are filled with 0.
 
             <b>Dilation</b> Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
             <b>Erosion</b> Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
@@ -463,6 +467,8 @@ class SciPyTophatAlgorithm(SciPyGreyMorphologicalAlgorithm):
             Calculated with black_tophat, \
             white_tophat, morphological_radient or morphological_laplace, respectively from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            Note: No data cells within the filter radius are filled with 0.
 
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \

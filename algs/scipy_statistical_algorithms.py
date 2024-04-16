@@ -59,6 +59,8 @@ class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
             Calculated with median_filter from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+            Note: No data cells within the filter radius are filled with the band mean.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
@@ -111,6 +113,8 @@ class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
             Minimum filter.\
             Calculated with minimum_filter from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            Note: No data cells within the filter radius are filled with the maximum of the data type.
 
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
@@ -165,6 +169,8 @@ class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
             Calculated with maximum_filter from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+            Note: No data cells within the filter radius are filled with the minimum of the data type.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
@@ -218,6 +224,8 @@ class SciPyRangeAlgorithm(SciPyStatisticalAlgorithm):
             Range filter, returns the difference of min and max within the neighborhood.\
             Calculated with minimum_filter and maximum_filter from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            Note: No data cells within the filter radius are filled with the band mean.
 
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
@@ -280,6 +288,8 @@ class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
             Percentile filter.\
             Calculated with percentile_filter from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            Note: No data cells within the filter radius are filled with the band mean.
 
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
@@ -361,6 +371,8 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
             Rank filter.\
             Calculated with rank_filter from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            Note: No data cells within the filter radius are filled with the band mean.
 
             The filter calculates a histogram for the neighborhood \
             (specified by footprint or size) and returns the value \
@@ -455,6 +467,8 @@ class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
             Uniform filter (a.k.a. box filter or mean filter). \
             Calculated with uniform_filter from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+            Note: Note: No data cells within the filter radius are filled with the band mean.
 
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \

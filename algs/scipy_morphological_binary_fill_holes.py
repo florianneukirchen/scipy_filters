@@ -67,6 +67,8 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
             Calculated with binary_fill_holes from \
             <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+            Note: No data cells within the filter radius are filled with 0.
+
             <b>Dimension</b> Calculate for each band separately (2D) \
             or use all bands as a 3D datacube and perform filter in 3D. \
             Note: bands will be the first axis of the datacube.
