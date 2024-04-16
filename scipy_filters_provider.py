@@ -96,7 +96,8 @@ from .algs.gradient_algorithm import (SciPyGradientAlgorithm,
                                       SciPyPixelGradientAlgorithm,
                                       SciPyPixelDiffAlgorithm)
 
-from .algs.scipy_nodata_algorithm import (SciPyFilterNoDataMask)
+from .algs.scipy_nodata_algorithm import (SciPyFilterNoDataMask,
+                                          SciPyFilterApplyNoDataMask)
 
 from processing.core.ProcessingConfig import Setting, ProcessingConfig
 
@@ -199,6 +200,7 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyPixelDiffAlgorithm())
 
         self.addAlgorithm(SciPyFilterNoDataMask())
+        self.addAlgorithm(SciPyFilterApplyNoDataMask())       
 
     def id(self):
         """

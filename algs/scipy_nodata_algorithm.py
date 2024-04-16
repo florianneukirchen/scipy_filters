@@ -55,6 +55,8 @@ from ..helpers import (str_to_array,
                       bandmean,
                       number_of_windows,
                       get_windows,
+                      is_in_dtype_range,
+                      get_np_dtype,
                       DEFAULTWINDOWSIZE)
 
 from ..scipy_algorithm_baseclasses import groups
@@ -229,3 +231,258 @@ class SciPyFilterNoDataMask(QgsProcessingAlgorithm):
     
     def createInstance(self):
         return SciPyFilterNoDataMask()
+    
+
+
+class SciPyFilterApplyNoDataMask(QgsProcessingAlgorithm):
+    MASK = 'MASK'
+    OUTPUT = 'OUTPUT'
+    INPUT = 'INPUT'
+    NODATA = 'NODATA'
+    CHANGE = 'CHANGE'
+
+    _name = 'apply_no_data_mask'
+    _displayname = tr('Apply no data mask')
+
+    def initAlgorithm(self, config):
+
+        try:
+            self.windowsize = int(ProcessingConfig.getSetting('WINDOWSIZE'))
+        except TypeError:
+            self.windowsize = DEFAULTWINDOWSIZE
+        if self.windowsize == 0:
+            self.windowsize = None
+
+        self.addParameter(
+            QgsProcessingParameterRasterLayer(
+                self.INPUT,
+                tr('Input layer'),
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterRasterLayer(
+                self.MASK,
+                tr('No data mask'),
+            )
+        )
+
+        self.addParameter(QgsProcessingParameterNumber(
+            self.NODATA,
+            tr('No data value'),
+            QgsProcessingParameterNumber.Type.Double,
+            defaultValue=0, 
+            optional=False, 
+            minValue=0, 
+            # maxValue=100
+            ))  
+        
+        self.addParameter(QgsProcessingParameterNumber(
+            self.CHANGE,
+            tr('Change (+/-) value if same as no data value'),
+            QgsProcessingParameterNumber.Type.Double,
+            defaultValue=0, 
+            optional=True, 
+            ))  
+
+
+        self.addParameter(
+            QgsProcessingParameterRasterDestination(
+                self.OUTPUT,
+                self.displayName(),
+            ))
+        
+    def checkParameterValues(self, parameters, context):
+        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        mask = self.parameterAsRasterLayer(parameters, self.MASK, context)
+        nodata = self.parameterAsDouble(parameters, self.NODATA, context)
+        change = self.parameterAsDouble(parameters, self.CHANGE, context)
+
+        if mask == inputlayer:
+            return False, tr("Mask layer and input layer can't be identical")
+
+        if mask.bandCount() != 1 and mask.bandCount() != inputlayer.bandCount():
+            return False, tr("Mask layer must have 1 band or same number of bands as input")
+
+        ds = gdal.Open(inputlayer.source())
+        if not ds:
+            raise Exception("Failed to open Raster Layer")
+        
+        dtype = ds.GetRasterBand(1).DataType
+
+        mask_ds = gdal.Open(mask.source())
+        if not mask_ds:
+            raise Exception("Failed to open Mask Layer")
+
+        if not (mask_ds.GetProjection() == ds.GetProjection()
+                    and mask_ds.RasterXSize == ds.RasterXSize
+                    and mask_ds.RasterYSize == ds.RasterYSize
+                    and mask_ds.GetGeoTransform() == ds.GetGeoTransform()):
+                return False, tr("Mask layer does not match input layer")
+
+        if dtype == 0:
+            return False, tr("Unkown data type")
+        if dtype <= 5:
+            npdtype = get_np_dtype(dtype)
+            # Integer
+            if not is_in_dtype_range(int(nodata), npdtype):
+                return False, tr("No data value is out of range of data type")
+            if not is_in_dtype_range((int(nodata) + int(change)), npdtype):
+                return False, tr("Changed value is out of range of data type")
+
+        return super().checkParameterValues(parameters, context)
+    
+        
+    def get_parameters(self, parameters, context):
+        
+        self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+        self.mask = self.parameterAsRasterLayer(parameters, self.MASK, context)
+        self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
+        self.nodata = self.parameterAsDouble(parameters, self.NODATA, context)
+        self.change = self.parameterAsDouble(parameters, self.CHANGE, context)
+
+
+
+    def processAlgorithm(self, parameters, context, feedback):
+        """
+        Here is where the processing itself takes place.
+        """
+        feedback.setProgress(0)
+
+        self.get_parameters(parameters, context)
+
+        self.ds = gdal.Open(self.inputlayer.source())
+
+        if not self.ds:
+            raise Exception("Failed to open Raster Layer")
+        
+        self.maskds = gdal.Open(self.mask.source())
+        if not self.maskds:
+            raise Exception("Failed to open Mask Layer")
+            
+        self.bandcount = self.ds.RasterCount
+
+        dtype = self.ds.GetRasterBand(1).DataType
+
+        if dtype <= 5:
+            # Integer
+            self.nodata = int(self.nodata)
+            self.change = int(self.nodata) + int(self.change)
+        else:
+            self.change = self.nodata + self.change
+
+        feedback.pushInfo(tr("No data value: {} \nChanged value: {}").format(self.nodata, self.change))
+
+        # Prepare output
+        driver = gdal.GetDriverByName('GTiff')
+
+        self.out_ds = driver.Create(
+            self.output_raster, 
+            xsize = self.ds.RasterXSize,
+            ysize = self.ds.RasterYSize,
+            bands = self.bandcount,
+            eType = dtype) 
+        
+        self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
+        self.out_ds.SetProjection(self.ds.GetProjection())
+
+        if feedback.isCanceled():
+            return {}
+        
+        total = number_of_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize) + 1
+        counter = 1
+
+        windows = get_windows(self.ds.RasterXSize, self.ds.RasterYSize, windowsize=self.windowsize, margin=0)
+
+        for win in windows:
+            a = self.ds.ReadAsArray(*win.gdalin)
+            mask = self.maskds.ReadAsArray(*win.gdalin) 
+            mask = mask.astype(bool)
+
+            a[a == self.nodata] = self.change
+            if mask.ndim == a.ndim:
+                a[mask] = self.nodata
+            else:
+                # a is multiband, mask is single band
+                for i in range(self.bandcount):
+                    a[i][mask] = self.nodata
+
+            self.out_ds.WriteArray(a, *win.gdalout)
+
+            feedback.setProgress(counter * 100 / total)
+            counter += 1
+            if feedback.isCanceled():
+                return {}
+                
+        # Free some memory
+        self.ds = None
+        a = None
+
+        # Set no data on all bands
+        for b in range(1, self.bandcount + 1):
+            self.out_ds.GetRasterBand(b).SetNoDataValue(self.nodata) 
+        
+
+        # Close the dataset to write file to disk
+        self.out_ds = None 
+
+
+        feedback.setProgress(100)
+
+        return {
+            self.OUTPUT: self.output_raster
+            }
+    
+    def shortHelpString(self):
+        """
+        Returns the help string that is shown on the right side of the 
+        user interface.
+        """
+        return """
+            Set all cells where the mask layer is not 0 to no data.
+
+            <b>No data mask</b> Raster layer, either with 1 band or same number of bands as input layer. \
+            Must have same projection, geotransform and width / height as input layer. \
+            Every cell with 0 in the mask layer is considered to be a data cell, \
+            with 1 (or any non zero number) as no data value. \
+            
+            <b>No data value</b> Value to be used as proxy for no data. Must be in the range \
+            of the data type. If data type is integer, decimal places are truncated.
+
+            <b>Change</b> Optionally add or substract a value from each cell where the value is \
+            equal to the no data value, to avoid to set the cell to no data. \
+            If data type is integer, decimal places are truncated.
+
+            """
+    
+
+    def name(self):
+        return self._name
+    
+    def displayName(self):
+        """
+        Returns the translated algorithm name, which should be used for any
+        user-visible display of the algorithm name.
+        """
+        return tr(self._displayname)
+    
+    def group(self):
+        """
+        Returns the name of the group this algorithm belongs to. This string
+        should be localised.
+        """
+        s = groups.get(self.groupId())
+        return tr(s)
+    
+    def groupId(self):
+        """
+        Returns the unique ID of the group this algorithm belongs to. This
+        string should be fixed for the algorithm, and must not be localised.
+        The group id should be unique within each provider. Group id should
+        contain lowercase alphanumeric characters only and no spaces or other
+        formatting characters.
+        """
+        return "no_data"
+    
+    def createInstance(self):
+        return SciPyFilterApplyNoDataMask()
