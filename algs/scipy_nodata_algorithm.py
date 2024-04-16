@@ -167,10 +167,10 @@ class SciPyFilterNoDataMask(QgsProcessingAlgorithm):
                 self.out_ds.WriteArray(np.any(nodata_mask, axis=0), *win.gdalout)
                 pixelcount = pixelcount + np.sum(np.any(nodata_mask, axis=0).astype(int))
                                
-                feedback.setProgress(counter * 100 / total)
-                counter += 1
-                if feedback.isCanceled():
-                    return {}
+            feedback.setProgress(counter * 100 / total)
+            counter += 1
+            if feedback.isCanceled():
+                return {}
                 
         # Free some memory
         self.ds = None
