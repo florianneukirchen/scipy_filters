@@ -37,6 +37,16 @@ Since version 0.2, the plugin offers an automatic installation of SciPy (using p
 The plugin settings can be found in the processing section of the QGIS settings. The window size should be large (SciPy is optimized to process large arrays), but not too large (SciPy / QGIS becomes unstable if the data does not fit into the memory). 
 The maximum size is only used for algorithms that can't use the windowing function, notably PCA. It only exists to prevent crashes when trying to process very large rasters. 
 
+## No data cells
+Since most filters work within a neighborhood, it is not enough to mask no data values: A no data pixel in the neighborhood would keep the no data value of the file (e.g. -9999) while applying the filter, drastically changing the result. 
+
+As a work around, the plugin fills no data cells either with 0 (most cases), with the band mean or with the smallest or largest possible value of the data type (see help of each filter for details).
+
+To fine tune the behavoir, it is possible to use the filters of the no data group: Get a no data mask, fill no data values with a suitable value, apply the filter, apply the no data mask to set no data cells back to no data. 
+
+Also note that no data values at the edge of the raster (typically caused by reprojecting to another CRS) interfere with the border modes avaible in some scipy.ndimage filters such as "reflect", "nearest", "mirror", "wrap": no data cells will be reflected, mirrored, wrapped as well. 
+
+
 ## Tips for python users
 
 ### Kernel / Structure / Footprint
@@ -60,9 +70,11 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 
 ## Changelog
 ### Git Main
-- Mask no data cells
+- Mask no data cells (no data pixels remain no data pixels)
 - Fill no data cells to smooth the leaking into the neighborhood
 - Add filter to calculate a no data mask
+- Add filter to apply a no data mask (set corresponding cells to no data)
+- Add filter to fill no data cells of all bands with either 0, a given value, the band mean, the minimum value of the data type, the maximum value of the data type or the central value of the data type 
 ### 1.0 (03/2024)
 - For large rasters: calculate in a moving window to avoid crashes
 - Add setValue() to the custom widgets to get loading from history working
