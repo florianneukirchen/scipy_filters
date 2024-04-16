@@ -4,32 +4,32 @@
 <context>
     <name>@default</name>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="86"/>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="513"/>
         <source>Input layer</source>
         <translation>Eingabe-Layer</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="211"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="213"/>
         <source>Dimension</source>
         <translation>Dimensionen</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="127"/>
+        <location filename="../algs/scipy_pca_algorithm.py" line="129"/>
         <source>Output data type</source>
         <translation>Ausgabe-Datentyp</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="335"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="338"/>
         <source>Failed to open Mask Layer</source>
         <translation>Konnte Maskenlayer nicht öffnen</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="491"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="538"/>
         <source>3D only possible if input layer has more than 1 bands</source>
         <translation>3D ist nur bei Layern mit mehr als einem Band möglich</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="515"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="562"/>
         <source>Warning, the range of output datatype is not in the range of the input datatype. Clipping is likely.</source>
         <translation>Warnung, der Wertebereich des Ausgabedatentyps ist nicht innerhalb desjenigen des Eingabedatentyps. Die Werte werden vermutlich beschnitten.</translation>
     </message>
@@ -44,17 +44,17 @@
         <translation>Konstanter Wert für Randmodus Konstante</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="641"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="703"/>
         <source>Axis</source>
         <translation>Achse</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="671"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="733"/>
         <source>Band axis not possible in 2D case</source>
-        <translation type="unfinished">Achse &quot;Band&quot; ist in 2D nicht möglich</translation>
+        <translation>Achse &amp;quot;Band&amp;quot; ist in 2D nicht möglich</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="462"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="486"/>
         <source>Size of flat structuring element (either size or footprint must be given, with footprint, size is ignored)</source>
         <translation>Größe eines flachen Strukturelements(entweder Größe oder Fußabdruck müssen gegeben sein, mit Fußabdruck wird Größe ignoriert)</translation>
     </message>
@@ -89,27 +89,27 @@
         <translation>Ursprung liegt außerhalb des Fußabdrucks</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="802"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="864"/>
         <source>Rank must be smaller than the size of the footprint</source>
         <translation>Rangordnung muss kleiner sein als Größe des Fußabdrucks</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="305"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="326"/>
         <source>Percentile</source>
         <translation>Perzentile</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="394"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="415"/>
         <source>Rank</source>
         <translation>Rangordnung</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="76"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="77"/>
         <source>Morphological Filters</source>
         <translation>Morphologische Filter</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="77"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="78"/>
         <source>Statistical Filters</source>
         <translation>Statistische Filter</translation>
     </message>
@@ -119,77 +119,77 @@
         <translation type="obsolete">Pixelstatistik</translation>
     </message>
     <message>
-        <location filename="../scipy_filters_provider.py" line="214"/>
+        <location filename="../scipy_filters_provider.py" line="224"/>
         <source>SciPy Filters</source>
         <translation>SciPy Filter</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="75"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="76"/>
         <source>Edges</source>
         <translation>Kanten</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="78"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="79"/>
         <source>Blur</source>
         <translation>Weichzeichnen</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="79"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="80"/>
         <source>Convolution</source>
         <translation>Faltung</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="80"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="81"/>
         <source>Enhance</source>
         <translation>Bildverbesserung</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="72"/>
+        <location filename="../algs/scipy_pca_algorithm.py" line="74"/>
         <source>PCA</source>
         <translation>PCA</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="50"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="54"/>
         <source>Median filter</source>
         <translation>Median Filter</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="100"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="107"/>
         <source>Minimum filter</source>
         <translation>Minimum Filter</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="149"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="160"/>
         <source>Maximum filter</source>
         <translation>Maximum Filter</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="199"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="214"/>
         <source>Local range (difference of min and max)</source>
         <translation>Lokaler Wertebereich (Differenz von Min und Max)</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="200"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="215"/>
         <source>Range</source>
         <translation>Wertebereich</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="258"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="276"/>
         <source>Percentile filter</source>
         <translation>Perzentilenfilter</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="336"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="357"/>
         <source>Rank filter</source>
         <translation>Rangordnungsfilter</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="427"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="451"/>
         <source>Uniform filter (box filter)</source>
         <translation>Einheitsfilter (Box Filter)</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_statistical_algorithms.py" line="428"/>
+        <location filename="../algs/scipy_statistical_algorithms.py" line="452"/>
         <source>Uniform filter</source>
         <translation>Einheitsfilter</translation>
     </message>
@@ -199,37 +199,37 @@
         <translation>Wie Eingabe</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="206"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="208"/>
         <source>2D (Separate for each band)</source>
         <translation>2D (für jedes Band einzeln)</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="207"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="209"/>
         <source>3D (All bands as a 3D data cube)</source>
         <translation>3D (alle Bänder als 3D data cube)</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="192"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="194"/>
         <source>Reflect</source>
         <translation>Reflexion</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="192"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="194"/>
         <source>Constant</source>
         <translation>Konstante</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="192"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="194"/>
         <source>Nearest</source>
         <translation>Nächster</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="192"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="194"/>
         <source>Mirror</source>
         <translation>Spiegel</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="192"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="194"/>
         <source>Wrap</source>
         <translation>Einwickeln</translation>
     </message>
@@ -274,12 +274,12 @@
         <translation>3 × 3 Quadrat</translation>
     </message>
     <message>
-        <location filename="../helpers/structures.py" line="208"/>
+        <location filename="../helpers/structures.py" line="212"/>
         <source>5 × 5 Square</source>
         <translation>5 × 5 Quadrat</translation>
     </message>
     <message>
-        <location filename="../helpers/structures.py" line="208"/>
+        <location filename="../helpers/structures.py" line="212"/>
         <source>7 × 7 Square</source>
         <translation>7 × 7 Quadrat</translation>
     </message>
@@ -294,7 +294,7 @@
         <translation>3 × 3 × 3 Würfel</translation>
     </message>
     <message>
-        <location filename="../helpers/structures.py" line="208"/>
+        <location filename="../helpers/structures.py" line="212"/>
         <source>5 × 5 × 5 Cube</source>
         <translation>5 × 5 × 5 Würfel</translation>
     </message>
@@ -334,27 +334,27 @@
         <translation>3 × 1 × 1 Alle Bänder eines Pixels</translation>
     </message>
     <message>
-        <location filename="../helpers/structures.py" line="208"/>
+        <location filename="../helpers/structures.py" line="212"/>
         <source>Cross 2D</source>
         <translation>Kreuz 2D</translation>
     </message>
     <message>
-        <location filename="../helpers/structures.py" line="208"/>
+        <location filename="../helpers/structures.py" line="212"/>
         <source>Square 2D</source>
         <translation>Quadrat 2D</translation>
     </message>
     <message>
-        <location filename="../helpers/structures.py" line="208"/>
+        <location filename="../helpers/structures.py" line="212"/>
         <source>Cross 3D</source>
         <translation>Kreuz 3D</translation>
     </message>
     <message>
-        <location filename="../helpers/structures.py" line="208"/>
+        <location filename="../helpers/structures.py" line="212"/>
         <source>Ball 3D</source>
         <translation>Ball 3D</translation>
     </message>
     <message>
-        <location filename="../helpers/structures.py" line="208"/>
+        <location filename="../helpers/structures.py" line="212"/>
         <source>Cube 3D</source>
         <translation>Würfel 3D</translation>
     </message>
@@ -434,106 +434,106 @@
         <translation>Vollständige Pixelstatistik</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="106"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="110"/>
         <source>Eigenvectors</source>
         <translation>Eigenvektoren</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="120"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="124"/>
         <source>Mean of original bands</source>
         <translation>Mittelwert der ursprünglichen Bänder</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="122"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="126"/>
         <source>False mean for each band</source>
         <translation>Falscher Mittelwert für jedes Band</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="221"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="225"/>
         <source>Can not parse eigenvectors</source>
         <translation>Kann Eigenvektoren nicht parsen</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="250"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="254"/>
         <source>Could not decode metadata abstract</source>
         <translation>Kann keine Daten aus Abstract der Metadaten decodieren</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="256"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="260"/>
         <source>The layer does not contain valid eigenvectors and no eigenvectors where provided</source>
         <translation>Layer enthält keine validen Eigenvektoren und keine Eigenvektoren wurden angegeben</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="260"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="264"/>
         <source>Matrix of eigenvectors must be square (2D)</source>
         <translation>Matrix der Eigenvektoren muss quadratisch sein (2D)</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="263"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="267"/>
         <source>Shape of matrix of eigenvectors does not match number of bands</source>
         <translation>Größe der Matrix der Eigenvektoren passt nicht zur Anzahl der Bänder</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="284"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="288"/>
         <source>Could not parse list of means</source>
         <translation>Kann die Liste der Mittelwerte nicht parsen</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="292"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="296"/>
         <source>False shape of means list</source>
         <translation>Liste der Mittelwerte hat falsche Länge</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="340"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="362"/>
         <source>
 Band Mean:</source>
         <translation>
 Mittelwerte der Bänder:</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="342"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="364"/>
         <source>
 False (given) band mean:</source>
         <translation>
 Falsche (gegebene) Band-Mittelwerte:</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="501"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="533"/>
         <source>Transform to principal components</source>
         <translation>Transformation in die Hauptkomponenten</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="549"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="581"/>
         <source>Read eigenvectors from PCA layer metadata</source>
         <translation>Lese Eigenvektoren aus Metadaten eines PCA-Layers</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="557"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="589"/>
         <source>Number of components to keep. Set to 0 for all components.</source>
         <translation>Anzahl der zu behaltenen Komponenten. 0 für alle Komponenten.</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="567"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="599"/>
         <source>Use false mean (provided as parameter) to center data</source>
         <translation>Verwende falsche Mittelwerte (als Parameter übergeben), um Daten zu zentrieren</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="598"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="630"/>
         <source>Transform from principal components</source>
         <translation>Transformation von den Hauptkomponenten zurück</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="105"/>
+        <location filename="../algs/scipy_pca_algorithm.py" line="107"/>
         <source>Percentage of Variance to keep (if set and &gt; 0: overwrites number of components)</source>
-        <translation>Prozentsatz der Varianz, der erhalten werden soll (wenn gesetzt und &gt; 0: überschreibt Anzahl der Komponenten)</translation>
+        <translation>Prozentsatz der Varianz, der erhalten werden soll (wenn gesetzt und &amp;gt; 0: überschreibt Anzahl der Komponenten)</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="351"/>
+        <location filename="../algs/scipy_pca_algorithm.py" line="369"/>
         <source>PCA only possible if input layer has more than 1 bands</source>
         <translation>PCA ist nur möglich, wenn das Eingabe-Layer mehr als 1 Band hat</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="385"/>
+        <location filename="../algs/scipy_pca_algorithm.py" line="403"/>
         <source>Principal Component Analysis (PCA)</source>
         <translation>Hauptkomponentenanalyse (PCA)</translation>
     </message>
@@ -643,7 +643,7 @@ Falsche (gegebene) Band-Mittelwerte:</translation>
         <translation>Gaußscher Laplace-Filter</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_edge_algorithms.py" line="197"/>
+        <location filename="../algs/scipy_edge_algorithms.py" line="198"/>
         <source>WARNING: Output contains negative values, but output data type is unsigned integer!</source>
         <translation>WARNUNG: Ausgabe enthält negative Werte, aber Ausgabe-Datentyp ist unsigned integer!</translation>
     </message>
@@ -763,17 +763,17 @@ Falsche (gegebene) Band-Mittelwerte:</translation>
         <translation>Stärke</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_edge_algorithms.py" line="44"/>
+        <location filename="../algs/scipy_edge_algorithms.py" line="45"/>
         <source>Laplace</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../algs/scipy_edge_algorithms.py" line="88"/>
+        <location filename="../algs/scipy_edge_algorithms.py" line="89"/>
         <source>Sobel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../algs/scipy_edge_algorithms.py" line="147"/>
+        <location filename="../algs/scipy_edge_algorithms.py" line="148"/>
         <source>Prewitt</source>
         <translation></translation>
     </message>
@@ -898,32 +898,32 @@ Falsche (gegebene) Band-Mittelwerte:</translation>
         <translation>Graue(s) </translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="342"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="345"/>
         <source>Mask layer does not match input layer, reprojecting mask.</source>
         <translation>Masken-Layer passt nicht zum Eingabelayer, reprojeziere Maske.</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="360"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="363"/>
         <source>Mask layer does match input layer.</source>
         <translation>Masken-Layer passt nicht zum Eingabe-Layer.</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="642"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="674"/>
         <source>Keep only n components</source>
         <translation>Behalte nur n Komponenten</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="659"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="691"/>
         <source>Number of components to keep (negative: number of components to remove)</source>
         <translation>Anzahl der Komponenten, die behalten werden sollen (negativ: Anzahl der Komponenten, die entfernt werden sollen)</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="691"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="723"/>
         <source>Number of components can&apos;t be larger than band count, keeping all bands.</source>
         <translation>Anzahl der Komponenten kann nicht größer als Anzahl der Bänder sein, behalte alle Bänder.</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_helper_algorithms.py" line="733"/>
+        <location filename="../algs/scipy_pca_helper_algorithms.py" line="771"/>
         <source>{} components of {}</source>
         <translation>{} Komponenten von {}</translation>
     </message>
@@ -953,37 +953,37 @@ Falsche (gegebene) Band-Mittelwerte:</translation>
         <translation>SciPy Filter: Installation von SciPy ist fehlgeschlagen.</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="94"/>
+        <location filename="../algs/scipy_pca_algorithm.py" line="96"/>
         <source>Number of components to keep. Set to 0 for all components; negative for number of components to remove.</source>
         <translation>Anzahl der Komponenten, die behalten werden sollen. 0 für alle Komponenten. Negativ: Anzahl der Komponenten, die verworfen werden soll.</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="81"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="82"/>
         <source>Pixel Based Filters</source>
         <translation>Pixelbasierte Filter</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="115"/>
+        <location filename="../algs/scipy_pca_algorithm.py" line="117"/>
         <source>Calculate band statistics</source>
         <translation>Berechne Bandstatistik</translation>
     </message>
     <message>
-        <location filename="../scipy_algorithm_baseclasses.py" line="396"/>
+        <location filename="../scipy_algorithm_baseclasses.py" line="404"/>
         <source>Calculating in {} windows with a margin of {} pixels.</source>
         <translation>Berechne in {} Fenstern mit einem Rand von {} Pixeln.</translation>
     </message>
     <message>
-        <location filename="../scipy_filters_provider.py" line="113"/>
+        <location filename="../scipy_filters_provider.py" line="117"/>
         <source>Window size for processing of large rasters (edge length in pixels)</source>
         <translation>Fenstergröße für Verarbeitung großer Raster (Seitenlänge in Pixeln)</translation>
     </message>
     <message>
-        <location filename="../scipy_filters_provider.py" line="119"/>
+        <location filename="../scipy_filters_provider.py" line="123"/>
         <source>Maximum size (megapixels) for algorithms not working in a moving window (avoids crashes).</source>
         <translation>Maximalgröße (Megapixel) für Algorithmen, die nicht mit Kacheln arbeiten können (verhindert Abstürze).</translation>
     </message>
     <message>
-        <location filename="../algs/scipy_pca_algorithm.py" line="347"/>
+        <location filename="../algs/scipy_pca_algorithm.py" line="365"/>
         <source>Raster size is larger than maxsize (see settings).</source>
         <translation>Raster ist größer als die Maximalgröße (siehe Einstellungen).</translation>
     </message>
@@ -996,6 +996,133 @@ Falsche (gegebene) Band-Mittelwerte:</translation>
         <location filename="../algs/scipy_convolve_algorithm.py" line="269"/>
         <source>Correlate</source>
         <translation>Korrelation</translation>
+    </message>
+    <message>
+        <location filename="../scipy_algorithm_baseclasses.py" line="84"/>
+        <source>No Data</source>
+        <translation>Keine Daten</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="266"/>
+        <source>No data mask</source>
+        <translation>Keine-Daten-Maske</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="91"/>
+        <source>Each band seperate</source>
+        <translation>Jedes Band einzeln</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="185"/>
+        <source>Number of pixels with no data value: {} </source>
+        <translation>Anzahl der Pixel ohne Daten: {} </translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="248"/>
+        <source>Apply no data mask</source>
+        <translation>Keine-Daten-Maske anwenden</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="273"/>
+        <source>No data value</source>
+        <translation>Leerwert</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="283"/>
+        <source>Change (+/-) value if same as no data value</source>
+        <translation>Wert ändern (+/-) wenn er dem Leerwert entspricht</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="305"/>
+        <source>Mask layer and input layer can&apos;t be identical</source>
+        <translation>Masken-Layer und Eingabe-Layer können nicht identisch sein</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="308"/>
+        <source>Mask layer must have 1 band or same number of bands as input</source>
+        <translation>Maskenlayer muss 1 Band oder die gleiche Anzahl an Bändern wie Eingabe-Layer haben</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="324"/>
+        <source>Mask layer does not match input layer</source>
+        <translation>Maskenlayer passt nicht zum Eingabe-Layer</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="556"/>
+        <source>Unkown data type</source>
+        <translation>Unbekannter Datentyp</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="561"/>
+        <source>No data value is out of range of data type</source>
+        <translation>Der Leerwert ist außerhalb des Wertebereichs des Datentyps</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="334"/>
+        <source>Changed value is out of range of data type</source>
+        <translation>Geänderter Wert ist außerhalb des Wertebereichs des Datentyps</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="377"/>
+        <source>No data value: {} 
+Changed value: {}</source>
+        <translation>Leerwert: {} 
+Geänderter Wert: {}</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="502"/>
+        <source>Fill no data</source>
+        <translation type="unfinished">Fülle Zellen ohne Daten</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="520"/>
+        <source>Fill with 0</source>
+        <translation>Fülle mit 0</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="520"/>
+        <source>Fill with value</source>
+        <translation>Fülle mit Wert</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="520"/>
+        <source>Fill with approximate band mean</source>
+        <translation type="unfinished">Fülle mit ungefährem Band-Mittelwert</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="520"/>
+        <source>Fill with exact band mean</source>
+        <translation>Fülle mit exaktem Band-Mittelwert</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="520"/>
+        <source>Fill with minimum of dtype range</source>
+        <translation>Fülle mit Minimalwert des Datentyps</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="520"/>
+        <source>Fill with maximum of dtype range</source>
+        <translation>Fülle mit Maximalwert des Datentyps</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="520"/>
+        <source>Fill with central value of dtype range</source>
+        <translation>Fülle mit zentralem Wert des Datentyps</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="522"/>
+        <source>Filling Mode</source>
+        <translation>Füllmodus</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="528"/>
+        <source>Value</source>
+        <translation>Wert</translation>
+    </message>
+    <message>
+        <location filename="../algs/scipy_nodata_algorithm.py" line="620"/>
+        <source>Fill value (each band): {} </source>
+        <translation>Füllwert (jedes Band): {} </translation>
     </message>
 </context>
 <context>

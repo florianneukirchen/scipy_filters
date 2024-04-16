@@ -16,5 +16,6 @@ SOURCES = ../scipy_algorithm_baseclasses.py \
           ../algs/scipy_enhance_algorithms.py \
           ../algs/scipy_edge_algorithms.py \
           ../algs/scipy_convolve_algorithm.py \
-          ../algs/scipy_binary_hit_miss.py
+          ../algs/scipy_binary_hit_miss.py \
+          ../algs/scipy_nodata_algorithm.py
 TRANSLATIONS = scipy_filters_de.ts
