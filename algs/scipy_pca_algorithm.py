@@ -198,7 +198,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
         # substract mean
 
-        col_mean = flattened.mean(axis=0)
+        col_mean = flattened[~nodata_mask].mean(axis=0)
         centered = flattened - col_mean[np.newaxis, :]
 
         flattened = None
