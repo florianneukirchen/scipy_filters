@@ -69,6 +69,8 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 - In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). Exception: PCA (only float32/float64 as options).
 
 ## Changelog
+### 1.2 (04/2024)
+- Bugfix: PCA, calculate band mean without no data value
 ### 1.1 (04/2024)
 - Mask no data cells (no data pixels remain no data pixels)
 - Fill no data cells to smooth the leaking into the neighborhood

@@ -6,7 +6,7 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=1.1
+version=1.2
 author=Florian Neukirchen
 email=mail@riannek.de
 
@@ -36,6 +36,8 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
+changelog=1.2
+    - Bugfix: PCA, calculate band mean without no data value
 changelog=1.1
     - Mask no data cells (no data pixels remain no data pixels)
     - Fill no data cells to smooth the leaking into the neighborhood
