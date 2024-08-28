@@ -449,6 +449,17 @@ class RasterWizard():
     
 
     def number_of_windows(self, windowsize=2048):
+        """
+        Returns the number of windows that would be generated with get_windows() with a given windowsize. 
+        
+        Since get_windows() is a generator, it can only be used once. 
+        Use this function to get the number of windows if you need it for a progress bar etc.
+
+        :param windowsize: Size of the windows in pixels, default is 2048
+        :type windowsize: int, optional
+        :return: Number of windows
+        :rtype: int
+        """
         return number_of_windows(self._ds.RasterXSize, self._ds.RasterYSize, windowsize)
     
     def get_windows(self, margin=0, windowsize=2048):
