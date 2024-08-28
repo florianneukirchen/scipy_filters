@@ -424,8 +424,18 @@ class RasterWizard():
         :type array: numpy.ndarray
         :param name: Name of the new layer in QGIS, default is "Wizard"
         :type name: str, optional
-        :param dtype: Datatype of the output layer, default is "auto", using the GDAL datatype matching the numpy array datatype
+        :param dtype: Datatype of the output layer, accepts numpy dtypes: "uint8", "int8", "uint16", "int16", "uint32", "int32", "float32", "float64", "complex64", "complex128"
+            default is "auto", using the GDAL datatype matching the numpy array datatype. 
+            "input" uses the datatype of the input layer.
         :type dtype: str, optional
+        :param filename: Full file path for the output geotiff, default is None (in-memory only)
+        :type filename: str, optional
+        :param stats: Calculate and write band statistics (min, max, mean, std), default is True
+        :type stats: bool, optional
+        :param bands_last: If True, the order of the dimensions is x, y [,bands], default is False, expecting [bands,] x, y
+        :type bands_last: bool, optional
+        :param nodata: No data value, default is None
+        :type nodata: int, optional
         """
 
         if nodata:
