@@ -304,8 +304,17 @@ class RasterWizard():
 
         With parameter band, a 2D array is returned; otherwise, all bands are returned as a 3D array 
         (or as 2D array if there is only one band). The order of the dimensions is [bands,] x, y.
+
         Alternatively, by setting bands_last=True, the order of the dimensions is x, y [,bands] 
         (e.g. expected by scikit-image).
+
+        Can be used together with the RasterWindow class to calculate in a moving window.
+
+        :param band: Band index, default is None
+        :type band: int, optional
+        :param win: RasterWindow instance for processing in a moving window, default is None
+        :type win: RasterWindow, optional
+        :param wrapping: Fill the margins of the window with the data of the far side of the dataset, to be used with scipy filters with mode='wrap', default is False
         """
         if band is None:
             ds = self._ds
