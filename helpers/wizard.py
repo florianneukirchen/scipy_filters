@@ -60,6 +60,7 @@ class RasterWizard():
     _dst_ds = None
     _layer = None
 
+    # Mapping of numpy datatypes to GDAL datatypes
     _gdal_datatypes = {
         "uint8": 1,
         "int8": 1,
@@ -413,6 +414,19 @@ class RasterWizard():
         self._dst_ds = dst_ds
 
     def tolayer(self, array, name="Wizard", dtype="auto", filename=None, stats=True, bands_last=False, nodata=None):
+        """
+        Load a numpy array as a new raster layer in QGIS.
+
+        The array must have the same dimensions in x and y as the input layer. The number of bands and the datatype can be different.
+        First, the data is saved as geotiff if a filename (full file path) is given. Otherwise, the geotiff is in-memory only, using GDAL virtual file system.
+
+        :param array: Numpy array with the raster data
+        :type array: numpy.ndarray
+        :param name: Name of the new layer in QGIS, default is "Wizard"
+        :type name: str, optional
+        :param dtype: Datatype of the output layer, default is "auto", using the GDAL datatype matching the numpy array datatype
+        :type dtype: str, optional
+        """
 
         if nodata:
             # Replace nan with no data value
