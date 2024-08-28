@@ -420,6 +420,8 @@ class RasterWizard():
         The array must have the same dimensions in x and y as the input layer. The number of bands and the datatype can be different.
         First, the data is saved as geotiff if a filename (full file path) is given. Otherwise, the geotiff is in-memory only, using GDAL virtual file system.
 
+        If iterating over windows, use write_window() and load_output() instead.
+
         :param array: Numpy array with the raster data
         :type array: numpy.ndarray
         :param name: Name of the new layer in QGIS, default is "Wizard"
