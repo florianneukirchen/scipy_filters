@@ -40,6 +40,21 @@ from .window import RasterWindow, get_windows, number_of_windows, wrap_margin
 gdal.UseExceptions()
 
 class RasterWizard():
+    """
+    Get QGIS raster layers as numpy arrays and the result back into QGIS as a new raster layer. 
+
+    To be used in the QGIS Python console for raster processing with numpy, scipy and other python
+    libraries; great for prototype development and experimenting with algorithms.
+
+    The resulting numpy array can be loaded back into QGIS as a new raster layer, as long as the
+    number of pixels is the same as the input layer and the geotransform is not changed (no reprojection).
+    The number of bands and the datatype can be different.
+
+    On very large rasters, the processing can be done in windows (tiles) to avoid crashes.
+
+    :param layer: instance of QgsRasterLayer, the layer to be processed. Optional, default is the active layer.
+    :type layer: QgsRasterLayer, optional
+    """
 
     _ds = None
     _dst_ds = None
@@ -82,11 +97,16 @@ class RasterWizard():
     
     def __getitem__(self, items):
         """
-        Returns 1-D numpy array with pixel values of all bands at indices x and y.
+        Get pixel values at [x, y].
 
-        Usage: 
-        wizard = RasterWizard()
-        wizard[0,10] # Pixel at x = 0 and y = 10
+        Returns 1-D numpy array with pixel values of all bands at indices x and y.
+        With x or y out of bounds, nans are returned.
+
+        Usage::
+
+            wizard = RasterWizard()
+            wizard[0,10] # Pixel at x = 0 and y = 10
+
         """
         try:
             x, y = items
@@ -106,26 +126,59 @@ class RasterWizard():
 
     @property
     def countbands(self):
+        """
+        Number of bands in the raster layer.
+
+        :return: Number of bands
+        :rtype: int
+        """
         return self._ds.RasterCount
 
     @property
     def ndim(self):
+        """
+        Number of dimensions of the raster layer.
+
+        Returns 2 for single band and 3 for multiple bands.
+
+        :return: Number of dimensions
+        :rtype: int
+        """
         if self._ds.RasterCount == 1:
             return 2
         else:
             return 3
         
     @property
-    def shape(self):
+    def shape(self) -> tuple[int]:
+        """
+        Shape of the raster layer
+         
+        Given in the order (bands, x, y); identical to numpy_array.shape 
+
+        :return: Shape of the raster layer
+        """
         # Numpy x axis is y in gdal and vica versa
         return (self._ds.RasterCount, self._ds.RasterYSize, self._ds.RasterXSize)
     
     @property
     def name(self):
+        """
+        Name of the raster layer in QGIS.
+
+        :return: Layer name
+        :rtype: str
+        """
         return self._name
     
     @property
     def filename(self):
+        """
+        Path and filename of the raster layer source file.
+
+        :return: Path
+        :rtype: str
+        """
         return self._filename
     
     @property
@@ -134,45 +187,114 @@ class RasterWizard():
     
     @property
     def ds(self):
+        """
+        GDAL dataset of the raster layer.
+
+        :return: GDAL dataset
+        :rtype: osgeo.gdal.Dataset
+        """
         return self._ds
        
     @property
     def geotransform(self):
+        """
+        Geotransform of the raster layer as used by GDAL.
+
+        :return: Geotransform
+        :rtype: tuple
+        """
         return self._ds.GetGeoTransform()
 
     @property
     def crs_wkt(self):
+        """
+        Get the CRS of the layer as WKT string.
+
+        :return: CRS as WKT string
+        :rtype: str
+        """
         return self._ds.GetProjection()
 
     @property
     def crs(self):
+        """
+        Get the CRS of the layer as QgsCoordinateReferenceSystem.
+
+        :return: CRS
+        :rtype: QgsCoordinateReferenceSystem
+        """
         return self._layer.crs()
 
     @property
     def crs_id(self):
+        """
+        Get the authority identifier of the CRS.
+
+        Returns a string like "EPSG:4326".
+
+        :return: CRS authority identifier
+        :rtype: str
+        """
         return self._layer.crs().authid()
     
     @property
     def has_axis_inverted(self):
+        """
+        Returns True if the axis order of the CRS is inverted,
+        i.e. not east/north (longitude/latitude).
+        """
         return self._layer.crs().hasAxisInverted()
     
     @property
     def pixel_width(self):
+        """
+        Returns the width of a pixel in map units, read from the geotransform.
+
+        :return: Pixel width
+        :rtype: float
+        """
         return np.abs(self.geotransform[1])
     
     @property
     def pixel_height(self):
+        """
+        Returns the height of a pixel in map units, read from the geotransform.
+
+        :return: Pixel height
+        :rtype: float
+        """
         return np.abs(self.geotransform[5])
     
     @property
     def is_geographic(self):
+        """
+        Returns True if the CRS is geographic (i.e. not projected).
+
+        :return: True if geographic CRS
+        :rtype: bool
+        """
         return self._layer.crs().isGeographic()
     
     @property
     def map_units(self):
+        """
+        Return the units for the projection used by the CRS.
+
+        :return: Map units
+        :rtype: Qgis.DistanceUnit enum
+        """
         return self._layer.crs().mapUnits()
     
     def nodata(self, band=1):
+        """
+        Get the no data value of a band. If no no data value is set, None is returned.
+
+        Note: In GeoTiff, the same no data value is used for all bands.
+
+        :param band: Band index, default is 1
+        :type band: int, optional
+        :return: No data value
+        """
         return self._ds.GetRasterBand(band).GetNoDataValue()
     
     
@@ -205,6 +327,15 @@ class RasterWizard():
     
 
     def datatype(self, band=1, as_int=False):
+        """
+        Get the name of the GDAL datatype of a band.
+
+        :param band: Band index, default is 1
+        :type band: int, optional
+        :param as_int: Return the datatype as integer as defined in enum GDALDataType, default is False
+        :type as_int: bool, optional
+        :return: GDAL Datatype as string or integer
+        """
         band = int(band) # just in case
         if band < 1 or band > self._ds.RasterCount:
             raise IndexError("Band index out of range")
