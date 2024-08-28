@@ -36,9 +36,14 @@ MAXSIZE = 200 # Max size in Mpixels for algs that can't use a window
 
 class RasterWindow():
     """
-    Class for window (tiles) of a large raster, to be created with get_windows().
+    Helper class for a window (tile) of a large raster to be used for processing
+    in a moving window. The window can have a margin, for algorthims that consider
+    the neighborhood of a pixel as well.
+     
     Does not contain any data, only the parameters to read/write data with gdal
-    and to slice off the margin.
+    into a numpy array and to slice off the margin before wring back to the raster.
+    
+    The windows (RasterWindow instances) can be generated with get_windows().
 
     Properties:
     ===========
@@ -54,6 +59,29 @@ class RasterWindow():
     getslice(ndim=3): Returns tuple of slice objects to be used directly with
             numpy to slice of the margin of the window. 
             ndim: int, number of dimensions of the numpy array, either 2 or 3.
+
+    Example:
+    ========
+
+    # Input and output datasets with gdal
+    ds = gdal.Open("raster.tif") 
+    driver = gdal.GetDriverByName("GTiff")
+    dst_ds = driver.CreateCopy(dst_filename, src_ds, strict=0)
+
+    # Get windows
+    windows = get_windows(ds.RasterXSize, ds.RasterYSize, windowsize=windowsize, margin=margin)
+
+    # Loop over windows
+    band = 1
+    for win in windows:
+        a = ds.GetRasterBand(band).ReadAsArray(*win.gdalin) # In this case a is a 2D numpy array
+        # Your calculation with numpy array a
+        a = a[win.getslice(2)] # Slice off the margin
+        dst_ds.GetRasterBand(band).WriteArray(filtered, *win.gdalout)
+
+    # Close datasets (flushes data to file)
+    ds = None
+    dst_ds = None
     """
     def __init__(self, rasterXSize, rasterYSize, xoff, yoff, xsize, ysize, margin=0):
         self.rasterXSize = rasterXSize
