@@ -39,7 +39,7 @@ from .window import RasterWindow, get_windows, number_of_windows, wrap_margin
 
 gdal.UseExceptions()
 
-class Wizard():
+class RasterWizard():
 
     _ds = None
     _dst_ds = None
@@ -74,18 +74,18 @@ class Wizard():
 
 
     def __str__(self):
-        return f"<Wizard: '{self._name}'>"
+        return f"<RasterWizard: '{self._name}'>"
 
 
     def __repr__(self):
-        return f"<Wizard: '{self._name}' shape: {self.shape}>"
+        return f"<RasterWizard: '{self._name}' shape: {self.shape}>"
     
     def __getitem__(self, items):
         """
         Returns 1-D numpy array with pixel values of all bands at indices x and y.
 
         Usage: 
-        wizard = Wizard()
+        wizard = RasterWizard()
         wizard[0,10] # Pixel at x = 0 and y = 10
         """
         try:
