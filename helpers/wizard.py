@@ -43,8 +43,8 @@ class RasterWizard():
     """
     Get QGIS raster layers as numpy arrays and the result back into QGIS as a new raster layer. 
 
-    To be used in the QGIS Python console for raster processing with numpy, scipy and other python
-    libraries; great for prototype development and experimenting with algorithms.
+    To be used in the QGIS Python console for raster processing with numpy, scipy, scikit-image, sklearn 
+    and other python libraries. Great for prototype development and experimenting with algorithms.
 
     The resulting numpy array can be loaded back into QGIS as a new raster layer, as long as the
     number of pixels is the same as the input layer and the geotransform is not changed (no reprojection).
@@ -299,6 +299,14 @@ class RasterWizard():
     
     
     def toarray(self, band=None, win=None, wrapping=False, bands_last=False):
+        """
+        Get the raster data as numpy array.
+
+        With parameter band, a 2D array is returned; otherwise, all bands are returned as a 3D array 
+        (or as 2D array if there is only one band). The order of the dimensions is [bands,] x, y.
+        Alternatively, by setting bands_last=True, the order of the dimensions is x, y [,bands] 
+        (e.g. expected by scikit-image).
+        """
         if band is None:
             ds = self._ds
         else:
