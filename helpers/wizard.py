@@ -44,16 +44,23 @@ class RasterWizard():
     Get QGIS raster layers as numpy arrays and the result back into QGIS as a new raster layer. 
 
     To be used in the QGIS Python console for raster processing with numpy, scipy, scikit-image, sklearn 
-    and other python libraries. Great for prototype development and experimenting with algorithms.
+    or other python libraries. Great for prototype development and experimenting with algorithms.
 
     The resulting numpy array can be loaded back into QGIS as a new raster layer, as long as the
-    number of pixels is the same as the input layer and the geotransform is not changed (no reprojection).
+    number of pixels is the same as the input layer and the geotransform is not changed (no reprojection, no subsetting in numpy).
     The number of bands and the datatype can be different.
 
     On very large rasters, the processing can be done in windows (tiles) to avoid crashes.
 
     :param layer: instance of QgsRasterLayer, the layer to be processed. Optional, default is the active layer.
     :type layer: QgsRasterLayer, optional
+
+    Example::
+            from scipy_filters.helpers import RasterWizard
+            wizard = RasterWizard()
+            a = wizard.toarray() # Returns 3D numpy array with all bands
+            a = a.mean(axis=0)   # Or any other calculation
+            wizard.tolayer(a, name="Mean", filename="/path/to/mean.tif")
     """
 
     _ds = None
@@ -101,7 +108,7 @@ class RasterWizard():
         Get pixel values at [x, y].
 
         Returns 1-D numpy array with pixel values of all bands at indices x and y.
-        With x or y out of bounds, nans are returned.
+        With x or y out of bounds, NaNs are returned.
 
         Usage::
 
@@ -350,7 +357,7 @@ class RasterWizard():
 
         :param band: Band index, default is 1
         :type band: int, optional
-        :param as_int: Return the datatype as integer as defined in enum GDALDataType, default is False
+        :param as_int: Return the datatype as integer instead, as defined in enum GDALDataType, default is False
         :type as_int: bool, optional
         :return: GDAL Datatype as string or integer
         """
@@ -376,6 +383,7 @@ class RasterWizard():
 
     def set_out_ds(self, filename=None, bands=None, dtype=None, nodata=None):
         # To be used by other functions
+        # TODO
         self._out_nodata = nodata
 
         if not filename:
@@ -506,11 +514,13 @@ class RasterWizard():
         return number_of_windows(self._ds.RasterXSize, self._ds.RasterYSize, windowsize)
     
     def get_windows(self, margin=0, windowsize=2048):
+        # TODO
         if margin > windowsize / 2:
             print("Note: margins are larger than windowsize")
         return get_windows(self._ds.RasterXSize, self._ds.RasterYSize, margin=margin, windowsize=windowsize)
 
     def write_window(self, array, win, band=None, bands_last=False):
+        # TODO
         if not isinstance(win, RasterWindow):
             raise TypeError("Window must be instance of RasterWindow")
         
@@ -540,6 +550,7 @@ class RasterWizard():
 
         
     def load_output(self, name="Wizard", stats=True):
+        # TODO
         if self._dst_ds is None:
             raise Exception("No output dataset")
         
