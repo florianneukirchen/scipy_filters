@@ -4,6 +4,8 @@ RasterWindow and related functions
 .. autoclass:: helpers.RasterWindow
     :members:
 
+Related functions
+=================
 
 .. autofunction:: helpers.get_windows
 
