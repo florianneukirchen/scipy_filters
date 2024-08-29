@@ -48,25 +48,36 @@ class RasterWizard():
 
     The resulting numpy array can be loaded back into QGIS as a new raster layer, as long as the
     number of pixels is the same as the input layer and the geotransform is not changed (no reprojection, no subsetting in numpy).
-    The number of bands and the datatype can be different.
+    The number of bands and the datatype can be different. See toarray() and tolayer().
 
-    On very large rasters, the processing can be done in windows (tiles) to avoid crashes.
+    On very large rasters, the processing can be done in windows (tiles) to avoid crashes, see get_windows().
 
     :param layer: instance of QgsRasterLayer, the layer to be processed. Optional, default is the active layer.
     :type layer: QgsRasterLayer, optional
 
     Example::
+
             from scipy_filters.helpers import RasterWizard
             from scipy import ndimage
 
             wizard = RasterWizard() # Uses active layer if layer is not given
-            a = wizard.toarray()    # Returns 3D numpy array with all bands
+            a = wizard.toarray()    # Returns numpy array with all bands
 
-            # Any calculation, for example a sobel filter with scipy
-            # The result is a numpy array with the same shape, but dtype float32
+            # Any calculation, for example a sobel filter with Scipy
+            # In the example, the result is a numpy array with dtype float32
             b = ndimage.sobel(a, output="float32") 
 
+            # Write the result to a geotiff and load it back into QGIS
             wizard.tolayer(b, name="Sobel", filename="/path/to/sobel.tif")
+
+            # You can also get pixel values at [x, y]
+            wizard[0,10] 
+
+            # or information like shape, CRS, etc.
+            wizard.shape   # like numpy_array.shape
+            wizard.crs_wkt # CRS as WKT string
+            wizard.crs     # CRS as QgsCoordinateReferenceSystem
+
     """
 
     _ds = None
@@ -322,7 +333,7 @@ class RasterWizard():
         Alternatively, by setting bands_last=True, the order of the dimensions is x, y [,bands] 
         (e.g. expected by scikit-image).
 
-        Can be used together with the RasterWindow class to calculate in a moving window.
+        Can be used together with the RasterWindow class to calculate in a moving window, see get_windows() for an example.
 
         :param band: Band index, default is None
         :type band: int, optional
@@ -388,8 +399,22 @@ class RasterWizard():
 
 
     def set_out_ds(self, filename=None, bands=None, dtype=None, nodata=None):
-        # To be used by other functions
-        # TODO
+        """
+        Set up a new output dataset for writing.
+
+        Only to be used directly when iterating over windows, see get_windows() for example.
+        Otherwise, see tolayer().
+
+        :param filename: Filename or full file path for the output geotiff, default is None (in-memory only)
+        :type filename: str, optional
+        :param bands: Number of bands in the output dataset, default is None (same as input)
+        :type bands: int, optional
+        :param dtype: Datatype of the output dataset, accepts numpy dtypes: "uint8", "int8", "uint16", "int16", "uint32", "int32", "float32", "float64", "complex64", "complex128"
+            default is None, using the datatype of the input layer (same as "input"). 
+        :type dtype: str, optional
+        :param nodata: No data value, default is None
+        :type nodata: int, optional
+        """
         self._out_nodata = nodata
 
         if not filename:
@@ -444,7 +469,7 @@ class RasterWizard():
             default is "auto", using the GDAL datatype matching the numpy array datatype. 
             "input" uses the datatype of the input layer.
         :type dtype: str, optional
-        :param filename: Full file path for the output geotiff, default is None (in-memory only)
+        :param filename: Filename or full file path for the output geotiff, default is None (in-memory only)
         :type filename: str, optional
         :param stats: Calculate and write band statistics (min, max, mean, std), default is True
         :type stats: bool, optional
@@ -505,7 +530,7 @@ class RasterWizard():
         return layer
     
 
-    def number_of_windows(self, windowsize=2048):
+    def number_of_windows(self, windowsize=5000):
         """
         Returns the number of windows that would be generated with get_windows() with a given windowsize. 
         
@@ -519,14 +544,71 @@ class RasterWizard():
         """
         return number_of_windows(self._ds.RasterXSize, self._ds.RasterYSize, windowsize)
     
-    def get_windows(self, windowsize=2048, margin=0):
-        # TODO
+    def get_windows(self, windowsize=5000, margin=0):
+        """
+        Generator to get windows for processing large rasters in tiles.
+
+        The generated windows are instances of RasterWindow. These do not contain the data, 
+        only the pixel indices and sizes that are used internally to read and write the data with GDAL.
+        You can iterate over the generated windows, read the data with toarray() and write the data with write_window().
+        The output dataset should be set first with set_out_ds(), otherwise a virtual in-memory file is used.
+        After processing all windows, the file is written and loaded back into QGIS with load_output().
+
+        Note that numpy, scipy etc. are very performant on large arrays. It is best to use a 
+        large windowsize or even the whole raster, as long as enough memory is avaible.
+        The windows can have a margin, for algorthims that consider the neighborhood of a pixel as well.
+        For example, a 3x3 kernel needs a margin of 1.
+
+        If you need the number of windows (e.g. for a progress bar), use number_of_windows().
+
+        :param windowsize: Size of the windows in x and y direction in pixels, default is 5000
+        :type windowsize: int, optional
+        :param margin: Size of the margin in pixels, default is 0
+        :type margin: int, optional
+
+        :return: RasterWindow instances
+
+        Example::
+
+            from scipy_filters.helpers import RasterWizard
+            from scipy import ndimage
+
+            wizard = RasterWizard()
+
+            wizard.set_out_ds(filename="/path/to/sobel.tif", dtype="float32")
+
+            for win in wizard.get_windows(windowsize=2048, margin=1):
+                a = wizard.toarray(win=win)
+                # Your calculation with numpy array a
+                a = ndimage.sobel(a, output="float32")
+                wizard.write_window(a, win)
+
+            wizard.load_output()
+
+        """
         if margin > windowsize / 2:
             print("Note: margins are larger than windowsize")
         return get_windows(self._ds.RasterXSize, self._ds.RasterYSize, margin=margin, windowsize=windowsize)
 
     def write_window(self, array, win, band=None, bands_last=False):
-        # TODO
+        """
+        Write a numpy array into the window of the output dataset.
+
+        The window is an instance of RasterWindow, generated with get_windows(). 
+        The margin of the window is sliced off before writing the data back to the raster.
+        After processing all windows, the file is written and loaded back into QGIS with load_output().
+        For a full example with reading and writing windows and loading the result,
+        see get_windows().
+
+        :param array: Numpy array with the data to be written
+        :type array: numpy.ndarray
+        :param win: Window, RasterWindow instance
+        :type win: RasterWindow
+        :param band: Band index, default is None (all bands)
+        :type band: int, optional
+        :param bands_last: If True, the order of the dimensions is x, y [,bands], default is False, expecting [bands,] x, y
+        :type bands_last: bool, optional
+        """
         if not isinstance(win, RasterWindow):
             raise TypeError("Window must be instance of RasterWindow")
         
@@ -545,7 +627,7 @@ class RasterWizard():
         if self._out_nodata:
             # Replace nan with no data value
             array[np.isnan(array)] = self._out_nodata
-            
+
         if band is None:
             dst_ds = self._dst_ds
         else:
@@ -556,7 +638,17 @@ class RasterWizard():
 
         
     def load_output(self, name="Wizard", stats=True):
-        # TODO
+        """
+        After processing windows, write the output file and load it back into QGIS.
+
+        The output file is written to the path given with set_out_ds() or to a virtual in-memory file.
+        See get_windows() for a full example.
+
+        :param name: Name of the new layer in QGIS, default is "Wizard"
+        :type name: str, optional
+        :param stats: Calculate and write band statistics (min, max, mean, std), default is True
+        :type stats: bool, optional
+        """
         if self._dst_ds is None:
             raise Exception("No output dataset")
         

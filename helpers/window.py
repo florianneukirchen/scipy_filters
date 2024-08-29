@@ -159,7 +159,7 @@ class RasterWindow():
 
 
 
-def get_windows(rasterXSize, rasterYSize, windowsize=1024, margin=0):
+def get_windows(rasterXSize, rasterYSize, windowsize=5000, margin=0):
     """
     Generator yielding RasterWindow classes, dividing a large raster into smaller
     windows (tiles).
