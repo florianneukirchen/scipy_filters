@@ -59,10 +59,13 @@ class RasterWizard():
             from scipy_filters.helpers import RasterWizard
             from scipy import ndimage
 
-            wizard = RasterWizard()
-            a = wizard.toarray() # Returns 3D numpy array with all bands
-            b = ndimage.sobel(a, output="float32") # Sobel filter, output is float32
-            # Or any other calculation
+            wizard = RasterWizard() # Uses active layer if layer is not given
+            a = wizard.toarray()    # Returns 3D numpy array with all bands
+
+            # Any calculation, for example a sobel filter with scipy
+            # The result is a numpy array with the same shape, but dtype float32
+            b = ndimage.sobel(a, output="float32") 
+
             wizard.tolayer(b, name="Sobel", filename="/path/to/sobel.tif")
     """
 
