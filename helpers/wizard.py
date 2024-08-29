@@ -208,6 +208,15 @@ class RasterWizard():
     
     @property
     def out_filename(self):
+        """
+        Path and filename of the output geotiff file.
+
+        Is None if no output file is set. Normally, the output file is set when calling tolayer().
+        When iterating over windows, the output file should be set with set_out_ds().
+
+        :return: Path or None
+        :rtype: str or None
+        """
         return self._out_filename
     
     @property

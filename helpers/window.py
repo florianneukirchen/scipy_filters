@@ -216,10 +216,10 @@ def wrap_margin(a, dataset, win: RasterWindow, band=None):
     The wrapping itself is done by scipy, this function only fills the
     data needed for wrapping to work.
 
-    a: Numpy array
-    dataset: gdal dataset
-    win: RasterWindow
-    band: int | None. Number of band (2D array), None for all bands (3D array).
+    :param a: Numpy array
+    :param dataset: gdal dataset
+    :param win: RasterWindow
+    :param band: int | None. Number of band (2D array), None for all bands (3D array).
     """
     rasterXSize = dataset.RasterXSize
     rasterYSize = dataset.RasterYSize
