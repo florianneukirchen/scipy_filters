@@ -57,10 +57,13 @@ class RasterWizard():
 
     Example::
             from scipy_filters.helpers import RasterWizard
+            from scipy import ndimage
+
             wizard = RasterWizard()
             a = wizard.toarray() # Returns 3D numpy array with all bands
-            a = a.mean(axis=0)   # Or any other calculation
-            wizard.tolayer(a, name="Mean", filename="/path/to/mean.tif")
+            b = ndimage.sobel(a, output="float32") # Sobel filter, output is float32
+            # Or any other calculation
+            wizard.tolayer(b, name="Sobel", filename="/path/to/sobel.tif")
     """
 
     _ds = None
