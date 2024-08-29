@@ -530,10 +530,6 @@ class RasterWizard():
         if not isinstance(win, RasterWindow):
             raise TypeError("Window must be instance of RasterWindow")
         
-        if self._out_nodata:
-            # Replace nan with no data value
-            array[np.isnan(array)] = self._out_nodata
-
         if bands_last and array.ndim == 3:
             array = array.transpose(2,0,1)
         
@@ -546,6 +542,10 @@ class RasterWizard():
                 bands = array.shape[0]
             self.set_out_ds(bands=bands, dtype=array.dtype)
 
+        if self._out_nodata:
+            # Replace nan with no data value
+            array[np.isnan(array)] = self._out_nodata
+            
         if band is None:
             dst_ds = self._dst_ds
         else:
