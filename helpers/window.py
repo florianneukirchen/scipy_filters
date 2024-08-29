@@ -45,43 +45,37 @@ class RasterWindow():
     
     The windows (RasterWindow instances) can be generated with get_windows().
 
-    Properties:
-    ===========
-
     gdalin: tuple with x_offset, y_offset, x_size, y_size including the margins
             of the window. To be used as parameters with gdal.Open() for input.
     gdalout: tuple with x_offset, y_offset without the margins of the window.
             To be used as parameter with gdal.Open() for output.
 
-    Methods:
-    ========
-
     getslice(ndim=3): Returns tuple of slice objects to be used directly with
             numpy to slice of the margin of the window. 
             ndim: int, number of dimensions of the numpy array, either 2 or 3.
 
-    Example:
-    ========
+    Example::
 
-    # Input and output datasets with gdal
-    ds = gdal.Open("raster.tif") 
-    driver = gdal.GetDriverByName("GTiff")
-    dst_ds = driver.CreateCopy(dst_filename, src_ds, strict=0)
+        # Input and output datasets with gdal
+        ds = gdal.Open("raster.tif") 
+        driver = gdal.GetDriverByName("GTiff")
+        dst_ds = driver.CreateCopy(dst_filename, src_ds, strict=0)
 
-    # Get windows
-    windows = get_windows(ds.RasterXSize, ds.RasterYSize, windowsize=windowsize, margin=margin)
+        # Get windows
+        windows = get_windows(ds.RasterXSize, ds.RasterYSize, windowsize=windowsize, margin=margin)
 
-    # Loop over windows
-    band = 1
-    for win in windows:
-        a = ds.GetRasterBand(band).ReadAsArray(*win.gdalin) # In this case a is a 2D numpy array
-        # Your calculation with numpy array a
-        a = a[win.getslice(2)] # Slice off the margin
-        dst_ds.GetRasterBand(band).WriteArray(filtered, *win.gdalout)
+        # Loop over windows
+        band = 1
+        for win in windows:
+            a = ds.GetRasterBand(band).ReadAsArray(*win.gdalin) # In this case a is a 2D numpy array
+            # Your calculation with numpy array a
+            a = a[win.getslice(2)] # Slice off the margin (2D array)
+            dst_ds.GetRasterBand(band).WriteArray(filtered, *win.gdalout)
 
-    # Close datasets (flushes data to file)
-    ds = None
-    dst_ds = None
+        # Close datasets (flushes data to file)
+        ds = None
+        dst_ds = None
+
     """
     def __init__(self, rasterXSize, rasterYSize, xoff, yoff, xsize, ysize, margin=0):
         self.rasterXSize = rasterXSize
@@ -125,18 +119,63 @@ class RasterWindow():
 
     @property
     def gdalin(self):
+        """
+        Parameters for GDAL ds.ReadAsArray() method.
+
+        The tuple can be unpacked with * to be used as parameters with ReadAsArray.
+
+        Example::
+
+            a = ds.GetRasterBand(band).ReadAsArray(*win.gdalin)
+
+        :return: tuple with x_offset, y_offset, x_size, y_size including the margins 
+        """
         return self.m_xoff, self.m_yoff, self.m_xsize, self.m_ysize
     
     @property
     def gdalout(self):
+        """
+        Parameters for GDAL ds.WriteArray() method.
+
+        The tuple can be unpacked with * to be used as parameters with WriteArray.
+        Margins must be sliced off the array with getslice() from the numpy array before writing to the output dataset.
+
+        Example::
+
+            a = a[win.getslice()] # Slice off the margin
+            dst_ds.WriteArray(a, *win.gdalout)
+
+        :return: tuple with x_offset, y_offset
+        """
         return self.xoff, self.yoff
     
     # Only for debugging:
     @property
     def gdalin_no_margin(self):
+        """
+        Parameters for GDAL ds.ReadAsArray() method to read data without margin.
+
+        The tuple can be unpacked with * to be used as parameters with ReadAsArray.
+
+        Example::
+
+            a = ds.GetRasterBand(band).ReadAsArray(*win.gdalin)
+
+        :return: tuple with x_offset, y_offset, x_size, y_size including the margins 
+        """
         return self.xoff, self.yoff, self.xsize, self.ysize
     
     def getslice(self, ndim=3):
+        """
+        Get tuple of slice objects to be used directly with numpy to remove the margin of the window.
+
+        Example::
+            
+                a = a[win.getslice()] # Slice off the margin of a 3D numpy array
+
+        :param ndim: int, number of dimensions of the numpy array, either 2 or 3.
+        :return: tuple of slice objects
+        """
         ystop = -(self.margin + self.yshift)
         xstop = -(self.margin + self.xshift)
 
@@ -155,6 +194,13 @@ class RasterWindow():
         return f"<RasterWindow>{self.xoff} {self.yoff} size {self.xsize} {self.ysize} margin {self.margin}"
 
     def get_a_off(self):
+        """
+        Get the x and y offsets with and without margins.
+
+        Primarily for debugging.
+
+        :return: tuple with x_offset, y_offset, x_offset_no_margin, y_offset_no_margin
+        """
         return self.xoff, self.yoff, self.m_xoff, self.m_yoff
 
 
@@ -163,6 +209,27 @@ def get_windows(rasterXSize, rasterYSize, windowsize=5000, margin=0):
     """
     Generator yielding RasterWindow classes, dividing a large raster into smaller
     windows (tiles).
+
+    The generated windows are instances of RasterWindow. These do not contain the data, 
+    only the pixel indices and sizes that are used internally to read and write the data with GDAL.
+
+    Note that numpy, scipy etc. are very performant on large arrays. It is best to use a 
+    large windowsize or even the whole raster, as long as enough memory is avaible.
+    The windows can have a margin, for algorthims that consider the neighborhood of a pixel as well.
+    For example, a 3x3 kernel needs a margin of 1.
+
+    If you need the number of windows (e.g. for a progress bar), use number_of_windows().
+
+    :param rasterXSize: number of pixels in x direction of the raster
+    :type rasterXSize: int
+    :param rasterYSize: int, number of pixels in y direction of the raster
+    :type rasterYSize: int
+    :param windowsize: Size of the windows in x and y direction in pixels, default is 5000
+    :type windowsize: int, optional
+    :param margin: Size of the margin in pixels, default is 0
+    :type margin: int, optional
+
+    :return: RasterWindow instances
     """
     if windowsize == None:
         # get 1 window with full raster 
@@ -194,7 +261,19 @@ def get_windows(rasterXSize, rasterYSize, windowsize=5000, margin=0):
 
 
 def number_of_windows(rasterXSize, rasterYSize, windowsize):
-    """Returns the number of windows that would be created with get_windows(). Used for progress bar."""
+    """
+    Returns the number of windows that would be created with get_windows(). 
+    
+    To be used for progress bar, etc.
+
+    :param rasterXSize: number of pixels in x direction of the raster
+    :type rasterXSize: int
+    :param rasterYSize: number of pixels in y direction of the raster
+    :type rasterYSize: int
+    :param windowsize: Size of the windows in x and y direction in pixels
+    :type windowsize: int
+    :return: int, number of windows
+    """
     if windowsize == None:
         return 1
     if (np.min((rasterXSize, rasterYSize))  < 2 * windowsize):
