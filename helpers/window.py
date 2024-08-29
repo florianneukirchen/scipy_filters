@@ -37,7 +37,7 @@ MAXSIZE = 200 # Max size in Mpixels for algs that can't use a window
 class RasterWindow():
     """
     Helper class for a window (tile) of a large raster to be used for processing
-    in a moving window. The window can have a margin, for algorthims that consider
+    in a moving window. The window can have a margin, for algorithms that consider
     the neighborhood of a pixel as well.
      
     Does not contain any data, only the parameters to read/write data with gdal
