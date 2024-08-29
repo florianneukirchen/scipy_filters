@@ -513,7 +513,7 @@ class RasterWizard():
         """
         return number_of_windows(self._ds.RasterXSize, self._ds.RasterYSize, windowsize)
     
-    def get_windows(self, margin=0, windowsize=2048):
+    def get_windows(self, windowsize=2048, margin=0):
         # TODO
         if margin > windowsize / 2:
             print("Note: margins are larger than windowsize")
