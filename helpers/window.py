@@ -152,7 +152,7 @@ class RasterWindow():
             return (slice(None, None, None), ys, xs)
     
     def __str__(self):
-        return f"<RasterWindow>{self.xoff} {self.yoff} margin {self.m_xoff} {self.m_yoff}"
+        return f"<RasterWindow>{self.xoff} {self.yoff} size {self.xsize} {self.ysize} margin {self.margin}"
 
     def get_a_off(self):
         return self.xoff, self.yoff, self.m_xoff, self.m_yoff
