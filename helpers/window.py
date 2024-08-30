@@ -36,23 +36,20 @@ MAXSIZE = 200 # Max size in Mpixels for algs that can't use a window
 
 class RasterWindow():
     """
+    Window for reading/writing a subset of a raster into/from a numpy array.
+
     Helper class for a window (tile) of a large raster to be used for processing
     in a moving window. The window can have a margin, for algorithms that consider
-    the neighborhood of a pixel as well.
+    the neighborhood of a pixel as well. For example, a 3x3 kernel needs a margin of 1.
+
+    The windows (RasterWindow instances) can be generated with :py:func:`.get_windows`.
      
-    Does not contain any data, only the parameters to read/write data with gdal
-    into a numpy array and to slice off the margin before wring back to the raster.
+    Does not contain any data, only the parameters to read/write a subset of the raster with `GDAL <https://gdal.org/en/latest/>`_
+    and to slice off the margin before writing data to the output dataset.
     
-    The windows (RasterWindow instances) can be generated with get_windows().
-
-    gdalin: tuple with x_offset, y_offset, x_size, y_size including the margins
-            of the window. To be used as parameters with gdal.Open() for input.
-    gdalout: tuple with x_offset, y_offset without the margins of the window.
-            To be used as parameter with gdal.Open() for output.
-
-    getslice(ndim=3): Returns tuple of slice objects to be used directly with
-            numpy to slice of the margin of the window. 
-            ndim: int, number of dimensions of the numpy array, either 2 or 3.
+    To read and write the data with `GDAL <https://gdal.org/en/latest/>`_ use the :py:attr:`.gdalin` 
+    and :py:attr:`.gdalout` properties. Any margin must be removed from the numpy array before writing
+    the data back to the raster, see :py:meth:`.getslice`.
 
     Example::
 
@@ -120,25 +117,28 @@ class RasterWindow():
     @property
     def gdalin(self):
         """
-        Parameters for GDAL ds.ReadAsArray() method.
+        Parameters for `GDAL <https://gdal.org/en/latest/>`_ ReadAsArray() method.
 
+        Tuple with x_offset, y_offset, x_size, y_size (including the margins of the window). 
         The tuple can be unpacked with * to be used as parameters with ReadAsArray.
 
         Example::
 
             a = ds.GetRasterBand(band).ReadAsArray(*win.gdalin)
 
-        :return: tuple with x_offset, y_offset, x_size, y_size including the margins 
+        :return: tuple with x_offset, y_offset, x_size, y_size 
         """
         return self.m_xoff, self.m_yoff, self.m_xsize, self.m_ysize
     
     @property
     def gdalout(self):
         """
-        Parameters for GDAL ds.WriteArray() method.
+        Parameters for `GDAL <https://gdal.org/en/latest/>`_ WriteArray() method.
 
-        The tuple can be unpacked with * to be used as parameters with WriteArray.
-        Margins must be sliced off the array with getslice() from the numpy array before writing to the output dataset.
+        Tuple with x_offset, y_offset (excluding the margins of the window).
+        The tuple can be unpacked with * to be used as parameters with the `GDAL <https://gdal.org/en/latest/>`_ 
+        WriteArray() method.
+        Margins must from the numpy array before writing to the output dataset, see :py:meth:`.get_slice`.
 
         Example::
 
@@ -153,13 +153,9 @@ class RasterWindow():
     @property
     def gdalin_no_margin(self):
         """
-        Parameters for GDAL ds.ReadAsArray() method to read data without margin.
+        Parameters for `GDAL <https://gdal.org/en/latest/>`_ ReadAsArray() method to read data without margin.
 
-        The tuple can be unpacked with * to be used as parameters with ReadAsArray.
-
-        Example::
-
-            a = ds.GetRasterBand(band).ReadAsArray(*win.gdalin)
+        Only for debugging, use :py:attr:`.gdalin` instead.
 
         :return: tuple with x_offset, y_offset, x_size, y_size including the margins 
         """
@@ -167,13 +163,15 @@ class RasterWindow():
     
     def getslice(self, ndim=3):
         """
-        Get tuple of slice objects to be used directly with numpy to remove the margin of the window.
+        Get tuple of :py:obj:`slice` objects to be used directly with numpy to remove the margin of the window
+        before writing the data into the output dataset.
 
         Example::
             
                 a = a[win.getslice()] # Slice off the margin of a 3D numpy array
 
-        :param ndim: int, number of dimensions of the numpy array, either 2 or 3.
+        :param ndim: number of dimensions of the numpy array; either 2 or 3, default is 3
+        :type ndim: int, optional
         :return: tuple of slice objects
         """
         ystop = -(self.margin + self.yshift)
@@ -207,18 +205,19 @@ class RasterWindow():
 
 def get_windows(rasterXSize, rasterYSize, windowsize=5000, margin=0):
     """
-    Generator yielding RasterWindow classes, dividing a large raster into smaller
+    Generator yielding :py:class:`RasterWindow` instances, dividing a large raster into smaller
     windows (tiles).
 
-    The generated windows are instances of RasterWindow. These do not contain the data, 
-    only the pixel indices and sizes that are used internally to read and write the data with GDAL.
+    The generated window objects do not contain the data, 
+    only the pixel indices and sizes that are used internally to read and write the data 
+    with `GDAL <https://gdal.org/en/latest/>`_.
 
     Note that numpy, scipy etc. are very performant on large arrays. It is best to use a 
     large windowsize or even the whole raster, as long as enough memory is avaible.
     The windows can have a margin, for algorthims that consider the neighborhood of a pixel as well.
     For example, a 3x3 kernel needs a margin of 1.
 
-    If you need the number of windows (e.g. for a progress bar), use number_of_windows().
+    If you need the number of windows (e.g. for a progress bar), use :py:func:`.number_of_windows`.
 
     :param rasterXSize: number of pixels in x direction of the raster
     :type rasterXSize: int
@@ -229,7 +228,7 @@ def get_windows(rasterXSize, rasterYSize, windowsize=5000, margin=0):
     :param margin: Size of the margin in pixels, default is 0
     :type margin: int, optional
 
-    :return: RasterWindow instances
+    :return: :py:class:`RasterWindow` instances
     """
     if windowsize == None:
         # get 1 window with full raster 
@@ -262,7 +261,7 @@ def get_windows(rasterXSize, rasterYSize, windowsize=5000, margin=0):
 
 def number_of_windows(rasterXSize, rasterYSize, windowsize):
     """
-    Returns the number of windows that would be created with get_windows(). 
+    Returns the number of windows that would be created with :py:func:`.get_windows`. 
     
     To be used for progress bar, etc.
 
@@ -289,16 +288,40 @@ def number_of_windows(rasterXSize, rasterYSize, windowsize):
 
 def wrap_margin(a, dataset, win: RasterWindow, band=None):
     """
-    Fills the margin of windows (tiles) that are situated on the edge
-    of the original dataset with the data of the far side of the dataset.
-    This makes mode="wrap" (offered by some scipy filters) possible.
-    The wrapping itself is done by scipy, this function only fills the
+    Fill margin of numpy array to enable SciPy filters with mode wrap.
+
+    Fills the margin of a numpy array that was read from a :py:class:`RasterWindow` that is situated on the edge
+    of the original raster with the data of the far side of the raster.
+    This makes :code:`mode="wrap"`, offered by some `SciPy <https://scipy.org/>`_ filters, possible.
+    The wrapping itself is done by SciPy, this function only fills the
     data needed for wrapping to work.
 
-    :param a: Numpy array
-    :param dataset: gdal dataset
+    
+    Example::
+
+        import gdal
+        from scipy import ndimage
+        from scipy_filters.helpers.window import get_windows, wrap_margin
+
+        ds = gdal.Open("raster.tif") 
+        driver = gdal.GetDriverByName("GTiff")
+        dst_ds = driver.CreateCopy(dst_filename, src_ds, strict=0)
+
+        windows = get_windows(ds.RasterXSize, ds.RasterYSize, windowsize=2000, margin=2)
+
+        for band in range(1, ds.RasterCount + 1):
+            for win in windows:
+                a = ds.GetRasterBand(band).ReadAsArray(*win.gdalin) 
+                wrap_margin(a, ds, win, band=band)
+                # Your calculation, for example median filter
+                a = ndimage.median_filter(a, size=5, mode="wrap")
+                a = a[win.getslice(2)] # Slice off the margin of the 2D array
+                dst_ds.GetRasterBand(band).WriteArray(filtered, *win.gdalout)
+
+    :param a: Numpy array with the data of the window
+    :param dataset: gdal dataset of the input raster
     :param win: RasterWindow
-    :param band: int | None. Number of band (2D array), None for all bands (3D array).
+    :param band: int | None. Number of band (and using a 2D array), None for all bands (3D array if more than 1 band exists).
     """
     rasterXSize = dataset.RasterXSize
     rasterYSize = dataset.RasterYSize
