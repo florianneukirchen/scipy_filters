@@ -13,11 +13,11 @@ Python users get extra tools for working in the QGIS Python console.
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
-   wizard
-   rasterwindow
-   ...
+   algorithms
+   pythonhelpers
+
    
 Indices and tables
 ==================
