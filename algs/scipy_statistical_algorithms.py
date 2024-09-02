@@ -55,11 +55,12 @@ class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
     Calculated with median_filter from 
     <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-    ..note:: No data cells within the filter radius are filled with the band mean.
+    .. note:: No data cells within the filter radius are filled with the band mean.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    ..note:: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Size** Size of filter in pixels if no footprint is given. Equivalent 
     to a footprint array of shape size_rows × size_cols (in 2D) or 
@@ -112,11 +113,12 @@ class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
     Calculated with minimum_filter from 
     <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-    ..note:: No data cells within the filter radius are filled with the maximum of the data type.
+    .. note:: No data cells within the filter radius are filled with the maximum of the data type.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    ..note:: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Size** Size of filter in pixels if no footprint is given. Equivalent 
     to a footprint array of shape size_rows × size_cols (in 2D) or 
@@ -169,11 +171,12 @@ class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
     Calculated with maximum_filter from 
     <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-    ..note:: No data cells within the filter radius are filled with the minimum of the data type.
+    .. note:: No data cells within the filter radius are filled with the minimum of the data type.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    ..note:: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Size** Size of filter in pixels if no footprint is given. Equivalent 
     to a footprint array of shape size_rows × size_cols (in 2D) or 
@@ -228,11 +231,12 @@ class SciPyRangeAlgorithm(SciPyStatisticalAlgorithm):
     Calculated with minimum_filter and maximum_filter from 
     <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-    ..note:: No data cells within the filter radius are filled with the band mean.
+    .. note:: No data cells within the filter radius are filled with the band mean.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    ..note:: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Size** Size of filter in pixels if no footprint is given. Equivalent 
     to a footprint array of shape size_rows × size_cols (in 2D) or 
@@ -291,11 +295,12 @@ class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
     Calculated with percentile_filter from 
     <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-    ..note:: No data cells within the filter radius are filled with the band mean.
+    .. note:: No data cells within the filter radius are filled with the band mean.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    ..note:: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Percentile** Percentile from 0 to 100. Negative values: 
     use 100 - given value as percentile.
@@ -375,17 +380,17 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
     Calculated with rank_filter from 
     <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-    ..note:: No data cells within the filter radius are filled with the band mean.
+    .. note:: No data cells within the filter radius are filled with the band mean.
 
     The filter calculates a histogram for the neighborhood 
     (specified by footprint or size) and returns the value 
     at the position of *rank*. 
     
-    ..note:: a median filter is a special case with rank = 0.5 * size of the footprint.
+    .. note:: a median filter is a special case with rank = 0.5 * size of the footprint.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    ..note:: bands will be the first axis of the datacube.
+    .. note:: bands will be the first axis of the datacube.
 
     **Rank** Index of the element in the array of the local histogram 
     to be returned. Ranges from 0 (smallest element) to 
@@ -467,11 +472,12 @@ class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
     Calculated with uniform_filter from 
     <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-    ..note:: No data cells within the filter radius are filled with the band mean.
+    .. note:: No data cells within the filter radius are filled with the band mean.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    ..note:: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Size** Size of filter in pixels if no footprint is given. Equivalent 
     to a footprint array of shape size_rows × size_cols (in 2D) or 
