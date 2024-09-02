@@ -48,8 +48,8 @@ from qgis.core import (QgsProcessingAlgorithm,
 
 from processing.core.ProcessingConfig import ProcessingConfig
 
-from ..scipy_algorithm_baseclasses import groups
-from ..helpers import tr, MAXSIZE
+from scipy_filters.scipy_algorithm_baseclasses import groups
+from scipy_filters.helpers import tr, MAXSIZE
 
 
 class SciPyPCAAlgorithm(QgsProcessingAlgorithm):

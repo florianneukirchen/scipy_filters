@@ -38,18 +38,18 @@ from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterDefinition,
                         )
 
-from ..ui.sizes_widget import SizesWidgetWrapper
-from ..scipy_algorithm_baseclasses import SciPyAlgorithm, Dimensions
+from scipy_filters.ui.sizes_widget import SizesWidgetWrapper
+from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithm, Dimensions
 
-from ..helpers import (check_structure, 
+from scipy_filters.helpers import (check_structure, 
                        str_to_array, 
                        kernelexamples,
                        tr)
 
-from ..ui.structure_widget import (StructureWidgetWrapper, 
+from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
 
-from ..helpers import str_to_int_or_list, get_np_dtype
+from scipy_filters.helpers import str_to_int_or_list, get_np_dtype
 
 class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
     """

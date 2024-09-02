@@ -28,7 +28,7 @@ from qgis.PyQt import uic
 
 from qgis.core import QgsProcessingParameterString
 
-from ..helpers import check_structure, str_to_int_or_list
+from scipy_filters.helpers import check_structure, str_to_int_or_list
 
 uipath = os.path.dirname(__file__)
 

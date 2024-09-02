@@ -38,18 +38,18 @@ from qgis.core import (QgsProcessingParameterDefinition,
                        QgsProcessingException,
                         )
 
-from ..scipy_algorithm_baseclasses import SciPyAlgorithm
+from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithm
 
-from ..ui.structure_widget import (StructureWidgetWrapper, 
+from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
 
-from ..helpers import (str_to_int_or_list, 
+from scipy_filters.helpers import (str_to_int_or_list, 
                       check_structure, 
                       str_to_array, 
                       morphostructexamples,
                       tr)
 
-from ..ui.origin_widget import (OriginWidgetWrapper, 
+from scipy_filters.ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
 
 class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):

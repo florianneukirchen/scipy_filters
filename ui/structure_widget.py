@@ -32,7 +32,7 @@ from qgis.PyQt.QtWidgets import QToolButton, QMenu, QAction
 from qgis.core import QgsProcessingParameterString
 
 
-from ..helpers import array_to_str, check_structure, tr
+from scipy_filters.helpers import array_to_str, check_structure, tr
 
 
 uipath = os.path.dirname(__file__)

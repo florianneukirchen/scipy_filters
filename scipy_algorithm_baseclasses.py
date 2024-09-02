@@ -49,15 +49,15 @@ from qgis.core import (QgsProcessingAlgorithm,
 
 from processing.core.ProcessingConfig import ProcessingConfig
 
-from .ui.sizes_widget import (SizesWidgetWrapper)
-from .ui.dim_widget import (DimsWidgetWrapper, SciPyParameterDims)
-from .ui.structure_widget import (StructureWidgetWrapper, 
+from scipy_filters.ui.sizes_widget import (SizesWidgetWrapper)
+from scipy_filters.ui.dim_widget import (DimsWidgetWrapper, SciPyParameterDims)
+from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
 
-from .ui.origin_widget import (OriginWidgetWrapper, 
+from scipy_filters.ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
 
-from .helpers import (RasterWindow,
+from scipy_filters.helpers import (RasterWindow,
                       get_windows,
                       number_of_windows,
                       DEFAULTWINDOWSIZE,

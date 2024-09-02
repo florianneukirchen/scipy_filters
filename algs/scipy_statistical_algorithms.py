@@ -37,12 +37,12 @@ from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterString,
                        QgsProcessingParameterDefinition)
 
-from ..scipy_algorithm_baseclasses import (SciPyAlgorithmWithMode,
+from scipy_filters.scipy_algorithm_baseclasses import (SciPyAlgorithmWithMode,
                                           SciPyStatisticalAlgorithm)
 
-from ..ui.sizes_widget import (SizesWidgetWrapper)
+from scipy_filters.ui.sizes_widget import (SizesWidgetWrapper)
 
-from ..helpers import (str_to_int_or_list, 
+from scipy_filters.helpers import (str_to_int_or_list, 
                        minimumvalue,
                        maximumvalue,
                        bandmean,

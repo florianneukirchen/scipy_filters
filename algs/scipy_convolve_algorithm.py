@@ -38,15 +38,15 @@ from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterDefinition,
                        QgsProcessingException,)
 
-from ..scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
+from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
 
-from ..ui.structure_widget import (StructureWidgetWrapper, 
+from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
 
-from ..ui.origin_widget import (OriginWidgetWrapper, 
+from scipy_filters.ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
 
-from ..helpers import (str_to_int_or_list, 
+from scipy_filters.helpers import (str_to_int_or_list, 
                       check_structure, 
                       str_to_array, 
                       kernelexamples, 

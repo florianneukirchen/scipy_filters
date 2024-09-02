@@ -32,8 +32,8 @@ __revision__ = '$Format:%H$'
 
 import numpy as np
                       
-from ..scipy_algorithm_baseclasses import SciPyAlgorithm, Dimensions
-from ..helpers import tr
+from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithm, Dimensions
+from scipy_filters.helpers import tr
 
 class SciPyPixelMinAlgorithm(SciPyAlgorithm):
     """

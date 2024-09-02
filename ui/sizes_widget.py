@@ -27,7 +27,7 @@ import os
 from processing.gui.wrappers import WidgetWrapper
 from processing.tools import dataobjects
 from qgis.PyQt import uic
-from ..helpers import str_to_int_or_list
+from scipy_filters.helpers import str_to_int_or_list
 
 uipath = os.path.dirname(__file__)
 

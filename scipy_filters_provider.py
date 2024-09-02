@@ -34,28 +34,28 @@ import os
 from qgis.core import QgsProcessingProvider
 from qgis.PyQt.QtGui import QIcon
 
-from .helpers import tr, DEFAULTWINDOWSIZE, MAXSIZE
+from scipy_filters.helpers import tr, DEFAULTWINDOWSIZE, MAXSIZE
                                    
-from .algs.scipy_convolve_algorithm import (SciPyConvolveAlgorithm,
+from scipy_filters.algs.scipy_convolve_algorithm import (SciPyConvolveAlgorithm,
                                             SciPyCorrelateAlgorithm)
 
-from .algs.scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm, 
+from scipy_filters.algs.scipy_morphological_algorithm import (SciPyBinaryMorphologicalAlgorithm, 
                                             SciPyGreyMorphologicalAlgorithm,
                                             SciPyTophatAlgorithm)
 
-from .algs.scipy_morphological_binary_fill_holes import SciPyBinaryFillHolesAlgorithm
+from scipy_filters.algs.scipy_morphological_binary_fill_holes import SciPyBinaryFillHolesAlgorithm
 
-from .algs.scipy_binary_hit_miss import SciPyBinaryHitMissAlgorithm
+from scipy_filters.algs.scipy_binary_hit_miss import SciPyBinaryHitMissAlgorithm
 
-from .algs.scipy_gaussian_algorithm import (SciPyGaussianAlgorithm, 
+from scipy_filters.algs.scipy_gaussian_algorithm import (SciPyGaussianAlgorithm, 
                                        SciPyGaussianLaplaceAlgorithm,
                                        SciPyGaussianGradientMagnitudeAlgorithm)
 
-from .algs.scipy_edge_algorithms import (SciPyLaplaceAlgorithm,
+from scipy_filters.algs.scipy_edge_algorithms import (SciPyLaplaceAlgorithm,
                                       SciPySobelAlgorithm,
                                       SciPyPrewittAlgorithm,)
 
-from .algs.scipy_statistical_algorithms import (SciPyMedianAlgorithm,
+from scipy_filters.algs.scipy_statistical_algorithms import (SciPyMedianAlgorithm,
                                       SciPyMaximumAlgorithm,
                                       SciPyMinimumAlgorithm,
                                       SciPyPercentileAlgorithm,
@@ -63,21 +63,21 @@ from .algs.scipy_statistical_algorithms import (SciPyMedianAlgorithm,
                                       SciPyUniformAlgorithm,
                                       SciPyRangeAlgorithm)
 
-from .algs.scipy_fourier_algorithm import (SciPyFourierGaussianAlgorithm,
+from scipy_filters.algs.scipy_fourier_algorithm import (SciPyFourierGaussianAlgorithm,
                                       SciPyFFTConvolveAlgorithm,
                                       SciPyFourierEllipsoidAlgorithm,
                                       SciPyFourierUniformAlgorithm,
                                       SciPyFFTCorrelateAlgorithm)
 
-from .algs.scipy_enhance_algorithms import (SciPyWienerAlgorithm,
+from scipy_filters.algs.scipy_enhance_algorithms import (SciPyWienerAlgorithm,
                                        SciPyUnsharpMaskAlgorithm)
 
 
-from .algs.scipy_local_variance_algorithm import (SciPyEstimateVarianceAlgorithm,
+from scipy_filters.algs.scipy_local_variance_algorithm import (SciPyEstimateVarianceAlgorithm,
                                             SciPyEstimateStdAlgorithm,
                                             SciPyStdAlgorithm)
 
-from .algs.scipy_pixel_statistic_algorithms import (SciPyPixelMinAlgorithm,
+from scipy_filters.algs.scipy_pixel_statistic_algorithms import (SciPyPixelMinAlgorithm,
                                                SciPyPixelMaxAlgorithm,
                                                SciPyPixelMeanAlgorithm,
                                                SciPyPixelMedianAlgorithm,
@@ -86,17 +86,17 @@ from .algs.scipy_pixel_statistic_algorithms import (SciPyPixelMinAlgorithm,
                                                SciPyPixelVarAlgorithm,
                                                SciPyPixelMinMaxMeanAlgorithm)
 
-from .algs.scipy_pca_algorithm import SciPyPCAAlgorithm
+from scipy_filters.algs.scipy_pca_algorithm import SciPyPCAAlgorithm
 
-from .algs.scipy_pca_helper_algorithms import (SciPyTransformToPCAlgorithm,
+from scipy_filters.algs.scipy_pca_helper_algorithms import (SciPyTransformToPCAlgorithm,
                                                SciPyTransformFromPCAlgorithm,
                                                SciPyKeepN)
 
-from .algs.gradient_algorithm import (SciPyGradientAlgorithm,
+from scipy_filters.algs.gradient_algorithm import (SciPyGradientAlgorithm,
                                       SciPyPixelGradientAlgorithm,
                                       SciPyPixelDiffAlgorithm)
 
-from .algs.scipy_nodata_algorithm import (SciPyFilterNoDataMask,
+from scipy_filters.algs.scipy_nodata_algorithm import (SciPyFilterNoDataMask,
                                           SciPyFilterApplyNoDataMask,
                                           SciPyFilterFillNoData)
 

@@ -50,7 +50,7 @@ from qgis.core import (QgsProcessingAlgorithm,
 from processing.core.ProcessingConfig import ProcessingConfig
 
 
-from ..helpers import (str_to_array, 
+from scipy_filters.helpers import (str_to_array, 
                       tr,
                       bandmean,
                       minimumvalue,
@@ -62,7 +62,7 @@ from ..helpers import (str_to_array,
                       get_np_dtype,
                       DEFAULTWINDOWSIZE)
 
-from ..scipy_algorithm_baseclasses import groups
+from scipy_filters.scipy_algorithm_baseclasses import groups
 
 class SciPyFilterNoDataMask(QgsProcessingAlgorithm):
     SEPARATE = 'SEPARATE'

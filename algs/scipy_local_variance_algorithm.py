@@ -37,12 +37,12 @@ from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterDefinition,
                         )
 
-from ..helpers import str_to_int_or_list, tr
+from scipy_filters.helpers import str_to_int_or_list, tr
 
-from ..scipy_algorithm_baseclasses import (SciPyAlgorithm,
+from scipy_filters.scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           SciPyStatisticalAlgorithm)
 
-from ..ui.sizes_widget import GreaterZeroSizesWidgetWrapper
+from scipy_filters.ui.sizes_widget import GreaterZeroSizesWidgetWrapper
 
 def estimate_local_variance(raster, size, output=None):
     """

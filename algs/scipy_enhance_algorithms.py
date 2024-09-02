@@ -35,13 +35,13 @@ from scipy import ndimage, signal
 
 from qgis.core import QgsProcessingParameterNumber
                         
-from ..scipy_algorithm_baseclasses import (SciPyAlgorithm,
+from scipy_filters.scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           QgsProcessingParameterString,
                                           Dimensions)
 
-from .scipy_gaussian_algorithm import SciPyAlgorithmWithSigma
+from scipy_filters.algs.scipy_gaussian_algorithm import SciPyAlgorithmWithSigma
 
-from ..ui.sizes_widget import (OddSizesWidgetWrapper)
+from scipy_filters.ui.sizes_widget import (OddSizesWidgetWrapper)
 
 
 from ..helpers import str_to_int_or_list, tr

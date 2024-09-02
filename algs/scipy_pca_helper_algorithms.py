@@ -49,12 +49,12 @@ from qgis.core import (QgsProcessingAlgorithm,
 from processing.core.ProcessingConfig import ProcessingConfig
 
 
-from ..helpers import (str_to_array, 
+from scipy_filters.helpers import (str_to_array, 
                       tr,
                       bandmean,
                       MAXSIZE)
 
-from ..scipy_algorithm_baseclasses import groups
+from scipy_filters.scipy_algorithm_baseclasses import groups
 
 
 class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):

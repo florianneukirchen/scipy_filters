@@ -34,8 +34,8 @@ from scipy import ndimage
 from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterEnum,)
 
-from ..scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
-from ..helpers import tr
+from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
+from scipy_filters.helpers import tr
 
 class SciPyAlgorithmWithSigma(SciPyAlgorithmWithMode):
     """
