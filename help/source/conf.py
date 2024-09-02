@@ -18,6 +18,18 @@ import sys, os
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('../..'))
 
+# Fügen Sie die relevanten Pfade aus der QGIS Python-Konsole hinzu
+sys.path.append('/home/riannek/.local/share/QGIS/QGIS3/profiles/default/python/plugins/scipy_filters')
+sys.path.append('/usr/share/qgis/python')
+sys.path.append('/home/riannek/.local/share/QGIS/QGIS3/profiles/default/python')
+sys.path.append('/home/riannek/.local/lib/python3.10/site-packages')
+sys.path.append('/usr/local/lib/python3.10/dist-packages')
+sys.path.append('/usr/lib/python3/dist-packages')
+
+# Fügen Sie das Projektverzeichnis zum sys.path hinzu
+sys.path.append(os.path.abspath('../../..'))
+sys.path.append(os.path.abspath('../..'))
+
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
