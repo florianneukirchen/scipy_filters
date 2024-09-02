@@ -53,6 +53,28 @@ from ..ui.origin_widget import (OriginWidgetWrapper,
                                SciPyParameterOrigin,)
 
 class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
+    """
+    Fill holes in binary shapes by using binary dilations
+    
+    Calculated with binary_fill_holes from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+    
+    **Structure** String representation of array. 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately). Examples can be loaded with the load button. 
+    For convenience (i.e. when calling from a script), 
+    the following shortcuts are accepted as well: 
+    "square", "cross", "cross3D", "ball", "cube".
+    """
 
     STRUCTURE = 'STRUCTURE'
     ORIGIN = 'ORIGIN'
@@ -62,27 +84,6 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
     _displayname = tr('Morphological (binary) fill holes')
     _outputname = tr("Morphology: Fill holes") # If set to None, the displayname is used 
     _groupid = 'morphological'
-    _help = """
-            Fill holes in binary shapes by using binary dilations. \
-            Calculated with binary_fill_holes from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-            
-            <b>Structure</b> String representation of array. \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately). Examples can be loaded with the load button. \
-            For convenience (i.e. when calling from a script), \
-            the following shortcuts are accepted as well: \
-            "square", "cross", "cross3D", "ball", "cube".
-            """
     
     # The function to be called
     def get_fct(self):

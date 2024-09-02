@@ -86,25 +86,26 @@ def estimate_local_variance(raster, size, output=None):
 
 
 class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
+    """
+    Estimate local variance 
+    
+    Implementation based on the 
+    <a href="https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615">source code of scipy.signal.wiener</a> 
+    using correlate from <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Size** Size of filter window.
+    """
     # Overwrite constants of base class
     _name = 'estimate_var'
     _displayname = tr('Estimate local variance')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
-    _help = """
-            Estimate local variance. Implementation based on the \
-            <a href="https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615">source code of scipy.signal.wiener</a> \
-            using correlate from <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Size</b> Size of filter window.
-            
-            """
     
     SIZE = 'SIZE'
     SIZES = 'SIZES'
@@ -183,25 +184,26 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
 
 
 class SciPyEstimateStdAlgorithm(SciPyEstimateVarianceAlgorithm):
+    """
+    Estimate local variance. Implementation based on the 
+    <a href="https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615">source code of scipy.signal.wiener</a> 
+    using correlate from <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Size** Size of filter window.
+    
+    """
     # Overwrite constants of base class
     _name = 'estimate_std'
     _displayname = tr('Estimate local standard deviation')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
-    _help = """
-            Estimate local variance. Implementation based on the \
-            <a href="https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615">source code of scipy.signal.wiener</a> \
-            using correlate from <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
 
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Size</b> Size of filter window.
-            
-            """
     
 
     
@@ -224,6 +226,43 @@ class SciPyEstimateStdAlgorithm(SciPyEstimateVarianceAlgorithm):
 # Very slow calculation of Std, disabled
     
 class SciPyStdAlgorithm(SciPyStatisticalAlgorithm):
+    """
+    Local standard deviation.
+    Calculated with generic_filter from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a> 
+    and numpy.std.
+
+    **Warning: Very slow!**
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Delta degrees of freedom** of the standard deviation 
+    (ddof in numpy). With ddof=0, the std is calculated with 
+    1/N, with ddof=1 with 1/(N-1).
+
+    **Size** Size of filter if no footprint is given. Equivalent 
+    to a footprint array of shape size × size [× size in 3D] 
+    filled with ones.
+    
+    **Footprint** String representation of array, specifiying 
+    the kernel of the filter. 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately).
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+    """
 
     DDOF = 'DDOF'
 
@@ -232,43 +271,7 @@ class SciPyStdAlgorithm(SciPyStatisticalAlgorithm):
     _displayname = 'Local standard deviation (very slow)'
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
-    _help = """
-            Local standard deviation.\
-            Calculated with generic_filter from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a> \
-            and numpy.std.
 
-            Warning: Very slow! 
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Delta degrees of freedom</b> of the standard deviation \
-            (ddof in numpy). With ddof=0, the std is calculated with \
-            1/N, with ddof=1 with 1/(N-1).
-
-            <b>Size</b> Size of filter if no footprint is given. Equivalent \
-            to a footprint array of shape size × size [× size in 3D] \
-            filled with ones.
-            
-            <b>Footprint</b> String representation of array, specifiying \
-            the kernel of the filter. \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately).
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            """
     
     def insert_parameters(self, config):
         

@@ -54,6 +54,41 @@ from ..helpers import (str_to_int_or_list,
                       tr)
 
 class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
+    """
+    Convolve raster with given kernel. 
+    Calculated with convolve from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Kernel** String representation of array. 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately).
+
+    **Normalization** Normalize the kernel by dividing through 
+    given value; set to 0 to devide through the sum of the absolute 
+    values of the kernel.
+
+    **Origin** Shift the origin (hotspot) of the kernel.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+
+    **Dtype** Data type of output. Beware of clipping 
+    and potential overflow errors if min/max of output does 
+    not fit. Default is Float32.
+    """
 
     KERNEL = 'KERNEL'
     NORMALIZATION = 'NORMALIZATION'
@@ -67,40 +102,6 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
     
-    _help = """
-            Convolve raster with given kernel. \
-            Calculated with convolve from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Kernel</b> String representation of array. \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately).
-            <b>Normalization</b> Normalize the kernel by dividing through \
-            given value; set to 0 to devide through the sum of the absolute \
-            values of the kernel.
-
-            <b>Origin</b> Shift the origin (hotspot) of the kernel.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-
-            <b>Dtype</b> Data type of output. Beware of clipping \
-            and potential overflow errors if min/max of output does \
-            not fit. Default is Float32.
-            """
     
     # The function to be called
     def get_fct(self):
@@ -264,6 +265,41 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
 
 class SciPyCorrelateAlgorithm(SciPyConvolveAlgorithm):
+    """
+    Correlate raster with given kernel. 
+    Calculated with correlate from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Kernel** String representation of array. 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately).
+
+    **Normalization** Normalize the kernel by dividing through 
+    given value; set to 0 to devide through the sum of the absolute 
+    values of the kernel.
+
+    **Origin** Shift the origin (hotspot) of the kernel.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+
+    **Dtype** Data type of output. Beware of clipping 
+    and potential overflow errors if min/max of output does 
+    not fit. Default is Float32.
+    """
 
 
     # Overwrite constants of base class
@@ -273,41 +309,6 @@ class SciPyCorrelateAlgorithm(SciPyConvolveAlgorithm):
     _groupid = 'convolution'
 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
-    
-    _help = """
-            Correlate raster with given kernel. \
-            Calculated with correlate from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Kernel</b> String representation of array. \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately).
-            <b>Normalization</b> Normalize the kernel by dividing through \
-            given value; set to 0 to devide through the sum of the absolute \
-            values of the kernel.
-
-            <b>Origin</b> Shift the origin (hotspot) of the kernel.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-
-            <b>Dtype</b> Data type of output. Beware of clipping \
-            and potential overflow errors if min/max of output does \
-            not fit. Default is Float32.
-            """
     
     
     def my_fct(self, a, **kwargs):

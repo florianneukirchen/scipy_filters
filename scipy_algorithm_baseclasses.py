@@ -69,6 +69,7 @@ from .helpers import (RasterWindow,
                       dtype_options,
                       get_np_dtype,
                       is_in_dtype_range,
+                      convert_docstring_to_html,
                       tr)
 
 # Group IDs and group names
@@ -97,9 +98,11 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
     The function to be called is returned by the function
     get_fct(), needs to be overwritten by inheriting classes.
-    Name, displayname, help are set as class variables, to be 
+    Name, displayname are set as class variables, to be 
     overwritten by inheriting classes. Some of them must be
     put in tr() for translation.
+
+    The shortHelpString is generated from the docstring of the classes.
 
     In inheriting classes, parameters can be added by:
     1) setting constants as class variables
@@ -133,9 +136,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     # Can be changed while getting the parameters.
     _outputname = None 
     _groupid = "" 
-    _help = """
-            Help
-            """
+
     
     _outbands = None # Optionally change the number of output bands
     _band_desc = None # Option to set description of bands (provide list with names)
@@ -638,7 +639,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         Returns the help string that is shown on the right side of the 
         user interface.
         """
-        return tr(self._help)
+        docstring = self.__doc__
+        return convert_docstring_to_html(docstring)
 
 
 

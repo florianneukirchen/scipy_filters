@@ -157,6 +157,39 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
 
 
 class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
+    """
+    Binary morphological filters: dilation, erosion, closing, and opening. 
+    Calculated with binary_dilation, 
+    binary_erosion, binary_closing, binary_opening respectively from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Dilation** Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
+    **Erosion** Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
+    **Closing** Perform dilation and then erosion. Fills small holes, large shapes are preserved.
+    **Opening** Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
+
+    **Structure** String representation of array. 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately). Examples can be loaded with the load button. 
+    For convenience (i.e. when calling from a script), 
+    the following shortcuts are accepted as well: 
+    "square", "cross", "cross3D", "ball", "cube".
+
+    **Origin** Shift the origin (hotspot) of the filter.
+
+    **Iterations** Each step of filter is repeated this number of times.
+    **Border value** Valute at border of output array, defaults to 0. 
+    **Mask** Optional mask layer.
+    """
 
     ITERATIONS = 'ITERATIONS'
     MASK = 'MASK'
@@ -166,39 +199,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     _name = 'binary_morphology'
     _displayname = tr('Binary dilation, erosion, closing, opening')
     _outputname = tr('Binary morphology') # If set to None, the displayname is used 
-    _help = """
-            Binary morphological filters: dilation, erosion, closing, and opening. \
-            Calculated with binary_dilation, \
-            binary_erosion, binary_closing, binary_opening respectively from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Dilation</b> Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
-            <b>Erosion</b> Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
-            <b>Closing</b> Perform dilation and then erosion. Fills small holes, large shapes are preserved.
-            <b>Opening</b> Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
-
-            <b>Structure</b> String representation of array. \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately). Examples can be loaded with the load button. \
-            For convenience (i.e. when calling from a script), \
-            the following shortcuts are accepted as well: \
-            "square", "cross", "cross3D", "ball", "cube".
-
-            <b>Origin</b> Shift the origin (hotspot) of the filter.
-
-            <b>Iterations</b> Each step of filter is repeated this number of times.
-            <b>Border value</b> Valute at border of output array, defaults to 0. 
-            <b>Mask</b> Optional mask layer.
-            """
     
     # The function to be called
     def get_fct(self):
@@ -265,6 +266,40 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
 
 class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
+    """
+    Grey morphological filters: dilation, erosion, closing, and opening. 
+    Calculated for every band with grey_dilation, 
+    grey_erosion, gey_closing or grey_opening, respectively from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dilation** Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
+    **Erosion** Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
+    **Closing** Perform dilation and then erosion. Fills small holes, large shapes are preserved.
+    **Opening** Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
+
+    **Structure** String representation of array. 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately). Examples can be loaded with the load button. 
+    For convenience (i.e. when calling from a script), 
+    the following shortcuts are accepted as well: 
+    "square", "cross", "cross3D", "ball", "cube".
+
+    **Origin** Shift the origin (hotspot) of the filter.
+
+    **Size** Size of flat and full structuring element, optional if footprint or structure is provided.
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+    **Footprint** Positions of elements of a flat structuring element used for the filter (string representation of array, only used if checkbox is checked).
+    """
 
     SIZE = 'SIZE'
     SIZES = 'SIZES'
@@ -276,40 +311,6 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     _name = 'grey_morphology'
     _displayname = tr('Grey dilation, erosion, closing, opening')
     _outputname = tr('Grey morphology') # If set to None, the displayname is used 
-    _help = """
-            Grey morphological filters: dilation, erosion, closing, and opening. \
-            Calculated for every band with grey_dilation, \
-            grey_erosion, gey_closing or grey_opening, respectively from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dilation</b> Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
-            <b>Erosion</b> Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
-            <b>Closing</b> Perform dilation and then erosion. Fills small holes, large shapes are preserved.
-            <b>Opening</b> Perform erosion and then dilation. Removes small shapes, large shapes are preserved.
-
-            <b>Structure</b> String representation of array. \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately). Examples can be loaded with the load button. \
-            For convenience (i.e. when calling from a script), \
-            the following shortcuts are accepted as well: \
-            "square", "cross", "cross3D", "ball", "cube".
-
-            <b>Origin</b> Shift the origin (hotspot) of the filter.
-
-            <b>Size</b> Size of flat and full structuring element, optional if footprint or structure is provided.
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            <b>Footprint</b> Positions of elements of a flat structuring element used for the filter (string representation of array, only used if checkbox is checked).
-            """
     
     # The function to be called
     def get_fct(self):
@@ -457,59 +458,61 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
     
 class SciPyTophatAlgorithm(SciPyGreyMorphologicalAlgorithm):
+    """
+    Morphological filters: black/white tophat, morphological gradient/laplace. 
+
+    Calculated with black_tophat, 
+    white_tophat, morphological_radient or morphological_laplace, respectively from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **White tophat** Difference between input raster and it's opening. Extracts white spots smaller than the structural element.
+    **Black tophat** Difference between input raster and it's closing. Extracts black spots smaller than the structural element.
+    **Morphological gradient** Difference between dilation and erosion.
+    **Morphological laplace** Difference between internal and external gradient.
+
+    **Structure** String representation of array. 
+    Must have 2 dimensions if *dimension* is set to 2D.
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately). Examples can be loaded with the load button. 
+    For convenience (i.e. when calling from a script), 
+    the following shortcuts are accepted as well: 
+    "square", "cross", "cross3D", "ball", "cube".
+
+    **Origin** Shift the origin (hotspot) of the filter.
+
+    **Size** Size of flat and full structuring element, optional if footprint or structure is provided.
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+    
+    **Footprint** Positions of elements of a flat structuring element 
+    used for the filter (as string representation of array). 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately). Examples can be loaded with the load button. 
+    For convenience (i.e. when calling from a script), 
+    the following shortcuts are accepted as well: 
+    "square", "cross", "cross3D", "ball", "cube".
+    """
 
     # Overwrite constants of base class
     _name = 'tophat'
     _displayname = tr('Tophat or morphological gradient/laplace')
     _outputname = tr('Tophat') # If set to None, the displayname is used 
-    _help = """
-            Morphological filters: black/white tophat, morphological gradient/laplace. \
-            Calculated with black_tophat, \
-            white_tophat, morphological_radient or morphological_laplace, respectively from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>White tophat</b> Difference between input raster and it's opening. Extracts white spots smaller than the structural element.
-            <b>Black tophat</b> Difference between input raster and it's closing. Extracts black spots smaller than the structural element.
-            <b>Morphological gradient</b> Difference between dilation and erosion.
-            <b>Morphological laplace</b> Difference between internal and external gradient.
-
-            <b>Structure</b> String representation of array. \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately). Examples can be loaded with the load button. \
-            For convenience (i.e. when calling from a script), \
-            the following shortcuts are accepted as well: \
-            "square", "cross", "cross3D", "ball", "cube".
-
-            <b>Origin</b> Shift the origin (hotspot) of the filter.
-
-            <b>Size</b> Size of flat and full structuring element, optional if footprint or structure is provided.
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            
-            <b>Footprint</b> Positions of elements of a flat structuring element \
-            used for the filter (as string representation of array). \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately). Examples can be loaded with the load button. \
-            For convenience (i.e. when calling from a script), \
-            the following shortcuts are accepted as well: \
-            "square", "cross", "cross3D", "ball", "cube".
-            """
     
     def getAlgs(self):
         return [tr('White Tophat'), tr('Black Tophat'), tr('Morphological Gradient'), tr('Morphological Laplace')]

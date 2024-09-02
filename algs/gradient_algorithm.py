@@ -41,17 +41,17 @@ from ..helpers import tr, bandmean
 
 class SciPyGradientAlgorithm(SciPyAlgorithm):
     """
-    Gradient filter. Returns gradient along x-axis, y-axis or the maximum gradient. Calculated with \
+    Gradient filter. Returns gradient along x-axis, y-axis or the maximum gradient. Calculated with 
     <a href="https://numpy.org/doc/stable/reference/generated/numpy.gradient.html">numpy.gradient</a>.
 
     See also Pixel Gradient in Pixel Based Filters.
 
     Note: No data cells within the filter radius are filled with 0.
 
-    <b>Axis</b> Calculate along x-axis, y-axis or both (returning the hypotenuse of both vectors.)
+    **Axis** Calculate along x-axis, y-axis or both (returning the hypotenuse of both vectors.)
 
-    <b>Return absolute values</b> Gradient is calculated left to right along x-axis \
-    or top to bottom of the raster, eventually returning negative values. If checked, \
+    **Return absolute values** Gradient is calculated left to right along x-axis 
+    or top to bottom of the raster, eventually returning negative values. If checked, 
     the absolute values are returned.
     """
 
@@ -67,11 +67,7 @@ class SciPyGradientAlgorithm(SciPyAlgorithm):
     _groupid = "edges" 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
 
-    _help = """
-            2 D Gradient filter
-
-            """
-    
+   
     # The function to be called, to be overwritten
     def get_fct(self):
         return self.myfnct
@@ -169,8 +165,13 @@ class SciPyGradientAlgorithm(SciPyAlgorithm):
 
 class SciPyPixelGradientAlgorithm(SciPyAlgorithm):
     """
-    Pixel gradient band to band
+    Pixel gradient filter
 
+    Returns band to band gradient for each pixel, calculated with 
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.gradient.html">numpy.gradient</a>.
+    
+    **Return absolute values** Gradient is calculated band to band, starting with band 1.
+    The result contains also negative values, optionally the absolute values are returned.
     """
 
     ABSOLUTE = "ABSOLUTE"
@@ -182,16 +183,6 @@ class SciPyPixelGradientAlgorithm(SciPyAlgorithm):
     _groupid = "pixel" 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
 
-    _help = """
-            Pixel gradient filter
-
-            Returns band to band gradient, calculated with \
-            <a href="https://numpy.org/doc/stable/reference/generated/numpy.gradient.html">numpy.gradient</a>.
-            
-            <b>Return absolute values</b> Gradient is calculated band to band, starting with band 1.
-            The result contains also negative values, optionally the absolute values are returned.
-            """
-    
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -245,8 +236,15 @@ class SciPyPixelGradientAlgorithm(SciPyAlgorithm):
 
 class SciPyPixelDiffAlgorithm(SciPyAlgorithm):
     """
-    Difference of values band to band
+    Difference band to band
 
+    Returns band to band difference for each pixel, calculated with \
+    <a href="https://numpy.org/doc/stable/reference/generated/numpy.diff.html">numpy.diff</a>.
+
+    The number of bands in the output is the number of input bands minus one. 
+
+    **Return absolute values** Difference is calculated band to band, starting with band 1.
+    The result contains also negative values, optionally the absolute values are returned.
     """
 
     ABSOLUTE = "ABSOLUTE"
@@ -258,18 +256,6 @@ class SciPyPixelDiffAlgorithm(SciPyAlgorithm):
     _groupid = "pixel" 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
 
-    _help = """
-            Difference band to band
-
-            Returns band to band difference, calculated with \
-            <a href="https://numpy.org/doc/stable/reference/generated/numpy.diff.html">numpy.diff</a>.
-
-            The number of bands in the output is the number of input bands minus one. 
-
-            <b>Return absolute values</b> Difference is calculated band to band, starting with band 1.
-            The result contains also negative values, optionally the absolute values are returned.
-            """
-    
     
     # The function to be called, to be overwritten
     def get_fct(self):

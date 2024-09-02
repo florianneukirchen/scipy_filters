@@ -37,10 +37,10 @@ from ..helpers import tr
 
 class SciPyPixelMinAlgorithm(SciPyAlgorithm):
     """
-    Pixel Statistics Minimum
+    Pixel Statistics Minimum Filter
 
+    Returns minimum of all bands for each individual pixel
     """
-
 
     # Overwrite constants of base class
     _name = 'pixel_min'
@@ -48,11 +48,7 @@ class SciPyPixelMinAlgorithm(SciPyAlgorithm):
     _outputname = tr('Pixel minimum')
     _groupid = "pixel" 
     _outbands = 1
-    _help = """
-            Pixel minimum filter
 
-            Returns minimum of all bands for each individual pixel
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -82,8 +78,9 @@ class SciPyPixelMinAlgorithm(SciPyAlgorithm):
 
 class SciPyPixelMaxAlgorithm(SciPyAlgorithm):
     """
-    Pixel Statistics Maximum
+    Pixel Statistics Maximum Filter
 
+    Returns maximum of all bands for each individual pixel
     """
 
 
@@ -93,11 +90,6 @@ class SciPyPixelMaxAlgorithm(SciPyAlgorithm):
     _outputname = tr('Pixel maximum')
     _groupid = "pixel" 
     _outbands = 1
-    _help = """
-            Pixel maximum filter
-
-            Returns maximum of all bands for each individual pixel
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -128,8 +120,9 @@ class SciPyPixelMaxAlgorithm(SciPyAlgorithm):
 
 class SciPyPixelMeanAlgorithm(SciPyAlgorithm):
     """
-    Pixel Statistics mean
+    Pixel Statistics Mean Filter
 
+    Returns mean of all bands for each individual pixel
     """
 
 
@@ -139,11 +132,6 @@ class SciPyPixelMeanAlgorithm(SciPyAlgorithm):
     _outputname = tr('Pixel mean')
     _groupid = "pixel" 
     _outbands = 1
-    _help = """
-            Pixel mean filter
-
-            Returns mean of all bands for each individual pixel
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -172,8 +160,9 @@ class SciPyPixelMeanAlgorithm(SciPyAlgorithm):
 
 class SciPyPixelMedianAlgorithm(SciPyAlgorithm):
     """
-    Pixel Statistics median
+    Pixel Statistics Median Filter
 
+    Returns mean of all bands for each individual pixel
     """
 
     # Overwrite constants of base class
@@ -182,11 +171,6 @@ class SciPyPixelMedianAlgorithm(SciPyAlgorithm):
     _outputname = tr('Pixel median')
     _groupid = "pixel" 
     _outbands = 1
-    _help = """
-            Pixel mean filter
-
-            Returns mean of all bands for each individual pixel
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -215,8 +199,9 @@ class SciPyPixelMedianAlgorithm(SciPyAlgorithm):
 
 class SciPyPixelStdAlgorithm(SciPyAlgorithm):
     """
-    Pixel Statistics standard deviation
+    Pixel Statistics Standard Deviation
 
+    Returns standard deviation of all bands for each individual pixel
     """
 
     # Overwrite constants of base class
@@ -225,11 +210,7 @@ class SciPyPixelStdAlgorithm(SciPyAlgorithm):
     _outputname = tr('Pixel std')
     _groupid = "pixel" 
     _outbands = 1
-    _help = """
-            Pixel standard deviation
 
-            Returns standard deviation of all bands for each individual pixel
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -258,8 +239,9 @@ class SciPyPixelStdAlgorithm(SciPyAlgorithm):
 
 class SciPyPixelVarAlgorithm(SciPyAlgorithm):
     """
-    Pixel Statistics variance
-
+    Pixel Statistics Variance
+    
+    Returns variance of all bands for each individual pixel
     """
 
     # Overwrite constants of base class
@@ -268,11 +250,6 @@ class SciPyPixelVarAlgorithm(SciPyAlgorithm):
     _outputname = None
     _groupid = "pixel" 
     _outbands = 1
-    _help = """
-            Pixel variance
-
-            Returns variance of all bands for each individual pixel
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -300,8 +277,9 @@ class SciPyPixelVarAlgorithm(SciPyAlgorithm):
 
 class SciPyPixelRangeAlgorithm(SciPyAlgorithm):
     """
-    Pixel Statistics range
+    Pixel Statistics Range Filter
 
+    Returns difference of max and min of all bands for each individual pixel
     """
 
     # Overwrite constants of base class
@@ -310,11 +288,6 @@ class SciPyPixelRangeAlgorithm(SciPyAlgorithm):
     _outputname = tr('Pixel range')
     _groupid = "pixel" 
     _outbands = 1
-    _help = """
-            Pixel range filter
-
-            Returns difference of max and min of all bands for each individual pixel
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -346,8 +319,9 @@ class SciPyPixelRangeAlgorithm(SciPyAlgorithm):
     
 class SciPyPixelMinMaxMeanAlgorithm(SciPyAlgorithm):
     """
-    Pixel Statistics 
+    Complete pixel statistics
 
+    Returns min, max, mean, median and std of all bands for each individual pixel
     """
 
     # Overwrite constants of base class
@@ -357,11 +331,6 @@ class SciPyPixelMinMaxMeanAlgorithm(SciPyAlgorithm):
     _groupid = "pixel" 
     _outbands = 5
     _band_desc = ["Min", "Max", "Mean", "Median", "Std"]
-    _help = """
-            Complete pixel statistics
-
-            Returns min, max, mean, median and std of all bands for each individual pixel
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):

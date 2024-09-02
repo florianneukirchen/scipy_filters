@@ -68,9 +68,27 @@ class SciPyAlgorithmWithSigma(SciPyAlgorithmWithMode):
 
 class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
     """
-    Gradient magnitude using Gaussian derivatives.
+    Laplace filter using Gaussian second derivatives. 
+    Calculated with gaussian_laplace from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+    Note: No data cells within the filter radius are filled with 0.
 
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Sigma** Standard deviation of the gaussian filter.
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+
+    **Dtype** Data type of output. Beware of clipping 
+    and potential overflow errors if min/max of output does 
+    not fit. Default is Float32.
     """
 
     # Overwrite constants of base class
@@ -80,30 +98,6 @@ class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
     _groupid = "edges" 
 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
-
-    _help = """
-            Laplace filter using Gaussian second derivatives. \
-            Calculated with gaussian_laplace from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Sigma</b> Standard deviation of the gaussian filter.
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-
-            <b>Dtype</b> Data type of output. Beware of clipping \
-            and potential overflow errors if min/max of output does \
-            not fit. Default is Float32.
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -120,9 +114,28 @@ class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
 
 class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
     """
-    Gaussian Filter (Blur) using scipy.ndimage.gaussian_filter
+    Gaussian filter (blur with a gaussian kernel)
 
+    Calculated with gaussian_filter from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Sigma** Standard deviation of a gaussian kernel.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+
+    **Order** Optionally use first, second or third derivative of gaussian.
+    **Truncate** Radius of kernel in standard deviations.
     """
 
     TRUNCATE = 'TRUNCATE'
@@ -133,29 +146,6 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
     _displayname = tr('Gaussian filter (blur)')
     _outputname = tr('Gaussian') 
     _groupid = "blur" 
-    _help = """
-            Gaussian filter (blur with a gaussian kernel). \
-            Calculated with gaussian_filter from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Sigma</b> Standard deviation of a gaussian kernel.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-
-            <b>Order</b> Optionally use first, second or third derivative of gaussian.
-            <b>Truncate</b> Radius of kernel in standard deviations.
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -215,9 +205,27 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
 
 class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
     """
-    Gradient magnitude using Gaussian derivatives.
+    Gradient magnitude using Gaussian derivatives. 
+    Calculated with gaussian_gradient_magnitude from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+    Note: No data cells within the filter radius are filled with 0.
 
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Sigma** Standard deviation of the gaussian filter.
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+
+    **Dtype** Data type of output. Beware of clipping 
+    and potential overflow errors if min/max of output does 
+    not fit. Default is Float32.
     """
 
     # Overwrite constants of base class
@@ -227,30 +235,6 @@ class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
     _groupid = "edges" 
 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
-    
-    _help = """
-            Gradient magnitude using Gaussian derivatives. \
-            Calculated with gaussian_gradient_magnitude from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Sigma</b> Standard deviation of the gaussian filter.
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-
-            <b>Dtype</b> Data type of output. Beware of clipping \
-            and potential overflow errors if min/max of output does \
-            not fit. Default is Float32.
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):

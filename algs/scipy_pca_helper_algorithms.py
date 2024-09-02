@@ -59,7 +59,7 @@ from ..scipy_algorithm_baseclasses import groups
 
 class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     """
-    Basclass: Transform to/from principal components
+    Baseclass to transform to/from principal components using matrix of eigenvectors
 
     """
 
@@ -80,9 +80,6 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     _outputname = ""
 
     # _outbands = 1
-    _help = """
-            Baseclass to transform to/from principal components using matrix of eigenvectors
-            """
 
     _inverse = False
     _keepbands = 0
@@ -517,7 +514,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         return self._groupid
     
     def shortHelpString(self):
-        return tr(self._help)
+        return tr("Bla")
 
     def tr(self, string):
         return QCoreApplication.translate('Processing', string)
@@ -528,45 +525,44 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
     """
     Transform to principal components
 
+    Transform data into given principal components 
+    with a matrix of eigenvectors by taking the 
+    dot product with a matrix of weights (after centering the data). 
+
+
+    The eigenvectors can also be read from the metadata of an 
+    existing PCA layer. 
+
+    **Eigenvectors** Matrix of eigenvectors (as string). 
+    Optional if the next parameter is set. 
+    
+
+    **Read eigenvectors from PCA layer metadata** 
+    Reads the weights for the transformation from the metadata 
+    of a layer that was generated using the PCA algorithm of this plugin. 
+    Ignored if the parameter *eigenvectors* is used. 
+
+    **Number of components** is only used if the value is greater than 0 and 
+    smaller than the count of original bands.
+
+    **False mean for each band** As first step of PCA, the data of each 
+    band is centered by subtracting the means. If false means are provided, 
+    these are substracted instead of the real means of the input layer. 
+    This allows to transform another raster image into the same space 
+    as the principal components of another layer. The result is usefull 
+    for comparation of several rasters, but should not be considered to be 
+    proper principal components. Only used if "Used false mean" is checked.
+
+    **Use false mean** See also *false mean of each band*. The 
+    false mean to be used can also be read from the metadata of a PCA layer. 
+    
+    **Output data type** Float32 or Float64.
     """
+
     _name = 'transform_to_PC'
     _displayname = tr('Transform to principal components')
     _outputname = _displayname
 
-    _help = """
-        Transform data into given principal components \
-        with a matrix of eigenvectors by taking the \
-        dot product with a matrix of weights (after centering the data). \
-
-
-        The eigenvectors can also be read from the metadata of an \
-        existing PCA layer. 
-
-        <b>Eigenvectors</b> Matrix of eigenvectors (as string). \
-        Optional if the next parameter is set. \
-        
-
-        <b>Read eigenvectors from PCA layer metadata</b> \
-        Reads the weights for the transformation from the metadata \
-        of a layer that was generated using the PCA algorithm of this plugin. \
-        Ignored if the parameter <i>eigenvectors</i> is used. 
-
-        <b>Number of components</b> is only used if the value is greater than 0 and \
-        smaller than the count of original bands.
-
-        <b>False mean for each band</b> As first step of PCA, the data of each \
-        band is centered by subtracting the means. If false means are provided, \
-        these are substracted instead of the real means of the input layer. \
-        This allows to transform another raster image into the same space \
-        as the principal components of another layer. The result is usefull \
-        for comparation of several rasters, but should not be considered to be \
-        proper principal components. Only used if "Used false mean" is checked.
-
-        <b>Use false mean</b> See also <i>false mean of each band</i>. The \
-        false mean to be used can also be read from the metadata of a PCA layer. \
-        
-        <b>Output data type</b> Float32 or Float64.
-        """
 
     PARAMETERLAYER = "PARAMETERLAYER"
     NCOMPONENTS = 'NCOMPONENTS'
@@ -623,35 +619,32 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
 class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
     """
     Transform from principal components
+    
+    Transform data from principal components (i.e. the PCA scores) 
+    back into the original feature space 
+    using a matrix of eigenvectors by taking the 
+    dot product of the scores the with the transpose of the matrix of eigenvectors 
+    and adding the original means to the result.
 
+    The eigenvectors can also be read from the metadata 
+    of the input layer, as long as they exist and are complete. 
+
+    **Eigenvectors** Matrix of eigenvectors (as string). 
+    Optional if the next parameter is set. 
+    The matrix can be taken from the output of the PCA algorith of this plugin. 
+
+    **Mean of original bands** As first step of PCA, the data of each 
+    band is centered by subtracting the means. These must be added 
+    after rotating back into the original feature space. 
+    Optional if the meta data of the input layer is complete. 
+    (Use false means if they were used for the forward transformation.)
+            
+    **Output data type** Float32 or Float64.
     """
 
     _name = 'transform_from_PC'
     _displayname = tr('Transform from principal components')
     _outputname = _displayname
-
-    _help = """
-        Transform data from principal components (i.e. the PCA scores) \
-        back into the original feature space \
-        using a matrix of eigenvectors by taking the \
-        dot product of the scores the with the transpose of the matrix of eigenvectors \
-        and adding the original means to the result.
-
-        The eigenvectors can also be read from the metadata \
-        of the input layer, as long as they exist and are complete. \
-
-        <b>Eigenvectors</b> Matrix of eigenvectors (as string). \
-        Optional if the next parameter is set. \
-        The matrix can be taken from the output of the PCA algorith of this plugin. \
-
-        <b>Mean of original bands</b> As first step of PCA, the data of each \
-        band is centered by subtracting the means. These must be added \
-        after rotating back into the original feature space. \
-        Optional if the meta data of the input layer is complete. \
-        (Use false means if they were used for the forward transformation.)
-                
-        <b>Output data type</b> Float32 or Float64.
-        """
 
     _inverse = True
 
@@ -798,7 +791,7 @@ class SciPyKeepN(QgsProcessingAlgorithm):
             Keep only n components. Utility to remove components of lesser importance \
             after a principal components analysis (PCA).
             
-            <b>Number of components</b> to keep. Negative numbers for \
+            **Number of components** to keep. Negative numbers for \
             numbers of components to remove.
 
             """

@@ -48,8 +48,19 @@ from ..helpers import str_to_int_or_list, tr
 
 class SciPyWienerAlgorithm(SciPyAlgorithm):
     """
-    Wiener filter 
+    Wiener filter (noise reduction). 
+    Calculated with wiener from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
 
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Size** Size of filter in pixels. All values must 
+    be odd.
+
+    **Noise** The noise-power to use. If not set, estimate noise from 
+    local variance.
     """
 
     SIZES = 'SIZES'
@@ -60,21 +71,6 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
     _displayname = tr('Wiener filter')
     _outputname = None
     _groupid = "enhance" 
-    _help = """
-            Wiener filter (noise reduction). \
-            Calculated with wiener from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Size</b> Size of filter in pixels. All values must \
-            be odd.
-
-            <b>Noise</b> The noise-power to use. If not set, estimate noise from \
-            local variance.
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -170,8 +166,23 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
 
 class SciPyUnsharpMaskAlgorithm(SciPyAlgorithmWithSigma):
     """
-    Unsharp mask based on scipy.ndimage.gaussian
+    Sharpen the image with an unsharp mask filter. 
 
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Sigma** Standard deviation of the gaussian filter. 
+    The size of the gaussian kernel is 4 * sigma.
+
+    **Amount** Amplification factor.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
     """
 
     AMOUNT = 'AMOUNT'
@@ -181,25 +192,7 @@ class SciPyUnsharpMaskAlgorithm(SciPyAlgorithmWithSigma):
     _displayname = tr('Unsharp mask')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "enhance" 
-    _help = """
-            Sharpen the image with an unsharp mask filter. 
 
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Sigma</b> Standard deviation of the gaussian filter. \
-            The size of the gaussian kernel is 4 * sigma.
-
-            <b>Amount</b> Amplification factor.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            """
     
     def insert_parameters(self, config):
         

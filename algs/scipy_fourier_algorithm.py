@@ -53,38 +53,36 @@ from ..helpers import str_to_int_or_list, get_np_dtype
 
 class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
     """
-    Gaussian fourier filter 
+    Gaussian fourier filter
 
+    Gaussian filter calculated by multiplication in the frequency domain. 
+    This is faster with large kernels (large sigma).
 
+    The input band is transformed with fast fourier transform (FFT) 
+    using fft2 (for 2D) or fftn (for 3D) from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.fft</a>.
+    The multiplication with the fourier transform of a gaussian kernel 
+    is calculated with fourier_gaussian from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>. 
+    The product is transformed back with ifft2 or ifftn, respectively. 
+    Only the real part of the resulting complex 
+    numbers is returned.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Sigma** Standard deviation of the gaussian filter.
     """
+
 
     # Overwrite constants of base class
     _name = 'fourier_gaussian'
     _displayname = tr('Fourier Gaussian')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "blur" 
-    _help = """
-            Gaussian filter calculated by multiplication in the frequency domain. \
-            This is faster with large kernels (large sigma).
-
-            The input band is transformed with fast fourier transform (FFT) \
-            using fft2 (for 2D) or fftn (for 3D) from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.fft</a>.
-            The multiplication with the fourier transform of a gaussian kernel \
-            is calculated with fourier_gaussian from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>. \
-            The product is transformed back with ifft2 or ifftn, respectively. \
-            Only the real part of the resulting complex \
-            numbers is returned.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-        
-            <b>Sigma</b> Standard deviation of the gaussian filter.
-            """
     
     SIGMA = 'SIGMA'
 
@@ -150,9 +148,28 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
 
 class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
     """
-    Ellipsoid fourier filter 
+    Ellipsoid fourier filter
 
+    Ellipsoidal box filter calculated by multiplication 
+    with a circular or ellipsoidal kernel in the frequency domain. 
 
+    The input band is transformed with fast fourier transform (FFT) 
+    using fft2 (for 2D) or fftn (for 3D) from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.fft</a>.
+    The multiplication with the fourier transform of a gaussian kernel 
+    is calculated with fourier_ellipsoid from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>. 
+    The product is transformed back with ifft2 or ifftn, respectively. 
+    Only the real part of the resulting complex 
+    numbers is returned.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Size** Size of the circular or ellipsoidal box.
     """
 
     # Overwrite constants of base class
@@ -160,28 +177,6 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
     _displayname = tr('Fourier ellipsoid')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "blur" 
-    _help = """
-            Ellipsoidal box filter calculated by multiplication \
-            with a circular or ellipsoidal kernel in the frequency domain. \
-
-            The input band is transformed with fast fourier transform (FFT) \
-            using fft2 (for 2D) or fftn (for 3D) from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.fft</a>.
-            The multiplication with the fourier transform of a gaussian kernel \
-            is calculated with fourier_ellipsoid from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>. \
-            The product is transformed back with ifft2 or ifftn, respectively. \
-            Only the real part of the resulting complex \
-            numbers is returned.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-        
-            <b>Size</b> Size of the circular or ellipsoidal box.
-            """
     
     SIZE = 'SIZE' 
     SIZES = 'SIZES'
@@ -296,7 +291,26 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
     """
     Fourier uniform (i.e. mean) filter 
 
+    Uniform filter calculated by multiplication 
+    with a box kernel in the frequency domain. 
 
+    The input band is transformed with fast fourier transform (FFT) 
+    using fft2 (for 2D) or fftn (for 3D) from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.fft</a>.
+    The multiplication with the fourier transform of a gaussian kernel 
+    is calculated with fourier_uniform from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>. 
+    The product is transformed back with ifft2 or ifftn, respectively. 
+    Only the real part of the resulting complex 
+    numbers is returned.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Size** Size of the box.
     """
 
     # Overwrite constants of base class
@@ -304,28 +318,6 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
     _displayname = tr('Fourier uniform (box filter)')
     _outputname = tr('Fourier uniform') # If set to None, the displayname is used 
     _groupid = "blur" 
-    _help = """
-            Uniform filter calculated by multiplication \
-            with a box kernel in the frequency domain. \
-
-            The input band is transformed with fast fourier transform (FFT) \
-            using fft2 (for 2D) or fftn (for 3D) from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.fft</a>.
-            The multiplication with the fourier transform of a gaussian kernel \
-            is calculated with fourier_uniform from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>. \
-            The product is transformed back with ifft2 or ifftn, respectively. \
-            Only the real part of the resulting complex \
-            numbers is returned.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-        
-            <b>Size</b> Size of the box.
-            """
     
     SIZE = 'SIZE' 
     SIZES = 'SIZES'
@@ -437,9 +429,31 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
 
 class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
     """
-    Convolve raster band(s) with custom kernel using FFT
-
+    Convolve raster band(s) with custom kernel using FFT. 
     
+    This is faster for large kernels. 
+    Both, raster band(s) and kernel are transformed into the frequency domain 
+    with fast fourier transform (FFT), the results are multiplied and the product 
+    is converted back using FFT.
+
+    Calculated using fftconvolve from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Kernel** String representation of array. 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately).
+    **Normalization** Normalize the kernel by dividing through 
+    given value; set to 0 to devide through the sum of the absolute 
+    values of the kernel.
+
+    **Dtype** Data type of output. Beware of clipping 
+    and potential overflow errors if min/max of output does 
+    not fit. Default is Float32.
     """
 
     KERNEL = 'KERNEL'
@@ -453,33 +467,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
 
-    _help = """
-            Convolve raster band(s) with custom kernel using FFT. This is faster for large kernels. \
-            Both, raster band(s) and kernel are transformed into the frequency domain \
-            with fast fourier transform (FFT), the results are multiplied and the product \
-            is converted back using FFT.
-
-            Calculated using fftconvolve from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Kernel</b> String representation of array. \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately).
-            <b>Normalization</b> Normalize the kernel by dividing through \
-            given value; set to 0 to devide through the sum of the absolute \
-            values of the kernel.
-
-            <b>Dtype</b> Data type of output. Beware of clipping \
-            and potential overflow errors if min/max of output does \
-            not fit. Default is Float32.
-            """
     
-
     def initAlgorithm(self, config):
         # Set dimensions to 2
         self._dimension = Dimensions.twoD
@@ -623,9 +611,33 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
 class SciPyFFTCorrelateAlgorithm(SciPyFFTConvolveAlgorithm):
     """
-    Correlate raster band(s) with custom kernel using FFT
-
+    Correlate raster band(s) with custom kernel using FFT. 
     
+    This is faster for large kernels. 
+    Both, raster band(s) and kernel are transformed into the frequency domain 
+    with fast fourier transform (FFT), the results are multiplied and the product 
+    is converted back using FFT.
+
+    Calculated using correlate from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>
+    using method "fft".
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Kernel** String representation of array. 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately).
+    
+    **Normalization** Normalize the kernel by dividing through 
+    given value; set to 0 to devide through the sum of the absolute 
+    values of the kernel.
+
+    **Dtype** Data type of output. Beware of clipping 
+    and potential overflow errors if min/max of output does 
+    not fit. Default is Float32.
     """
 
     # Overwrite constants of base class
@@ -636,32 +648,6 @@ class SciPyFFTCorrelateAlgorithm(SciPyFFTConvolveAlgorithm):
 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
 
-    _help = """
-            Correlate raster band(s) with custom kernel using FFT. This is faster for large kernels. \
-            Both, raster band(s) and kernel are transformed into the frequency domain \
-            with fast fourier transform (FFT), the results are multiplied and the product \
-            is converted back using FFT.
-
-            Calculated using correlate from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>\
-            using method "fft".
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Kernel</b> String representation of array. \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately).
-            <b>Normalization</b> Normalize the kernel by dividing through \
-            given value; set to 0 to devide through the sum of the absolute \
-            values of the kernel.
-
-            <b>Dtype</b> Data type of output. Beware of clipping \
-            and potential overflow errors if min/max of output does \
-            not fit. Default is Float32.
-            """
     
     def my_fct(self, a, **kwargs):
         dtype = kwargs.pop("output")

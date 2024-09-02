@@ -4,3 +4,4 @@ from .i18n import *
 from .window import *
 from .nodata import *
 from .wizard import *
+from .docstring_html import *

@@ -51,7 +51,27 @@ from ..helpers import (str_to_int_or_list,
 
 
 class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
+    """
+    Preserves pixels whose neighbourhood matches structure1, but does not match the (disjoint) structure2.  
+    Calculated with binary_hit_or_miss from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Structure 1** String representation of array. 
+    **Structure 2** String representation of array, disjoint to structure 1. 
+    If no value is provided, the complementary of structure1 is taken.
+
+    Both structures must have 2 dimensions if <i>dimension</i> is set to 2D. 
+    Should have 3 dimensions if <i>dimension</i> is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately).
+    """
 
     STRUCTURE1 = 'STRUCTURE1'
     STRUCTURE2 = 'STRUCTURE2'
@@ -63,27 +83,6 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
     _displayname = tr('Morphological (binary) hit or miss')
     _outputname = tr("Hit or miss") # If set to None, the displayname is used 
     _groupid = 'morphological'
-    _help = """
-            Preserves pixels whose neighbourhood matches structure1, but does not match the (disjoint) structure2.  \
-            Calculated with binary_hit_or_miss from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Structure 1</b> String representation of array. 
-            <b>Structure 2</b> String representation of array, disjoint to structure 1. \
-            If no value is provided, the complementary of structure1 is taken.
-
-            Both structures must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately).
-            """
     
     # The function to be called
     def get_fct(self):

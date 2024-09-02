@@ -49,48 +49,50 @@ from ..helpers import (str_to_int_or_list,
                        tr)
 
 class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
+    """
+    Median filter
+
+    Calculated with median_filter from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    ..note:: No data cells within the filter radius are filled with the band mean.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    ..note:: bands will be the first axis of the datacube.
+
+    **Size** Size of filter in pixels if no footprint is given. Equivalent 
+    to a footprint array of shape size_rows × size_cols (in 2D) or 
+    size_bands × size_rows × size_cols (in 3D) 
+    filled with ones.
+    
+    **Footprint** Positions of elements of a flat structuring element 
+    used for the filter (as string representation of array). 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately). Examples can be loaded with the load button. 
+    For convenience (i.e. when calling from a script), 
+    the following shortcuts are accepted as well: 
+    "square", "cross", "cross3D", "ball", "cube".
+
+
+    **Origin** Shift the origin (hotspot) of the filter.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+    """
+
     # Overwrite constants of base class
     _name = 'median'
     _displayname = tr('Median filter')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
-    _help = """
-            Median filter.\
-            Calculated with median_filter from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with the band mean.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
-            to a footprint array of shape size_rows × size_cols (in 2D) or \
-            size_bands × size_rows × size_cols (in 3D) \
-            filled with ones.
-            
-            <b>Footprint</b> Positions of elements of a flat structuring element \
-            used for the filter (as string representation of array). \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately). Examples can be loaded with the load button. \
-            For convenience (i.e. when calling from a script), \
-            the following shortcuts are accepted as well: \
-            "square", "cross", "cross3D", "ball", "cube".
-
-
-            <b>Origin</b> Shift the origin (hotspot) of the filter.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -104,47 +106,50 @@ class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
 
 
 class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
+    """
+    Minimum filter
+
+    Calculated with minimum_filter from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    ..note:: No data cells within the filter radius are filled with the maximum of the data type.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    ..note:: bands will be the first axis of the datacube.
+
+    **Size** Size of filter in pixels if no footprint is given. Equivalent 
+    to a footprint array of shape size_rows × size_cols (in 2D) or 
+    size_bands × size_rows × size_cols (in 3D) 
+    filled with ones.
+
+    **Footprint** Positions of elements of a flat structuring element 
+    used for the filter (as string representation of array). 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately). Examples can be loaded with the load button. 
+    For convenience (i.e. when calling from a script), 
+    the following shortcuts are accepted as well: 
+    "square", "cross", "cross3D", "ball", "cube".
+
+    **Origin** Shift the origin (hotspot) of the filter.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+    """
+    
     # Overwrite constants of base class
     _name = 'minimum'
     _displayname = tr('Minimum filter')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
-    _help = """
-            Minimum filter.\
-            Calculated with minimum_filter from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-            Note: No data cells within the filter radius are filled with the maximum of the data type.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
-            to a footprint array of shape size_rows × size_cols (in 2D) or \
-            size_bands × size_rows × size_cols (in 3D) \
-            filled with ones.
-
-            <b>Footprint</b> Positions of elements of a flat structuring element \
-            used for the filter (as string representation of array). \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately). Examples can be loaded with the load button. \
-            For convenience (i.e. when calling from a script), \
-            the following shortcuts are accepted as well: \
-            "square", "cross", "cross3D", "ball", "cube".
-
-            <b>Origin</b> Shift the origin (hotspot) of the filter.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -159,47 +164,49 @@ class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
     
 
 class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
+    """
+    Maximum filter.
+    Calculated with maximum_filter from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    ..note:: No data cells within the filter radius are filled with the minimum of the data type.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    ..note:: bands will be the first axis of the datacube.
+
+    **Size** Size of filter in pixels if no footprint is given. Equivalent 
+    to a footprint array of shape size_rows × size_cols (in 2D) or 
+    size_bands × size_rows × size_cols (in 3D) 
+    filled with ones.
+
+    **Footprint** Positions of elements of a flat structuring element 
+    used for the filter (as string representation of array). 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately). Examples can be loaded with the load button. 
+    For convenience (i.e. when calling from a script), 
+    the following shortcuts are accepted as well: 
+    "square", "cross", "cross3D", "ball", "cube".
+
+    **Origin** Shift the origin (hotspot) of the filter.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+    """
+    
     # Overwrite constants of base class
     _name = 'maximum'
     _displayname = tr('Maximum filter')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
-    _help = """
-            Maximum filter.\
-            Calculated with maximum_filter from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-            Note: No data cells within the filter radius are filled with the minimum of the data type.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
-            to a footprint array of shape size_rows × size_cols (in 2D) or \
-            size_bands × size_rows × size_cols (in 3D) \
-            filled with ones.
-
-            <b>Footprint</b> Positions of elements of a flat structuring element \
-            used for the filter (as string representation of array). \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately). Examples can be loaded with the load button. \
-            For convenience (i.e. when calling from a script), \
-            the following shortcuts are accepted as well: \
-            "square", "cross", "cross3D", "ball", "cube".
-
-            <b>Origin</b> Shift the origin (hotspot) of the filter.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -215,47 +222,49 @@ class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
 
 
 class SciPyRangeAlgorithm(SciPyStatisticalAlgorithm):
+    """
+    Range filter, returns the difference of min and max within the neighborhood
+
+    Calculated with minimum_filter and maximum_filter from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    ..note:: No data cells within the filter radius are filled with the band mean.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    ..note:: bands will be the first axis of the datacube.
+
+    **Size** Size of filter in pixels if no footprint is given. Equivalent 
+    to a footprint array of shape size_rows × size_cols (in 2D) or 
+    size_bands × size_rows × size_cols (in 3D) 
+    filled with ones.
+
+    **Footprint** Positions of elements of a flat structuring element 
+    used for the filter (as string representation of array). 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately). Examples can be loaded with the load button. 
+    For convenience (i.e. when calling from a script), 
+    the following shortcuts are accepted as well: 
+    "square", "cross", "cross3D", "ball", "cube".
+
+    **Origin** Shift the origin (hotspot) of the filter.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+    """
+    
     # Overwrite constants of base class
     _name = 'range'
     _displayname = tr('Local range (difference of min and max)')
     _outputname = tr('Range')
     _groupid = "statistic" 
-    _help = """
-            Range filter, returns the difference of min and max within the neighborhood.\
-            Calculated with minimum_filter and maximum_filter from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with the band mean.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
-            to a footprint array of shape size_rows × size_cols (in 2D) or \
-            size_bands × size_rows × size_cols (in 3D) \
-            filled with ones.
-
-            <b>Footprint</b> Positions of elements of a flat structuring element \
-            used for the filter (as string representation of array). \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately). Examples can be loaded with the load button. \
-            For convenience (i.e. when calling from a script), \
-            the following shortcuts are accepted as well: \
-            "square", "cross", "cross3D", "ball", "cube".
-
-            <b>Origin</b> Shift the origin (hotspot) of the filter.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -276,6 +285,46 @@ class SciPyRangeAlgorithm(SciPyStatisticalAlgorithm):
 
 
 class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
+    """
+    Percentile filter
+
+    Calculated with percentile_filter from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    ..note:: No data cells within the filter radius are filled with the band mean.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    ..note:: bands will be the first axis of the datacube.
+
+    **Percentile** Percentile from 0 to 100. Negative values: 
+    use 100 - given value as percentile.
+
+    **Size** Size of filter in pixels if no footprint is given. Equivalent 
+    to a footprint array of shape size_rows × size_cols (in 2D) or 
+    size_bands × size_rows × size_cols (in 3D) 
+    filled with ones.
+
+    **Footprint** Positions of elements of a flat structuring element 
+    used for the filter (as string representation of array). 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately). Examples can be loaded with the load button. 
+    For convenience (i.e. when calling from a script), 
+    the following shortcuts are accepted as well: 
+    "square", "cross", "cross3D", "ball", "cube".
+
+    **Origin** Shift the origin (hotspot) of the filter.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+    """
 
     PERCENTILE = 'PERCENTILE'
 
@@ -284,45 +333,6 @@ class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
     _displayname = tr('Percentile filter')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
-    _help = """
-            Percentile filter.\
-            Calculated with percentile_filter from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with the band mean.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Percentile</b> Percentile from 0 to 100. Negative values: \
-            use 100 - given value as percentile.
-
-            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
-            to a footprint array of shape size_rows × size_cols (in 2D) or \
-            size_bands × size_rows × size_cols (in 3D) \
-            filled with ones.
-
-            <b>Footprint</b> Positions of elements of a flat structuring element \
-            used for the filter (as string representation of array). \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately). Examples can be loaded with the load button. \
-            For convenience (i.e. when calling from a script), \
-            the following shortcuts are accepted as well: \
-            "square", "cross", "cross3D", "ball", "cube".
-
-            <b>Origin</b> Shift the origin (hotspot) of the filter.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -359,6 +369,57 @@ class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
 # Disabled, needs checks. E.g. rank must be < size or footprint
 
 class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
+    """
+    Rank filter
+
+    Calculated with rank_filter from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    ..note:: No data cells within the filter radius are filled with the band mean.
+
+    The filter calculates a histogram for the neighborhood 
+    (specified by footprint or size) and returns the value 
+    at the position of *rank*. 
+    
+    ..note:: a median filter is a special case with rank = 0.5 * size of the footprint.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    ..note:: bands will be the first axis of the datacube.
+
+    **Rank** Index of the element in the array of the local histogram 
+    to be returned. Ranges from 0 (smallest element) to 
+    the size of the footprint minus one. 
+    If using size instead of footprint, the resulting footprint size 
+    is size raised by the power of the number of dimensions. 
+    The rank parameter may be less than zero: 
+    rank = -1 indicates the largest element, etc.
+
+    **Size** Size of filter in pixels if no footprint is given. Equivalent 
+    to a footprint array of shape size_rows × size_cols (in 2D) or 
+    size_bands × size_rows × size_cols (in 3D) 
+    filled with ones.
+
+    **Footprint** Positions of elements of a flat structuring element 
+    used for the filter (as string representation of array). 
+    Must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
+    but a 2D array is also excepted (a new axis is added as first 
+    axis and the result is the same as calculating each band 
+    seperately). Examples can be loaded with the load button. 
+    For convenience (i.e. when calling from a script), 
+    the following shortcuts are accepted as well: 
+    "square", "cross", "cross3D", "ball", "cube".
+
+    **Origin** Shift the origin (hotspot) of the filter.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+    """
 
     RANK = 'RANK'
 
@@ -367,56 +428,6 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
     _displayname = tr('Rank filter')
     _outputname = None # If set to None, the displayname is used 
     _groupid = "statistic" 
-    _help = """
-            Rank filter.\
-            Calculated with rank_filter from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with the band mean.
-
-            The filter calculates a histogram for the neighborhood \
-            (specified by footprint or size) and returns the value \
-            at the position of <i>rank</i>. 
-            
-            Note: a median filter is a special case with rank = 0.5 * size of the footprint.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Rank</b> Index of the element in the array of the local histogram \
-            to be returned. Ranges from 0 (smallest element) to \
-            the size of the footprint minus one. \
-            If using size instead of footprint, the resulting footprint size \
-            is size raised by the power of the number of dimensions. \
-            The rank parameter may be less than zero: \
-            rank = -1 indicates the largest element, etc.
-
-            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
-            to a footprint array of shape size_rows × size_cols (in 2D) or \
-            size_bands × size_rows × size_cols (in 3D) \
-            filled with ones.
-
-            <b>Footprint</b> Positions of elements of a flat structuring element \
-            used for the filter (as string representation of array). \
-            Must have 2 dimensions if <i>dimension</i> is set to 2D. \
-            Should have 3 dimensions if <i>dimension</i> is set to 3D, \
-            but a 2D array is also excepted (a new axis is added as first \
-            axis and the result is the same as calculating each band \
-            seperately). Examples can be loaded with the load button. \
-            For convenience (i.e. when calling from a script), \
-            the following shortcuts are accepted as well: \
-            "square", "cross", "cross3D", "ball", "cube".
-
-            <b>Origin</b> Shift the origin (hotspot) of the filter.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -451,9 +462,31 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
 
 class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
     """
-    Uniform filter (i.e. box filter)
-    (does not have footprint)
+    Uniform filter (a.k.a. box filter or mean filter)
+    
+    Calculated with uniform_filter from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    ..note:: No data cells within the filter radius are filled with the band mean.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    ..note:: bands will be the first axis of the datacube.
+
+    **Size** Size of filter in pixels if no footprint is given. Equivalent 
+    to a footprint array of shape size_rows × size_cols (in 2D) or 
+    size_bands × size_rows × size_cols (in 3D) 
+    filled with ones.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
     """
+
+    # Note: Does not have footprint
 
     SIZE = 'SIZE'
     SIZES = 'SIZES'
@@ -463,29 +496,7 @@ class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
     _displayname = tr('Uniform filter (box filter)')
     _outputname = tr('Uniform filter') 
     _groupid = "blur" 
-    _help = """
-            Uniform filter (a.k.a. box filter or mean filter). \
-            Calculated with uniform_filter from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
 
-            Note: Note: No data cells within the filter radius are filled with the band mean.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Size</b> Size of filter in pixels if no footprint is given. Equivalent \
-            to a footprint array of shape size_rows × size_cols (in 2D) or \
-            size_bands × size_rows × size_cols (in 3D) \
-            filled with ones.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):

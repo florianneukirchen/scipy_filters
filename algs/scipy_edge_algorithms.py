@@ -40,6 +40,29 @@ from ..scipy_algorithm_baseclasses import (SciPyAlgorithmWithMode,
 from ..helpers import tr
 
 class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
+    """
+    Multidimensional Laplace filter based on approximate second derivatives.
+    Calculated with gaussian_laplace from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+
+    **Dtype** Data type of output. Beware of clipping 
+    and potential overflow errors if min/max of output does 
+    not fit. Default is Float32.
+    """
+    
     # Overwrite constants of base class
     _name = 'laplace'
     _displayname = tr('Laplace')
@@ -48,28 +71,6 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
 
-    _help = """
-            Multidimensional Laplace filter based on approximate second derivatives.\
-            Calculated with gaussian_laplace from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-
-            <b>Dtype</b> Data type of output. Beware of clipping \
-            and potential overflow errors if min/max of output does \
-            not fit. Default is Float32.
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -86,6 +87,33 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
 
 
 class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
+    """
+    Sobel filter
+    
+    Calculated with sobel from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Axis**: Find horizontal or vertical edges or in case 
+    of 3D edges across the bands. Magnitude: all axes combined 
+    with hypothenuse of the triangle.
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+    
+    **Dtype** Data type of output. Beware of clipping 
+    and potential overflow errors if min/max of output does 
+    not fit. Default is Float32.
+    """
+    
     # Overwrite constants of base class
     _name = 'sobel'
     _displayname = tr('Sobel')
@@ -93,32 +121,6 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
     _groupid = "edges" 
 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
-
-    _help = """
-            Sobel filter. \
-            Calculated with sobel from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Axis</b>: Find horizontal or vertical edges or in case \
-            of 3D edges across the bands. Magnitude: all axes combined \
-            with hypothenuse of the triangle.
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            
-            <b>Dtype</b> Data type of output. Beware of clipping \
-            and potential overflow errors if min/max of output does \
-            not fit. Default is Float32.
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
@@ -147,6 +149,32 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
 
 
 class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
+    """
+    Prewitt filter.
+    Calculated with prewitt from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+
+    Note: No data cells within the filter radius are filled with 0.
+
+    **Dimension** Calculate for each band separately (2D) 
+    or use all bands as a 3D datacube and perform filter in 3D. 
+    Note: bands will be the first axis of the datacube.
+
+    **Axis**: Find horizontal or vertical edges or in case 
+    of 3D edges across the bands. Magnitude: all axes combined 
+    with hypothenuse of the triangle.
+    **Border mode** determines how input is extended around 
+    the edges: *Reflect* (input is extended by reflecting at the edge), 
+    *Constant* (fill around the edges with a **constant value**), 
+    *Nearest* (extend by replicating the nearest pixel), 
+    *Mirror* (extend by reflecting about the center of last pixel), 
+    *Wrap* (extend by wrapping around to the opposite edge).
+    
+    **Dtype** Data type of output. Beware of clipping 
+    and potential overflow errors if min/max of output does 
+    not fit. Default is Float32.
+    """
+    
     # Overwrite constants of base class
     _name = 'prewitt'
     _displayname = tr('Prewitt')
@@ -155,31 +183,6 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
 
     _default_dtype = 6 # Optionally change default output dtype (value = idx of combobox)
 
-    _help = """
-            Prewitt filter.\
-            Calculated with prewitt from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
-
-            Note: No data cells within the filter radius are filled with 0.
-
-            <b>Dimension</b> Calculate for each band separately (2D) \
-            or use all bands as a 3D datacube and perform filter in 3D. \
-            Note: bands will be the first axis of the datacube.
-
-            <b>Axis</b>: Find horizontal or vertical edges or in case \
-            of 3D edges across the bands. Magnitude: all axes combined \
-            with hypothenuse of the triangle.
-            <b>Border mode</b> determines how input is extended around \
-            the edges: <i>Reflect</i> (input is extended by reflecting at the edge), \
-            <i>Constant</i> (fill around the edges with a <b>constant value</b>), \
-            <i>Nearest</i> (extend by replicating the nearest pixel), \
-            <i>Mirror</i> (extend by reflecting about the center of last pixel), \
-            <i>Wrap</i> (extend by wrapping around to the opposite edge).
-            
-            <b>Dtype</b> Data type of output. Beware of clipping \
-            and potential overflow errors if min/max of output does \
-            not fit. Default is Float32.
-            """
     
     # The function to be called, to be overwritten
     def get_fct(self):
