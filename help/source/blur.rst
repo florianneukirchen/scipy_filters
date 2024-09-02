@@ -1,7 +1,20 @@
-Blur
-====
+Blur — SciPy Filters for QGIS
+=============================
 
-.. autoclass:: scipy_filters.algs.scipy_statistical_algorithms.SciPyUniformAlgorithm
+Fourier Ellipsoid
+-----------------
 
 
-    
+Fourier Gaussian
+---------------
+
+Fourier uniform 
+---------------
+
+Gaussian filter 
+---------------
+
+Uniform filter
+--------------
+
+
