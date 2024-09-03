@@ -15,11 +15,11 @@ Keep only n components
 Transform from principal components
 -----------------------------------
 
-.. autoclass:: scipy_filters.algs.scipy_pca_helper_algorithms.SciPyTransformFromPCAAlgorithm
+.. autoclass:: scipy_filters.algs.scipy_pca_helper_algorithms.SciPyTransformFromPCAlgorithm
 
 Transform to principal components
 ---------------------------------
 
-.. autoclass:: scipy_filters.algs.scipy_pca_helper_algorithms.SciPyTransformToPCAAlgorithm
+.. autoclass:: scipy_filters.algs.scipy_pca_helper_algorithms.SciPyTransformToPCAlgorithm
 
 

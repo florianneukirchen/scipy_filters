@@ -4,12 +4,12 @@ Morphological filters — SciPy Filters for QGIS
 Binary dilation, erosion, closing, and opening
 ----------------------------------------------
 
-.. autoclass:: scipy_filters.algs.scipy_morphological.SciPyBinaryMorphologicalAlgorithm
+.. autoclass:: scipy_filters.algs.scipy_morphological_algorithm.SciPyBinaryMorphologicalAlgorithm
 
 Grey dilation, erosion, closing, and opening
 --------------------------------------------
 
-.. autoclass:: scipy_filters.algs.scipy_morphological.SciPyGreyMorphologicalAlgorithm
+.. autoclass:: scipy_filters.algs.scipy_morphological_algorithm.SciPyGreyMorphologicalAlgorithm
 
 Fill holes
 ----------
@@ -24,6 +24,6 @@ Hit or miss
 Tophat or morphological gradient/Laplace
 ----------------------------------------
 
-.. autoclass:: scipy_filters.algs.scipy_morphological.SciPyTophatAlgorithm
+.. autoclass:: scipy_filters.algs.scipy_morphological_algorithm.SciPyTophatAlgorithm
 
 

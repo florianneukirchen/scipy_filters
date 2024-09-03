@@ -4,12 +4,12 @@ Statistical Filters — SciPy Filters for QGIS
 Estimate local standard deviation
 ---------------------------------
 
-.. autoclass:: scipy_filters.algs.scipy_local_std_algorithm.SciPyLocalStdAlgorithm
+.. autoclass:: scipy_filters.algs.scipy_local_variance_algorithm.SciPyEstimateStdAlgorithm
 
 Estimate local variance 
 -----------------------
 
-.. autoclass:: scipy_filters.algs.scipy_local_variance_algorithm.SciPyLocalVarianceAlgorithm
+.. autoclass:: scipy_filters.algs.scipy_local_variance_algorithm.SciPyEstimateVarianceAlgorithm
 
 Local range (difference of min and max)
 ---------------------------------------

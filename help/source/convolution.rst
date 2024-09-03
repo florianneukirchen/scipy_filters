@@ -19,6 +19,6 @@ FFT Convolve
 FFT Correlate
 -------------
 
-.. autoclass:: scipy_filters.algs.scipy_fourier_algorithm.SciPyFFTConvolveAlgorithm
+.. autoclass:: scipy_filters.algs.scipy_fourier_algorithm.SciPyFFTCorrelateAlgorithm
 
 

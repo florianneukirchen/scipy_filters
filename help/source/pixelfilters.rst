@@ -4,7 +4,7 @@ Pixel based filters — SciPy Filters for QGIS
 Complete pixel statistics
 -------------------------
 
-.. autoclass:: scipy_filters.algs.scipy_pixel_statistic_algorithms.ciPyPixelMinMaxMeanAlgorithm
+.. autoclass:: scipy_filters.algs.scipy_pixel_statistic_algorithms.SciPyPixelMinMaxMeanAlgorithm
 
 Difference band to band 
 -----------------------
