@@ -161,7 +161,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     Binary morphological filters: dilation, erosion, closing, and opening. 
     Calculated with binary_dilation, 
     binary_erosion, binary_closing, binary_opening respectively from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 
@@ -270,7 +270,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     Grey morphological filters: dilation, erosion, closing, and opening. 
     Calculated for every band with grey_dilation, 
     grey_erosion, gey_closing or grey_opening, respectively from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 
@@ -463,7 +463,7 @@ class SciPyTophatAlgorithm(SciPyGreyMorphologicalAlgorithm):
 
     Calculated with black_tophat, 
     white_tophat, morphological_radient or morphological_laplace, respectively from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 

@@ -57,7 +57,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     Principal Component Analysis (PCA) 
 
     calculated using Singular Value Decomposition (SVD) using svd from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/linalg.html">scipy.linalg</a>.
+    `scipy.linalg <https://docs.scipy.org/doc/scipy/reference/linalg.html>`_.
 
     With default parameters, all components are kept. Optionally, either the 
     *number of components* to keep or the *percentage of variance* 

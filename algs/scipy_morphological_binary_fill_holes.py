@@ -57,7 +57,7 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
     Fill holes in binary shapes by using binary dilations
     
     Calculated with binary_fill_holes from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 

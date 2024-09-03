@@ -54,7 +54,7 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
     """
     Preserves pixels whose neighbourhood matches structure1, but does not match the (disjoint) structure2.  
     Calculated with binary_hit_or_miss from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 
@@ -66,8 +66,8 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
     **Structure 2** String representation of array, disjoint to structure 1. 
     If no value is provided, the complementary of structure1 is taken.
 
-    Both structures must have 2 dimensions if <i>dimension</i> is set to 2D. 
-    Should have 3 dimensions if <i>dimension</i> is set to 3D, 
+    Both structures must have 2 dimensions if *dimension* is set to 2D. 
+    Should have 3 dimensions if *dimension* is set to 3D, 
     but a 2D array is also excepted (a new axis is added as first 
     axis and the result is the same as calculating each band 
     seperately).

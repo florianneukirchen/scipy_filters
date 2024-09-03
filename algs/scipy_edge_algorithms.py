@@ -43,7 +43,7 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
     """
     Multidimensional Laplace filter based on approximate second derivatives.
     Calculated with gaussian_laplace from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 
@@ -91,7 +91,7 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
     Sobel filter
     
     Calculated with sobel from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 
@@ -152,7 +152,7 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
     """
     Prewitt filter.
     Calculated with prewitt from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 

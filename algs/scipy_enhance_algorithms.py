@@ -50,7 +50,7 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
     """
     Wiener filter (noise reduction). 
     Calculated with wiener from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
+    `scipy.signal <https://docs.scipy.org/doc/scipy/reference/signal.html>`_.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
@@ -166,7 +166,7 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
 
 class SciPyUnsharpMaskAlgorithm(SciPyAlgorithmWithSigma):
     """
-    Sharpen the image with an unsharp mask filter. 
+    Sharpen the image with an unsharp mask filter
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 

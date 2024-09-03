@@ -42,7 +42,7 @@ from scipy_filters.helpers import tr, bandmean
 class SciPyGradientAlgorithm(SciPyAlgorithm):
     """
     Gradient filter. Returns gradient along x-axis, y-axis or the maximum gradient. Calculated with 
-    <a href="https://numpy.org/doc/stable/reference/generated/numpy.gradient.html">numpy.gradient</a>.
+    `numpy.gradient <https://numpy.org/doc/stable/reference/generated/numpy.gradient.html>`_.
 
     See also Pixel Gradient in Pixel Based Filters.
 
@@ -168,7 +168,7 @@ class SciPyPixelGradientAlgorithm(SciPyAlgorithm):
     Pixel gradient filter
 
     Returns band to band gradient for each pixel, calculated with 
-    <a href="https://numpy.org/doc/stable/reference/generated/numpy.gradient.html">numpy.gradient</a>.
+    `numpy.gradient <https://numpy.org/doc/stable/reference/generated/numpy.gradient.html>`_.
     
     **Return absolute values** Gradient is calculated band to band, starting with band 1.
     The result contains also negative values, optionally the absolute values are returned.
@@ -238,8 +238,8 @@ class SciPyPixelDiffAlgorithm(SciPyAlgorithm):
     """
     Difference band to band
 
-    Returns band to band difference for each pixel, calculated with \
-    <a href="https://numpy.org/doc/stable/reference/generated/numpy.diff.html">numpy.diff</a>.
+    Returns band to band difference for each pixel, calculated with 
+    `numpy.diff <https://numpy.org/doc/stable/reference/generated/numpy.diff.html>`_.
 
     The number of bands in the output is the number of input bands minus one. 
 

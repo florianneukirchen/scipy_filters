@@ -50,7 +50,8 @@ def estimate_local_variance(raster, size, output=None):
     
     Implementation based on parts of the source code of 
     the scipy.signal.wiener filter:
-    https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615
+    `https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615 <https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615>`_.
+    
     which is (c) 1999-2002 Travis Oliphant under BSD-3-Clause license.
 
     Parameters
@@ -90,8 +91,8 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
     Estimate local variance 
     
     Implementation based on the 
-    <a href="https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615">source code of scipy.signal.wiener</a> 
-    using correlate from <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
+    `source code of scipy.signal.wiener <https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615>`_.
+    using correlate from `scipy.signal <https://docs.scipy.org/doc/scipy/reference/signal.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 
@@ -186,8 +187,8 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
 class SciPyEstimateStdAlgorithm(SciPyEstimateVarianceAlgorithm):
     """
     Estimate local variance. Implementation based on the 
-    <a href="https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615">source code of scipy.signal.wiener</a> 
-    using correlate from <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
+    `source code of scipy.signal.wiener <https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615>`_.
+    using correlate from `scipy.signal <https://docs.scipy.org/doc/scipy/reference/signal.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 

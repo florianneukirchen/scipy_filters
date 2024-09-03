@@ -60,10 +60,10 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
 
     The input band is transformed with fast fourier transform (FFT) 
     using fft2 (for 2D) or fftn (for 3D) from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.fft</a>.
+    `scipy.fft <https://docs.scipy.org/doc/scipy/reference/fft.html>`_.
     The multiplication with the fourier transform of a gaussian kernel 
     is calculated with fourier_gaussian from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>. 
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_. 
     The product is transformed back with ifft2 or ifftn, respectively. 
     Only the real part of the resulting complex 
     numbers is returned.
@@ -155,10 +155,10 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
 
     The input band is transformed with fast fourier transform (FFT) 
     using fft2 (for 2D) or fftn (for 3D) from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.fft</a>.
+    `scipy.fft <https://docs.scipy.org/doc/scipy/reference/fft.html>`_.
     The multiplication with the fourier transform of a gaussian kernel 
     is calculated with fourier_ellipsoid from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>. 
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
     The product is transformed back with ifft2 or ifftn, respectively. 
     Only the real part of the resulting complex 
     numbers is returned.
@@ -296,10 +296,10 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
 
     The input band is transformed with fast fourier transform (FFT) 
     using fft2 (for 2D) or fftn (for 3D) from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/fft.html">scipy.fft</a>.
+    `scipy.fft <https://docs.scipy.org/doc/scipy/reference/fft.html>`_.
     The multiplication with the fourier transform of a gaussian kernel 
     is calculated with fourier_uniform from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>. 
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
     The product is transformed back with ifft2 or ifftn, respectively. 
     Only the real part of the resulting complex 
     numbers is returned.
@@ -437,7 +437,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
     is converted back using FFT.
 
     Calculated using fftconvolve from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>.
+    `scipy.signal <https://docs.scipy.org/doc/scipy/reference/signal.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 
@@ -611,7 +611,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
 
 class SciPyFFTCorrelateAlgorithm(SciPyFFTConvolveAlgorithm):
     """
-    Correlate raster band(s) with custom kernel using FFT. 
+    Correlate raster band(s) with custom kernel using FFT
     
     This is faster for large kernels. 
     Both, raster band(s) and kernel are transformed into the frequency domain 
@@ -619,7 +619,7 @@ class SciPyFFTCorrelateAlgorithm(SciPyFFTConvolveAlgorithm):
     is converted back using FFT.
 
     Calculated using correlate from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/signal.html">scipy.signal</a>
+    `scipy.signal <https://docs.scipy.org/doc/scipy/reference/signal.html>`_.
     using method "fft".
 
     Note: No data cells within the filter radius are filled with 0.

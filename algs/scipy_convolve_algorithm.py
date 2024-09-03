@@ -57,7 +57,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
     """
     Convolve raster with given kernel. 
     Calculated with convolve from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 
@@ -268,7 +268,7 @@ class SciPyCorrelateAlgorithm(SciPyConvolveAlgorithm):
     """
     Correlate raster with given kernel. 
     Calculated with correlate from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 

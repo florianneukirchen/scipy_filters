@@ -53,7 +53,7 @@ class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
     Median filter
 
     Calculated with median_filter from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     .. note:: No data cells within the filter radius are filled with the band mean.
 
@@ -111,7 +111,7 @@ class SciPyMinimumAlgorithm(SciPyStatisticalAlgorithm):
     Minimum filter
 
     Calculated with minimum_filter from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     .. note:: No data cells within the filter radius are filled with the maximum of the data type.
 
@@ -169,7 +169,7 @@ class SciPyMaximumAlgorithm(SciPyStatisticalAlgorithm):
     """
     Maximum filter.
     Calculated with maximum_filter from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     .. note:: No data cells within the filter radius are filled with the minimum of the data type.
 
@@ -229,7 +229,7 @@ class SciPyRangeAlgorithm(SciPyStatisticalAlgorithm):
     Range filter, returns the difference of min and max within the neighborhood
 
     Calculated with minimum_filter and maximum_filter from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     .. note:: No data cells within the filter radius are filled with the band mean.
 
@@ -293,7 +293,7 @@ class SciPyPercentileAlgorithm(SciPyStatisticalAlgorithm):
     Percentile filter
 
     Calculated with percentile_filter from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     .. note:: No data cells within the filter radius are filled with the band mean.
 
@@ -378,7 +378,7 @@ class SciPyRankAlgorithm(SciPyStatisticalAlgorithm):
     Rank filter
 
     Calculated with rank_filter from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     .. note:: No data cells within the filter radius are filled with the band mean.
 
@@ -470,7 +470,7 @@ class SciPyUniformAlgorithm(SciPyAlgorithmWithMode):
     Uniform filter (a.k.a. box filter or mean filter)
     
     Calculated with uniform_filter from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     .. note:: No data cells within the filter radius are filled with the band mean.
 

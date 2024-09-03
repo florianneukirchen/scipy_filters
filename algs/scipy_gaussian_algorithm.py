@@ -68,9 +68,10 @@ class SciPyAlgorithmWithSigma(SciPyAlgorithmWithMode):
 
 class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
     """
-    Laplace filter using Gaussian second derivatives. 
+    Laplace filter using Gaussian second derivatives
+
     Calculated with gaussian_laplace from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 
@@ -117,7 +118,7 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
     Gaussian filter (blur with a gaussian kernel)
 
     Calculated with gaussian_filter from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 
@@ -207,7 +208,7 @@ class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
     """
     Gradient magnitude using Gaussian derivatives. 
     Calculated with gaussian_gradient_magnitude from 
-    <a href="https://docs.scipy.org/doc/scipy/reference/ndimage.html">scipy.ndimage</a>.
+    `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
     Note: No data cells within the filter radius are filled with 0.
 
