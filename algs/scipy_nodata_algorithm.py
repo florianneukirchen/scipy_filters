@@ -52,6 +52,7 @@ from processing.core.ProcessingConfig import ProcessingConfig
 
 from scipy_filters.helpers import (str_to_array, 
                       tr,
+                      convert_docstring_to_html,
                       bandmean,
                       minimumvalue,
                       maximumvalue,
@@ -65,6 +66,13 @@ from scipy_filters.helpers import (str_to_array,
 from scipy_filters.scipy_algorithm_baseclasses import groups
 
 class SciPyFilterNoDataMask(QgsProcessingAlgorithm):
+    """
+    Return mask of no data value, with 1 for no data, 0 for data.
+
+    **Seperate** Return seperate mask for each band. Otherwise, 
+    return one band, with value 1 if any band has no data.
+
+    """
     SEPARATE = 'SEPARATE'
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
@@ -195,13 +203,8 @@ class SciPyFilterNoDataMask(QgsProcessingAlgorithm):
         Returns the help string that is shown on the right side of the 
         user interface.
         """
-        return """
-            Return mask of no data value, with 1 for no data, 0 for data.
-
-            <b>Seperate</b> Return seperate mask for each band. Otherwise, \
-            return one band, with value 1 if any band has no data.
-
-            """
+        docstring = self.__doc__
+        return convert_docstring_to_html(docstring)
     
 
     def name(self):
@@ -238,6 +241,24 @@ class SciPyFilterNoDataMask(QgsProcessingAlgorithm):
 
 
 class SciPyFilterApplyNoDataMask(QgsProcessingAlgorithm):
+    """
+    Apply no data mask to raster layer
+
+    Set all cells where the mask layer is not 0 to no data.
+
+    **No data mask** Raster layer, either with 1 band or same number of bands as input layer. 
+    Must have same projection, geotransform and width / height as input layer. 
+    Every cell with 0 in the mask layer is considered to be a data cell, 
+    with 1 (or any non zero number) as no data value. 
+    
+    **No data value** Value to be used as proxy for no data. Must be in the range 
+    of the data type. If data type is integer, decimal places are truncated.
+
+    **Change** Optionally add or substract a value from each cell where the value is 
+    equal to the no data value, to avoid to set the cell to no data. 
+    If data type is integer, decimal places are truncated.
+
+    """
     MASK = 'MASK'
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
@@ -441,22 +462,8 @@ class SciPyFilterApplyNoDataMask(QgsProcessingAlgorithm):
         Returns the help string that is shown on the right side of the 
         user interface.
         """
-        return """
-            Set all cells where the mask layer is not 0 to no data.
-
-            <b>No data mask</b> Raster layer, either with 1 band or same number of bands as input layer. \
-            Must have same projection, geotransform and width / height as input layer. \
-            Every cell with 0 in the mask layer is considered to be a data cell, \
-            with 1 (or any non zero number) as no data value. \
-            
-            <b>No data value</b> Value to be used as proxy for no data. Must be in the range \
-            of the data type. If data type is integer, decimal places are truncated.
-
-            <b>Change</b> Optionally add or substract a value from each cell where the value is \
-            equal to the no data value, to avoid to set the cell to no data. \
-            If data type is integer, decimal places are truncated.
-
-            """
+        docstring = self.__doc__
+        return convert_docstring_to_html(docstring)
     
 
     def name(self):
@@ -493,6 +500,16 @@ class SciPyFilterApplyNoDataMask(QgsProcessingAlgorithm):
 
 
 class SciPyFilterFillNoData(QgsProcessingAlgorithm):
+    """
+    Fill no data cells (all bands)
+
+    **Mode** Fill with 0, fill with value, fill with approximate band mean, \
+    fill with exact band mean, fill with minimum of dtype range, \
+    fill with maximum of dtype range, fill with central value of dtype range.
+
+    **Value** Used for mode *fill with value*
+    """
+    
     VALUE = 'VALUE'
     MODE = 'MODE'
     OUTPUT = 'OUTPUT'
@@ -675,17 +692,8 @@ class SciPyFilterFillNoData(QgsProcessingAlgorithm):
         Returns the help string that is shown on the right side of the 
         user interface.
         """
-        return """
-            Fill no data cells (all bands).
-
-            <b>Mode</b> Fill with 0, fill with value, fill with approximate band mean, \
-            fill with exact band mean, fill with minimum of dtype range, \
-            fill with maximum of dtype range, fill with central value of dtype range.
-
-            <b>Value</b> Used for mode <i>fill with value</i>
-
-
-            """
+        docstring = self.__doc__
+        return convert_docstring_to_html(docstring)
     
 
     def name(self):
