@@ -51,6 +51,7 @@ from processing.core.ProcessingConfig import ProcessingConfig
 
 from scipy_filters.helpers import (str_to_array, 
                       tr,
+                      convert_docstring_to_html,
                       bandmean,
                       MAXSIZE)
 
@@ -514,7 +515,8 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         return self._groupid
     
     def shortHelpString(self):
-        return tr("Bla")
+        docstring = self.__doc__
+        return convert_docstring_to_html(docstring)
 
     def tr(self, string):
         return QCoreApplication.translate('Processing', string)
@@ -655,8 +657,13 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
 
 class SciPyKeepN(QgsProcessingAlgorithm):
     """
-    Keep only n bands (or principal components), utility algorithm for PCA.
-
+    Keep only n components
+    
+    Utility to remove components of lesser importance 
+    after a principal components analysis (PCA)
+    
+    **Number of components** to keep. Negative numbers:  
+    numbers of components to remove.
     """
 
     OUTPUT = 'OUTPUT'
@@ -787,14 +794,8 @@ class SciPyKeepN(QgsProcessingAlgorithm):
         Returns the help string that is shown on the right side of the 
         user interface.
         """
-        return """
-            Keep only n components. Utility to remove components of lesser importance \
-            after a principal components analysis (PCA).
-            
-            **Number of components** to keep. Negative numbers for \
-            numbers of components to remove.
-
-            """
+        docstring = self.__doc__
+        return convert_docstring_to_html(docstring)
     
     def name(self):
         """

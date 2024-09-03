@@ -3,6 +3,16 @@ import re
 def convert_docstring_to_html(docstring):
     if not docstring:
         return ""
+    
+ # Bullet list
+    def replace_bullet_list(match):
+        items = match.group(0)
+        items = re.sub(r'^\s*\*\s+(.*)$', r'<li>\1</li>', items, flags=re.MULTILINE)
+        return f"<ul>\n{items}\n</ul>"
+
+    # Ersetzen Sie Bullet-Listen
+    docstring = re.sub(r'((?:^\s*\*\s+.*$\n?)+)', replace_bullet_list, docstring, flags=re.MULTILINE)
+
 
     # Ersetzen Sie Fettdruck
     docstring = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', docstring)

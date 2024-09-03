@@ -49,12 +49,46 @@ from qgis.core import (QgsProcessingAlgorithm,
 from processing.core.ProcessingConfig import ProcessingConfig
 
 from scipy_filters.scipy_algorithm_baseclasses import groups
-from scipy_filters.helpers import tr, MAXSIZE
+from scipy_filters.helpers import convert_docstring_to_html, tr, MAXSIZE
 
 
 class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     """
-    Calculate PCA (using scipy.svd)
+    Principal Component Analysis (PCA) 
+
+    calculated using Singular Value Decomposition (SVD) using svd from 
+    <a href="https://docs.scipy.org/doc/scipy/reference/linalg.html">scipy.linalg</a>.
+
+    With default parameters, all components are kept. Optionally, either the 
+    *number of components* to keep or the *percentage of variance* 
+    explained by the kept components can be set. 
+
+    **Number of components** to keep. 0 for all components. If negative: 
+    number of components to remove. 
+    Ignored if percentage of variance is set.
+
+    **Percentage of variance to keep** is only used if it is greater than 0 
+    (typical values would be in the range between 90 and 100).
+
+    **Output** The output raster contains 
+    the data projected into the principal components 
+    (i.e. the PCA scores).
+
+    **Output data type** Float32 or Float64
+
+    The following values / vectors are avaible a) in the log tab of 
+    the processing window, b) in JSON format in the "Abstract" field 
+    of the metadata of the output raster layer, eventually to be used 
+    by subsequent transformations, and c) in the output dict if 
+    the tool has been called from the python console or a script:
+    * Singular values (of SVD)
+    * Variance explained (Eigenvalues)
+    * Ratio of variance explained
+    * Cumulated sum of variance explained
+    * Eigenvectors (V of SVD)
+    * Loadings (eigenvectors scaled by sqrt(eigenvalues))
+    * Band Mean
+
     """
 
     # Constants used to refer to parameters and outputs. They will be
@@ -425,44 +459,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         Returns the help string that is shown on the right side of the 
         user interface.
         """
-        return """
-            Principal Component Analysis (PCA), \
-            calculated using Singular Value Decomposition (SVD) using svd from \
-            <a href="https://docs.scipy.org/doc/scipy/reference/linalg.html">scipy.linalg</a>.
-
-            With default parameters, all components are kept. Optionally, either the \
-            <i>number of components</i> to keep or the <i>percentage of variance</i> \
-            explained by the kept components can be set. 
-
-            <b>Number of components</b> to keep. 0 for all components. If negative: \
-            number of components to remove. \
-            Ignored if percentage of variance is set.
-
-            <b>Percentage of variance to keep</b> is only used if it is greater than 0 \
-            (typical values would be in the range between 90 and 100).
-
-            <b>Output</b> The output raster contains \
-            the data projected into the principal components \
-            (i.e. the PCA scores).
-
-            <b>Output data type</b> Float32 or Float64
-
-            The following values / vectors are avaible a) in the log tab of \
-            the processing window, b) in JSON format in the "Abstract" field \
-            of the metadata of the output raster layer, eventually to be used \
-            by subsequent transformations, and c) in the output dict if \
-            the tool has been called from the python console or a script:\n
-            <ul>
-            <li>Singular values (of SVD)</li>
-            <li>Variance explained (Eigenvalues)</li>
-            <li>Ratio of variance explained</li>
-            <li>Cumulated sum of variance explained</li>
-            <li>Eigenvectors (V of SVD)</li>
-            <li>Loadings (eigenvectors scaled by sqrt(eigenvalues))</li>
-            <li>Band Mean</li>
-            </ul>
-
-            """
+        docstring = self.__doc__
+        return convert_docstring_to_html(docstring)
     
         
 
