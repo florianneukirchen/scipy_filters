@@ -25,9 +25,9 @@ For more information, see the help in the window of the respective processing to
 
 
 ## Installation
-The plugin can be installed with "manage and install plugins" in QGIS. In the settings of "install plugins", the checkbox "Show also experimental plugins" must be checked.
+The plugin can be installed with "manage and install plugins" in QGIS. Eventually, in the settings of "install plugins", the checkbox "Show also experimental plugins" must be checked.
 
-The plugin requires [SciPy](https://scipy.org/), wich can be installed with pip:
+The plugin requires [SciPy](https://scipy.org/), which can be installed with pip:
 ```
 pip install scipy
 ```
@@ -42,9 +42,9 @@ Since most filters work within a neighborhood, it is not enough to mask no data 
 
 As a work around, the plugin fills no data cells either with 0 (most cases), with the band mean or with the smallest or largest possible value of the data type (see help of each filter for details).
 
-To fine tune the behavoir, it is possible to use the filters of the no data group: Get a no data mask, fill no data values with a suitable value, apply the filter, apply the no data mask to set no data cells back to no data. 
+To fine tune the behavior, it is possible to use the filters of the no data group: Get a no data mask, fill no data values with a suitable value, apply the filter, apply the no data mask to set no data cells back to no data. 
 
-Also note that no data values at the edge of the raster (typically caused by reprojecting to another CRS) interfere with the border modes avaible in some scipy.ndimage filters such as "reflect", "nearest", "mirror", "wrap": no data cells will be reflected, mirrored, wrapped as well. 
+Also note that no data values at the edge of the raster (typically caused by reprojecting to another CRS) interfere with the border modes available in some scipy.ndimage filters such as "reflect", "nearest", "mirror", "wrap": no data cells will be reflected, mirrored, wrapped as well. 
 
 
 ## Tips for python users
