@@ -17,6 +17,8 @@ For many filters, a custom footprint and/or structure or kernel can be provided,
 
 For more information, see the help in the window of the respective processing tool.
 
+Python users get `helpers.RasterWizard` to quickly get the data of a raster layer as numpy array and the processing result back into QGIS as a new raster layer. 
+
 ## Resources
 - QGIS Plugin Repository: [https://plugins.qgis.org/plugins/scipy_filters/](https://plugins.qgis.org/plugins/scipy_filters/)
 - Source code: [https://github.com/florianneukirchen/scipy_filters/](https://github.com/florianneukirchen/scipy_filters/)
@@ -68,7 +70,38 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 - The integer values are the indices of the combo box.
 - In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). Exception: PCA (only float32/float64 as options).
 
+### RasterWizard
+In the QGIS python console, `RasterWizard` allows to quickly get the data of a raster layer as a numpy array, and the processing result back into QGIS as a new raster layer.
+
+(New in version 1.3)
+
+```python
+from scipy_filters.helpers import RasterWizard
+from scipy import ndimage
+
+wizard = RasterWizard() # Uses active layer if layer is not given
+a = wizard.toarray()    # Returns numpy array with all bands
+
+# Any calculation, for example a sobel filter with Scipy
+# In the example, the result is a numpy array with dtype float32
+b = ndimage.sobel(a, output="float32") 
+
+# Write the result to a geotiff and load it back into QGIS
+wizard.tolayer(b, name="Sobel", filename="/path/to/sobel.tif")
+
+# You can also get pixel values at [x, y]
+wizard[0,10] 
+
+# or information like shape, CRS, etc.
+wizard.shape   # like numpy_array.shape
+wizard.crs_wkt # CRS as WKT string
+wizard.crs     # CRS as QgsCoordinateReferenceSystem
+```
+
 ## Changelog
+### 1.3 (09/2024)
+- Add helpers.RasterWizard
+- generate help
 ### 1.2 (04/2024)
 - Bugfix: PCA, calculate band mean without no data value
 ### 1.1 (04/2024)

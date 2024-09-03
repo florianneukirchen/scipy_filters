@@ -6,7 +6,7 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=1.2
+version=1.3
 author=Florian Neukirchen
 email=mail@riannek.de
 
@@ -25,6 +25,7 @@ about=QGIS plugin providing access to SciPy filters via the processing toolbox. 
     - fill no data cells of all bands with value, band mean or minimum, maximum or central value of the data type
     Most filters are based on scipy.ndimage, a library to filter images (or arrays, rasters) in n dimensions. These are either applied on each layer seperately in 2D, or in 3D on a 3D datacube consisting of all bands. In most cases, the plugin simply provides a user interface for a single SciPy function, gets the raster data using GDAL, calls the SciPy function with the provided parameters and loads the result back into QGIS. A few filters (PCA, unsharp mask, pixel statistics etc.) use custom functions that where implemented using SciPy and/or Numpy.
     For many filters, a custom footprint and/or structure or kernel can be provided, adjusting the size and shape of the filter.
+    Python users get helpers.RasterWizard to quickly get the data of a raster layer as numpy array and the processing result back into QGIS as a new raster layer. 
 
     
 
@@ -36,7 +37,10 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=1.2
+changelog=1.3
+    - Add helpers.RasterWizard
+    - generate help
+    1.2
     - Bugfix: PCA, calculate band mean without no data value
     1.1
     - Mask no data cells (no data pixels remain no data pixels)
