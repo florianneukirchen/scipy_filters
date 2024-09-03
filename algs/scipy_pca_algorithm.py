@@ -81,13 +81,13 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     of the metadata of the output raster layer, eventually to be used 
     by subsequent transformations, and c) in the output dict if 
     the tool has been called from the python console or a script:
-    * Singular values (of SVD)
-    * Variance explained (Eigenvalues)
-    * Ratio of variance explained
-    * Cumulated sum of variance explained
-    * Eigenvectors (V of SVD)
-    * Loadings (eigenvectors scaled by sqrt(eigenvalues))
-    * Band Mean
+    Singular values (of SVD),
+    Variance explained (Eigenvalues),
+    Ratio of variance explained,
+    Cumulated sum of variance explained,
+    Eigenvectors (V of SVD),
+    Loadings (eigenvectors scaled by sqrt(eigenvalues)),
+    Band Mean.
 
     """
 
