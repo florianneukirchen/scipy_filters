@@ -46,7 +46,7 @@ class SciPyGradientAlgorithm(SciPyAlgorithm):
 
     See also Pixel Gradient in Pixel Based Filters.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Axis** Calculate along x-axis, y-axis or both (returning the hypotenuse of both vectors.)
 

@@ -163,11 +163,12 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     binary_erosion, binary_closing, binary_opening respectively from 
     `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Dilation** Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
     **Erosion** Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
@@ -272,7 +273,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
     grey_erosion, gey_closing or grey_opening, respectively from 
     `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dilation** Set pixel to maximum value of neighborhood. Remaining shapes are larger, lines are thicker.
     **Erosion** Set pixel to minimum value of neighborhood. Remaining shapes are smaller, lines are thinner.
@@ -465,11 +466,12 @@ class SciPyTophatAlgorithm(SciPyGreyMorphologicalAlgorithm):
     white_tophat, morphological_radient or morphological_laplace, respectively from 
     `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+    
+    .. note:: bands will be the first axis of the datacube.
 
     **White tophat** Difference between input raster and it's opening. Extracts white spots smaller than the structural element.
     **Black tophat** Difference between input raster and it's closing. Extracts black spots smaller than the structural element.

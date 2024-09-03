@@ -94,11 +94,12 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
     `source code of scipy.signal.wiener <https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615>`_.
     using correlate from `scipy.signal <https://docs.scipy.org/doc/scipy/reference/signal.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+    
+    .. note:: bands will be the first axis of the datacube.
 
     **Size** Size of filter window.
     """
@@ -190,11 +191,12 @@ class SciPyEstimateStdAlgorithm(SciPyEstimateVarianceAlgorithm):
     `source code of scipy.signal.wiener <https://github.com/scipy/scipy/blob/v1.8.0/scipy/signal/_signaltools.py#L1541-L1615>`_.
     using correlate from `scipy.signal <https://docs.scipy.org/doc/scipy/reference/signal.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Size** Size of filter window.
     
@@ -235,11 +237,12 @@ class SciPyStdAlgorithm(SciPyStatisticalAlgorithm):
 
     **Warning: Very slow!**
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Delta degrees of freedom** of the standard deviation 
     (ddof in numpy). With ddof=0, the std is calculated with 

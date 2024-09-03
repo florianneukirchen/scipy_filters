@@ -54,7 +54,8 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Size** Size of filter in pixels. All values must 
     be odd.
@@ -169,8 +170,9 @@ class SciPyUnsharpMaskAlgorithm(SciPyAlgorithmWithSigma):
     Sharpen the image with an unsharp mask filter
 
     **Dimension** Calculate for each band separately (2D) 
-    or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+    or use all bands as a 3D datacube and perform filter in 3D.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Sigma** Standard deviation of the gaussian filter. 
     The size of the gaussian kernel is 4 * sigma.

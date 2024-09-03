@@ -73,11 +73,12 @@ class SciPyGaussianLaplaceAlgorithm(SciPyAlgorithmWithSigma):
     Calculated with gaussian_laplace from 
     `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+    
+    .. note:: bands will be the first axis of the datacube.
 
     **Sigma** Standard deviation of the gaussian filter.
     **Border mode** determines how input is extended around 
@@ -120,11 +121,12 @@ class SciPyGaussianAlgorithm(SciPyAlgorithmWithSigma):
     Calculated with gaussian_filter from 
     `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Sigma** Standard deviation of a gaussian kernel.
 
@@ -210,11 +212,12 @@ class SciPyGaussianGradientMagnitudeAlgorithm(SciPyAlgorithmWithSigma):
     Calculated with gaussian_gradient_magnitude from 
     `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Sigma** Standard deviation of the gaussian filter.
     **Border mode** determines how input is extended around 

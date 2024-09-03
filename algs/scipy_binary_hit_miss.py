@@ -56,11 +56,12 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
     Calculated with binary_hit_or_miss from 
     `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+    
+    .. note:: bands will be the first axis of the datacube.
 
     **Structure 1** String representation of array. 
     **Structure 2** String representation of array, disjoint to structure 1. 

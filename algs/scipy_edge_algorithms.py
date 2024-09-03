@@ -45,11 +45,12 @@ class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
     Calculated with gaussian_laplace from 
     `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+    
+    .. note:: bands will be the first axis of the datacube.
 
     **Border mode** determines how input is extended around 
     the edges: *Reflect* (input is extended by reflecting at the edge), 
@@ -93,11 +94,12 @@ class SciPySobelAlgorithm(SciPyAlgorithmWithModeAxis):
     Calculated with sobel from 
     `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+    
+    .. note:: bands will be the first axis of the datacube.
 
     **Axis**: Find horizontal or vertical edges or in case 
     of 3D edges across the bands. Magnitude: all axes combined 
@@ -154,11 +156,12 @@ class SciPyPrewittAlgorithm(SciPyAlgorithmWithModeAxis):
     Calculated with prewitt from 
     `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Axis**: Find horizontal or vertical edges or in case 
     of 3D edges across the bands. Magnitude: all axes combined 

@@ -59,11 +59,12 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
     Calculated with binary_fill_holes from 
     `scipy.ndimage <https://docs.scipy.org/doc/scipy/reference/ndimage.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+    
+    .. note:: bands will be the first axis of the datacube.
     
     **Structure** String representation of array. 
     Must have 2 dimensions if *dimension* is set to 2D. 

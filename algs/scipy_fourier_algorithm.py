@@ -68,11 +68,12 @@ class SciPyFourierGaussianAlgorithm(SciPyAlgorithm):
     Only the real part of the resulting complex 
     numbers is returned.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
-    or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+    or use all bands as a 3D datacube and perform filter in 3D.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Sigma** Standard deviation of the gaussian filter.
     """
@@ -163,11 +164,12 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
     Only the real part of the resulting complex 
     numbers is returned.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Size** Size of the circular or ellipsoidal box.
     """
@@ -304,11 +306,12 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
     Only the real part of the resulting complex 
     numbers is returned.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Dimension** Calculate for each band separately (2D) 
     or use all bands as a 3D datacube and perform filter in 3D. 
-    Note: bands will be the first axis of the datacube.
+
+    .. note:: bands will be the first axis of the datacube.
 
     **Size** Size of the box.
     """
@@ -439,7 +442,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
     Calculated using fftconvolve from 
     `scipy.signal <https://docs.scipy.org/doc/scipy/reference/signal.html>`_.
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Kernel** String representation of array. 
     Must have 2 dimensions if *dimension* is set to 2D. 
@@ -622,7 +625,7 @@ class SciPyFFTCorrelateAlgorithm(SciPyFFTConvolveAlgorithm):
     `scipy.signal <https://docs.scipy.org/doc/scipy/reference/signal.html>`_.
     using method "fft".
 
-    Note: No data cells within the filter radius are filled with 0.
+    .. note:: No data cells within the filter radius are filled with 0.
 
     **Kernel** String representation of array. 
     Must have 2 dimensions if *dimension* is set to 2D. 
