@@ -15,7 +15,7 @@ Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/refer
 
 For many filters, a custom footprint and/or structure or kernel can be provided, adjusting the size and shape of the filter. 
 
-For more information, see the help in the window of the respective processing tool.
+For more information, see [https://florianneukirchen.github.io/scipy_filters/](https://florianneukirchen.github.io/scipy_filters/) or the help in the window of the respective processing tool.
 
 Python users get `helpers.RasterWizard` to quickly get the data of a raster layer as numpy array and the processing result back into QGIS as a new raster layer. 
 
@@ -23,6 +23,7 @@ Python users get `helpers.RasterWizard` to quickly get the data of a raster laye
 - QGIS Plugin Repository: [https://plugins.qgis.org/plugins/scipy_filters/](https://plugins.qgis.org/plugins/scipy_filters/)
 - Source code: [https://github.com/florianneukirchen/scipy_filters/](https://github.com/florianneukirchen/scipy_filters/)
 - Bug tracker: [https://github.com/florianneukirchen/scipy_filters/issues](https://github.com/florianneukirchen/scipy_filters/issues)
+- Documentation: [https://florianneukirchen.github.io/scipy_filters/](https://florianneukirchen.github.io/scipy_filters/)
 
 
 
@@ -71,10 +72,11 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 - In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). Exception: PCA (only float32/float64 as options).
 
 ### RasterWizard
-In the QGIS python console, `RasterWizard` allows to quickly get the data of a raster layer as a numpy array, and the processing result back into QGIS as a new raster layer.
+In the QGIS python console, `RasterWizard` allows to quickly get the data of a raster layer as a numpy array, and the processing result back into QGIS as a new raster layer. See the [API documentation of RasterWizard](https://florianneukirchen.github.io/scipy_filters/wizard.html) for more information.
 
 (New in version 1.3)
 
+Example:
 ```python
 from scipy_filters.helpers import RasterWizard
 from scipy import ndimage
@@ -88,7 +90,10 @@ b = ndimage.sobel(a, output="float32")
 
 # Write the result to a geotiff and load it back into QGIS
 wizard.tolayer(b, name="Sobel", filename="/path/to/sobel.tif")
+```
 
+Getting more info about the raster:
+```python
 # You can also get pixel values at [x, y]
 wizard[0,10] 
 
@@ -140,7 +145,7 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 - New filters:
     - unsharp mask
     - rank filter
-    - uniform  filter (a.k.a. mean filter, box filter)
+    - uniform filter (a.k.a. mean filter, box filter)
     - estimate local variance
     - estimate local standard deviation
     - range filter 
