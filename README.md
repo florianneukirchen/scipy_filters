@@ -72,7 +72,10 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 - In the case of `"DTYPE"` (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by [gdal](https://gdal.org/index.html). Exception: PCA (only float32/float64 as options).
 
 ### RasterWizard
-In the QGIS python console, `RasterWizard` allows to quickly get the data of a raster layer as a numpy array, and the processing result back into QGIS as a new raster layer. See the [API documentation of RasterWizard](https://florianneukirchen.github.io/scipy_filters/wizard.html) for more information.
+In the QGIS python console, `RasterWizard` allows to quickly get the data of a raster layer as a numpy array, and the processing result back into QGIS as a new raster layer. This allows for processing with [NumPy](https://numpy.org/), [SciPy](https://scipy.org/), [scikit-image](https://scikit-image.org/), 
+[scikit-learn](https://scikit-learn.org/stable/) or other python libraries. Great for prototype development and experimenting with algorithms.
+
+See the [API documentation of RasterWizard](https://florianneukirchen.github.io/scipy_filters/wizard.html) for more information.
 
 (New in version 1.3)
 
