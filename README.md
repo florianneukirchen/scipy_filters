@@ -107,6 +107,8 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 ```
 
 ## Changelog
+### 1.4 (09/2024)
+- RasterWizard: Raise TypeError if layer is not a QgsRasterLayer
 ### 1.3 (09/2024)
 - Add helpers.RasterWizard
 - generate help

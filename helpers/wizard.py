@@ -104,6 +104,9 @@ class RasterWizard():
         if layer is None:
             layer = iface.activeLayer()
 
+        if not isinstance(layer, QgsRasterLayer):
+            raise TypeError("Layer is not a raster layer, must be QgsRasterLayer")
+
         self._layer = layer
         self._filename = layer.source()
         self._out_filename = None

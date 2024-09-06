@@ -6,7 +6,7 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=1.3
+version=1.4
 author=Florian Neukirchen
 email=mail@riannek.de
 
@@ -37,7 +37,9 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=1.3
+changelog=1.4
+    - helpers.RasterWizard: Raise type error if layer is not a raster layer
+    1.3
     - Add helpers.RasterWizard
     - generate help
     1.2
