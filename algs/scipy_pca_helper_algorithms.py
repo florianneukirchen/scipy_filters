@@ -205,6 +205,10 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     def checkParameterValues(self, parameters, context):
 
         inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+
+        if not inputlayer.providerType() == "gdal":
+            return False, tr("Raster provider {} is not supported, must be raster layer with a local file".format(inputlayer.providerType()))
+
         bands = inputlayer.bandCount()
 
         # Check maxsize
@@ -774,6 +778,15 @@ class SciPyKeepN(QgsProcessingAlgorithm):
 
 
         return {self.OUTPUT: self.output_raster}
+    
+    def checkParameterValues(self, parameters, context):
+
+        inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+
+        if not inputlayer.providerType() == "gdal":
+            return False, tr("Raster provider {} is not supported, must be raster layer with a local file".format(inputlayer.providerType()))
+        
+        return super().checkParameterValues(parameters, context)
     
 
     class PostProcess(QgsProcessingLayerPostProcessorInterface):

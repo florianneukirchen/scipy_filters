@@ -393,6 +393,10 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
     def checkParameterValues(self, parameters, context):
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+
+        if not layer.providerType() == 'gdal':
+            return False, tr("Raster provider {} is not supported, must be raster layer with a local file".format(layer.providerType()))
+        
         # Check maxsize
         size = layer.width() * layer.height() / 1000000 # megapixels
         if size > self.maxsize:

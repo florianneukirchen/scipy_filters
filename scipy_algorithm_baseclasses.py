@@ -315,6 +315,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         self.fct = self.get_fct()
 
+        if not self.inputlayer.providerType() == "gdal":
+            feedback.reportError(f"Raster provider {self.inputlayer.providerType()} is not supported, must be raster layer with a local file", fatalError = True)
+            return {}
+
         # Open Raster with GDAL
         self.ds = gdal.Open(self.inputlayer.source())
 
@@ -334,9 +338,12 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         # Eventually open mask layer 
         if self.masklayer:
+            if not self.masklayer.providerType() == "gdal":
+                raise TypeError("Mask: provider {} is not supported, must be raster layer with a local file".format(self.masklayer.providerType()))
+
             self.mask_ds = gdal.Open(self.masklayer.source())
             if not self.mask_ds:
-                raise Exception(tr("Failed to open Mask Layer"))
+                raise Exception("Failed to open Mask Layer")
             
             # Mask must have same crs etc.
             if not (self.mask_ds.GetProjection() == self.ds.GetProjection()
@@ -534,6 +541,10 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         # Check parameters before starting processing, eventually giving feedback and stopping
         dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+
+        if not layer.providerType() == "gdal":
+            return False, tr("Raster provider {} is not supported, must be raster layer with a local file".format(layer.providerType()))
+
         # 3D only possible with more than 1 bands
         if dim_option == 1 and layer.bandCount() == 1:
             return (False, tr("3D only possible if input layer has more than 1 bands"))

@@ -124,6 +124,10 @@ class SciPyFilterNoDataMask(QgsProcessingAlgorithm):
 
         self.get_parameters(parameters, context)
 
+        if not self.inputlayer.providerType() == "gdal":
+            feedback.reportError(f"Raster provider {self.inputlayer.providerType()} is not supported, must be raster layer with a local file", fatalError = True)
+            return {}
+
         self.ds = gdal.Open(self.inputlayer.source())
 
         if not self.ds:
@@ -327,6 +331,12 @@ class SciPyFilterApplyNoDataMask(QgsProcessingAlgorithm):
 
         if mask.bandCount() != 1 and mask.bandCount() != inputlayer.bandCount():
             return False, tr("Mask layer must have 1 band or same number of bands as input")
+
+        if not inputlayer.providerType() == "gdal":
+            return False, tr("Raster provider {} is not supported, must be raster layer with a local file".format(inputlayer.providerType()))
+        
+        if not mask.providerType() == "gdal":
+            return False, tr("Mask: provider {} is not supported, must be raster layer with a local file".format(inputlayer.providerType()))
 
         ds = gdal.Open(inputlayer.source())
         if not ds:
@@ -561,6 +571,9 @@ class SciPyFilterFillNoData(QgsProcessingAlgorithm):
         inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         mode = self.parameterAsInt(parameters, self.MODE, context)
         value = self.parameterAsDouble(parameters, self.VALUE, context)
+
+        if not inputlayer.providerType() == "gdal":
+            return False, tr("Raster provider {} is not supported, must be raster layer with a local file".format(inputlayer.providerType()))
 
         ds = gdal.Open(inputlayer.source())
         if not ds:
