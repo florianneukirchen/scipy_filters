@@ -105,13 +105,18 @@ class RasterWizard():
             layer = iface.activeLayer()
 
         if not isinstance(layer, QgsRasterLayer):
-            raise TypeError("Layer is not a raster layer, must be QgsRasterLayer")
+            raise TypeError("Layer is not a raster layer, must be QgsRasterLayer with a local file")
+        
+        if not layer.providerType() == "gdal":
+            raise TypeError(f"Raster provider {layer.providerType()} is not supported, must be raster layer with a local file")
 
         self._layer = layer
         self._filename = layer.source()
         self._out_filename = None
         self._dst_ds = None
+
         self._ds = gdal.Open(self._filename)
+
         self._name = layer.name()
         if not self._ds:
             raise FileNotFoundError("Could not open layer with GDAL")
