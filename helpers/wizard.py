@@ -463,6 +463,10 @@ class RasterWizard():
         Only to be used directly when iterating over windows, see :py:meth:`.get_windows` for example.
         Otherwise, the output is set in :py:meth`tolayer`.
 
+        With default values, the file is written to memory only and has the dtype matching the NumPy array.
+
+        It is possible to set the band descriptions with the banddesc parameter. They show up in QGIS as "Band 1: description".
+
         :param filename: Filename or full file path for the output geotiff, default is None (in-memory only)
         :type filename: str, optional
         :param bands: Number of bands in the output dataset, default is None (same as input)
@@ -472,6 +476,8 @@ class RasterWizard():
         :type dtype: str, optional
         :param nodata: No data value, default is None
         :type nodata: int, optional
+        :param banddesc: List of band descriptions, default is None
+        :type banddesc: list of str, optional
         """
         self._out_nodata = nodata
 
@@ -519,12 +525,15 @@ class RasterWizard():
 
     def tolayer(self, array, name="Wizard", dtype="auto", filename=None, stats=True, bands_last=False, nodata=None, banddesc=None):
         """
-        Load a numpy array as a new raster layer in QGIS.
+        Save a numpy array as geotiff or in-memory and load it as a new raster layer in QGIS.
 
         The array must have the same dimensions in x and y as the input layer. The number of bands and the datatype can be different.
+        By default, the datatype is inferred from the NumPy array.
         First, the data is saved as geotiff if a filename (full file path) is given. Otherwise, the geotiff is in-memory only, using `GDAL <https://gdal.org/en/latest/>`_ virtual file system.
 
         If iterating over windows, use :py:meth:`.write_window` and :py:meth:`.load_output` instead.
+
+        It is possible to set the band descriptions with the banddesc parameter. They show up in QGIS as "Band 1: description".
 
         :param array: Numpy array with the raster data
         :type array: numpy.ndarray
@@ -542,6 +551,8 @@ class RasterWizard():
         :type bands_last: bool, optional
         :param nodata: No data value, default is None
         :type nodata: int, optional
+        :param banddesc: List of band descriptions, default is None
+        :type banddesc: list of str, optional
         :return: QgsRasterLayer instance of the new layer
         :rtype: QgsRasterLayer
         """
