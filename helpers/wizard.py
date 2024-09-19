@@ -47,7 +47,7 @@ class RasterWizard():
     `SciPy <https://scipy.org/>`_, `scikit-image <https://scikit-image.org/>`_, `scikit-learn <https://scikit-learn.org/stable/>`_ 
     or other python libraries. Great for prototype development and experimenting with algorithms.
 
-    The resulting numpy array can be loaded back into QGIS as a new raster layer, as long as the
+    The resulting numpy array can be saved to geotiff or in-memory and loaded back into QGIS as a new raster layer, as long as the
     number of pixels is the same as the input layer and the geotransform is not changed (no reprojection, no subsetting in numpy).
     The number of bands and the datatype can be different. See :py:meth:`.toarray` and :py:meth:`.tolayer`.
 
@@ -57,6 +57,9 @@ class RasterWizard():
 
     :param layer: instance of qgis.core.QgsRasterLayer, the layer to be processed. Optional, default is the active layer.
     :type layer: QgsRasterLayer, optional
+
+    .. versionchanged:: 1.5
+        Allow to get band by description, and to set band description.
 
     Example::
 
