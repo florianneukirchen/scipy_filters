@@ -365,7 +365,7 @@ class RasterWizard():
 
         Can be used together with the RasterWindow class to calculate in a moving window, see :py:meth:`.get_windows` for an example.
 
-        .. versionchanged:: 1.4
+        .. versionchanged:: 1.5
             Accept a string as band parameter to select a band by band description.
 
         :param band: Band index (int) or band description (str), default is None (all bands). The first band is indexed with 1. Using the band description returns the first band with the given name.
@@ -445,7 +445,7 @@ class RasterWizard():
         use :code:`wizard.banddesc().index("description")`. 
         The band index in QGIS / GDAL or :py:meth:`tolayer` is + 1.
 
-        .. versionadded:: 1.4
+        .. versionadded:: 1.5
 
         :return: List of band descriptions
         :rtype: list
@@ -470,7 +470,7 @@ class RasterWizard():
 
         With default values, the file is written to memory only and has the dtype matching the NumPy array.
 
-        .. versionchanged:: 1.4
+        .. versionchanged:: 1.5
             It is now possible to set the band descriptions with the banddesc parameter. They show up in QGIS as "Band 1: description".
 
         :param filename: Filename or full file path for the output geotiff, default is None (in-memory only)
@@ -539,7 +539,7 @@ class RasterWizard():
 
         If iterating over windows, use :py:meth:`.write_window` and :py:meth:`.load_output` instead.
 
-        .. versionchanged:: 1.4
+        .. versionchanged:: 1.5
             It is now possible to set the band descriptions with the banddesc parameter. They show up in QGIS as "Band 1: description".
 
         :param array: Numpy array with the raster data
