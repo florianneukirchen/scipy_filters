@@ -365,8 +365,8 @@ class RasterWizard():
 
         Can be used together with the RasterWindow class to calculate in a moving window, see :py:meth:`.get_windows` for an example.
 
-        :param band: Band index, default is None (all bands). The first band is indexed with 1.
-        :type band: int, optional
+        :param band: Band index (int) or band name (str), default is None (all bands). The first band is indexed with 1. Using the band name returns the first band with the given name.
+        :type band: int, str, optional
         :param win: RasterWindow instance for processing in a moving window, default is None
         :type win: RasterWindow, optional
         :param wrapping: Fill the margins of the window with the data of the far side of the dataset, to be used with scipy filters with mode='wrap', default is False
@@ -376,6 +376,11 @@ class RasterWizard():
         :return: Numpy array with the raster data. 2D if only one band, 3D if multiple bands.
         :rtype: numpy.ndarray
         """
+        if isinstance(band, str):
+            if band == "":
+                raise ValueError("Empty string is not a valid band name")
+            band = self.bandnames().index(band) + 1 # ValueError if not in list
+
         if band is None:
             ds = self._ds
         else:
@@ -431,9 +436,11 @@ class RasterWizard():
 
         Helps to find the right band for processing if the bandnames are set.
         If no band name is set, an empty string is returned for the respective band.
+
+        .. note:: Band names in QGIS are called band descriptions in GDAL.
         
         To get the index of a band in the NumPy array by name, 
-        use :code:`bandnames().index("name")`. The band index in QGIS or :py:meth:`tolayer` is + 1.
+        use :code:`bandnames().index("name")`. The band index in QGIS / GDAL or :py:meth:`tolayer` is + 1.
 
         :return: List of band names
         :rtype: list
