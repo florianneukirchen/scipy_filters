@@ -425,6 +425,22 @@ class RasterWizard():
         return gdal.GetDataTypeName(i)
     
 
+    def bandnames(self):
+        """
+        Get a list of the band names of the raster layer.
+
+        Helps to find the right band for processing if the bandnames are set.
+        If no band name is set, an empty string is returned for the respective band.
+        
+        To get the index of a band in the NumPy array by name, 
+        use :code:`bandnames().index("name")`. The band index in QGIS or :py:meth:`tolayer` is + 1.
+
+        :return: List of band names
+        :rtype: list
+        """
+        return [self._ds.GetRasterBand(i).GetDescription() for i in range(1, self._ds.RasterCount + 1)]
+    
+
     def _memfile(self):
         """
         Get a virtual filename, the file will be written to memory only.
