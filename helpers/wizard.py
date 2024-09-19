@@ -365,7 +365,7 @@ class RasterWizard():
 
         Can be used together with the RasterWindow class to calculate in a moving window, see :py:meth:`.get_windows` for an example.
 
-        :param band: Band index (int) or band name (str), default is None (all bands). The first band is indexed with 1. Using the band name returns the first band with the given name.
+        :param band: Band index (int) or band description (str), default is None (all bands). The first band is indexed with 1. Using the band description returns the first band with the given name.
         :type band: int, str, optional
         :param win: RasterWindow instance for processing in a moving window, default is None
         :type win: RasterWindow, optional
@@ -378,8 +378,8 @@ class RasterWizard():
         """
         if isinstance(band, str):
             if band == "":
-                raise ValueError("Empty string is not a valid band name")
-            band = self.bandnames().index(band) + 1 # ValueError if not in list
+                raise ValueError("Empty string is not a valid band description")
+            band = self.banddesc().index(band) + 1 # ValueError if not in list
 
         if band is None:
             ds = self._ds
@@ -430,19 +430,19 @@ class RasterWizard():
         return gdal.GetDataTypeName(i)
     
 
-    def bandnames(self):
+    def banddesc(self):
         """
-        Get a list of the band names of the raster layer.
+        Get a list of the band descriptions of the raster layer.
 
-        Helps to find the right band for processing if the bandnames are set.
-        If no band name is set, an empty string is returned for the respective band.
+        Helps to find the right band for processing if the band descriptions of the layer are set.
+        Otherwise, an empty string is returned for the respective band.
+        The band descriptions can be set with GDAL, and QGIS shows a band name in the format "Band 1: description".
+                
+        To get the index of a band (in the NumPy) array by name, 
+        use :code:`banddesc().index("name")`. 
+        The band index in QGIS / GDAL or :py:meth:`tolayer` is + 1.
 
-        .. note:: Band names in QGIS are called band descriptions in GDAL.
-        
-        To get the index of a band in the NumPy array by name, 
-        use :code:`bandnames().index("name")`. The band index in QGIS / GDAL or :py:meth:`tolayer` is + 1.
-
-        :return: List of band names
+        :return: List of band descriptions
         :rtype: list
         """
         return [self._ds.GetRasterBand(i).GetDescription() for i in range(1, self._ds.RasterCount + 1)]
@@ -456,7 +456,7 @@ class RasterWizard():
         return f"/vsimem/{name}.tif"
 
 
-    def set_out_ds(self, filename=None, bands=None, dtype=None, nodata=None):
+    def set_out_ds(self, filename=None, bands=None, dtype=None, nodata=None, banddesc=None):
         """
         Set up a new output dataset for writing.
 
@@ -510,7 +510,14 @@ class RasterWizard():
 
         self._dst_ds = dst_ds
 
-    def tolayer(self, array, name="Wizard", dtype="auto", filename=None, stats=True, bands_last=False, nodata=None):
+        # Set band descriptions
+        if banddesc and isinstance(banddesc, list):
+            for i in range(bands):
+                if i < len(banddesc):
+                    self._dst_ds.GetRasterBand(i+1).SetDescription(str(banddesc[i]))
+
+
+    def tolayer(self, array, name="Wizard", dtype="auto", filename=None, stats=True, bands_last=False, nodata=None, banddesc=None):
         """
         Load a numpy array as a new raster layer in QGIS.
 
@@ -558,7 +565,7 @@ class RasterWizard():
         if dtype == "auto":
             dtype = array.dtype
 
-        self.set_out_ds(filename=filename, bands=bands, dtype=dtype)
+        self.set_out_ds(filename=filename, bands=bands, dtype=dtype, banddesc=banddesc)
 
         if bands == 1:
             self._dst_ds.GetRasterBand(1).WriteArray(array)
