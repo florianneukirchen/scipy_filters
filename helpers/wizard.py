@@ -55,11 +55,12 @@ class RasterWizard():
 
     On very large rasters, the processing can be done in windows (tiles) to avoid crashes, see :py:meth:`.get_windows`.
 
+    .. versionchanged:: 1.5
+        Allow to get band by description, and to set band description.
+
     :param layer: instance of qgis.core.QgsRasterLayer, the layer to be processed. Optional, default is the active layer.
     :type layer: QgsRasterLayer, optional
 
-    .. versionchanged:: 1.5
-        Allow to get band by description, and to set band description.
 
     Example::
 
