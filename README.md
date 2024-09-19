@@ -1,4 +1,4 @@
-# SciPy filter pack for QGIS
+# SciPy Filters for QGIS
 QGIS plugin providing access to [SciPy](https://scipy.org/) filters via the processing toolbox. SciPy offers a range of highly optimised algorithms for i.e. [multidimensional image processing](https://docs.scipy.org/doc/scipy/tutorial/ndimage.html) and [signal processing](https://docs.scipy.org/doc/scipy/tutorial/signal.html), and some can be useful to analyze raster layers.
 
 Includes raster filters such as:
