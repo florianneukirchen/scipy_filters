@@ -51,9 +51,9 @@ class RasterWizard():
     number of pixels is the same as the input layer and the geotransform is not changed (no reprojection, no subsetting in numpy).
     The number of bands and the datatype can be different. See :py:meth:`.toarray` and :py:meth:`.tolayer`.
 
-    On very large rasters, the processing can be done in windows (tiles) to avoid crashes, see :py:meth:`.get_windows`.
-
     .. note:: Like QGIS and GDAL, the first band is indexed with 1 in :py:meth:`.toarray`. In NumPy it is indexed with 0.
+
+    On very large rasters, the processing can be done in windows (tiles) to avoid crashes, see :py:meth:`.get_windows`.
 
     :param layer: instance of qgis.core.QgsRasterLayer, the layer to be processed. Optional, default is the active layer.
     :type layer: QgsRasterLayer, optional
@@ -365,6 +365,9 @@ class RasterWizard():
 
         Can be used together with the RasterWindow class to calculate in a moving window, see :py:meth:`.get_windows` for an example.
 
+        .. versionchanged:: 1.4
+            Accept a string as band parameter to select a band by band description.
+
         :param band: Band index (int) or band description (str), default is None (all bands). The first band is indexed with 1. Using the band description returns the first band with the given name.
         :type band: int, str, optional
         :param win: RasterWindow instance for processing in a moving window, default is None
@@ -438,9 +441,11 @@ class RasterWizard():
         Otherwise, an empty string is returned for the respective band.
         The band descriptions can be set with GDAL, and QGIS shows a band name in the format "Band 1: description".
                 
-        To get the index of a band (in the NumPy) array by name, 
-        use :code:`banddesc().index("name")`. 
+        To get the index of a band (in the NumPy) array by description, 
+        use :code:`wizard.banddesc().index("description")`. 
         The band index in QGIS / GDAL or :py:meth:`tolayer` is + 1.
+
+        .. versionadded:: 1.4
 
         :return: List of band descriptions
         :rtype: list
@@ -465,7 +470,8 @@ class RasterWizard():
 
         With default values, the file is written to memory only and has the dtype matching the NumPy array.
 
-        It is possible to set the band descriptions with the banddesc parameter. They show up in QGIS as "Band 1: description".
+        .. versionchanged:: 1.4
+            It is now possible to set the band descriptions with the banddesc parameter. They show up in QGIS as "Band 1: description".
 
         :param filename: Filename or full file path for the output geotiff, default is None (in-memory only)
         :type filename: str, optional
@@ -533,7 +539,8 @@ class RasterWizard():
 
         If iterating over windows, use :py:meth:`.write_window` and :py:meth:`.load_output` instead.
 
-        It is possible to set the band descriptions with the banddesc parameter. They show up in QGIS as "Band 1: description".
+        .. versionchanged:: 1.4
+            It is now possible to set the band descriptions with the banddesc parameter. They show up in QGIS as "Band 1: description".
 
         :param array: Numpy array with the raster data
         :type array: numpy.ndarray
@@ -629,7 +636,7 @@ class RasterWizard():
         The generated windows are instances of :py:class:`RasterWindow`. These do not contain the data, 
         only the pixel indices and sizes that are used internally to read and write the data with `GDAL <https://gdal.org/en/latest/>`_.
         You can iterate over the generated windows, read the data with :py:meth:`.toarray` and write the data with :py:meth:`.write_window`.
-        The output dataset should be set first with set_out_ds(), otherwise a virtual in-memory file is used.
+        The output dataset should be set first with :py:class:`set_out_ds()`, otherwise a virtual in-memory file is used.
         After processing all windows, the file is written and loaded back into QGIS with :py:meth:`load_output`.
 
         Note that numpy, scipy etc. are very performant on large arrays. It is best to use a 
