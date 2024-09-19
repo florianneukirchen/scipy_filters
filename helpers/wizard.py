@@ -51,7 +51,7 @@ class RasterWizard():
     number of pixels is the same as the input layer and the geotransform is not changed (no reprojection, no subsetting in numpy).
     The number of bands and the datatype can be different. See :py:meth:`.toarray` and :py:meth:`.tolayer`.
 
-    .. note:: Like QGIS and GDAL, the first band is indexed with 1 in :py:meth:`.toarray`. In NumPy it is indexed with 0.
+    .. note:: As in QGIS and GDAL, the first band is indexed with 1 in :py:meth:`.toarray`. In NumPy it is indexed with 0.
 
     On very large rasters, the processing can be done in windows (tiles) to avoid crashes, see :py:meth:`.get_windows`.
 

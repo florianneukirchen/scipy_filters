@@ -23,7 +23,6 @@ Tips for Python users
 
 As usual, the processing algorithms can be called from the Python console or a script with :code:`processing.run()`.
 
-See also :doc:`pythonhelpers` for additional tools for working in the Python console.
 
 Kernel / Structure / Footprint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,3 +52,8 @@ Dimension, output data type, border mode, etc.
 
 * The integer values are the indices of the combo box.
 * In the case of "DTYPE" (output data type), 0 means "same as input data type" and > 0 corresponds to the enum values used by GDAL. Exception: PCA (only float32/float64 as options).
+
+Working in the Python console
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In the python console, the class :py:class:`helpers.RasterWizard` helps to get the data of a QGIS raster layer as a numpy array, and the processing result back into QGIS as a new raster layer. It can be used together with :py:class:`helpers.RasterWindow` to process large rasters in a moving window. 
