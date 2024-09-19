@@ -53,6 +53,8 @@ class RasterWizard():
 
     On very large rasters, the processing can be done in windows (tiles) to avoid crashes, see :py:meth:`.get_windows`.
 
+    .. note:: Like QGIS and GDAL, the first band is indexed with 1 in :py:meth:`.toarray`. In NumPy it is indexed with 0.
+
     :param layer: instance of qgis.core.QgsRasterLayer, the layer to be processed. Optional, default is the active layer.
     :type layer: QgsRasterLayer, optional
 
@@ -339,7 +341,7 @@ class RasterWizard():
         """
         Get the no data value of a band. If no no data value is set, None is returned.
 
-        Note: In GeoTiff, the same no data value is used for all bands.
+        .. note:: In GeoTiff, the same no data value is used for all bands.
 
         :param band: Band index, default is 1. The fist band is indexed with 1.
         :type band: int, optional
@@ -359,9 +361,11 @@ class RasterWizard():
         Alternatively, by setting :code:`bands_last=True`, the order of the dimensions is x, y [,bands] 
         (e.g. expected by scikit-image).
 
+        .. note:: In QGIS and GDAL, the first band is indexed with 1, in numpy with 0.
+
         Can be used together with the RasterWindow class to calculate in a moving window, see :py:meth:`.get_windows` for an example.
 
-        :param band: Band index, default is None (all bands). The fist band is indexed with 1.
+        :param band: Band index, default is None (all bands). The first band is indexed with 1.
         :type band: int, optional
         :param win: RasterWindow instance for processing in a moving window, default is None
         :type win: RasterWindow, optional
