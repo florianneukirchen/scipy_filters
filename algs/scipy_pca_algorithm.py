@@ -44,6 +44,7 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterDefinition,
                        QgsProcessingParameterBoolean,
+                       QgsProcessingParameterFileDestination
                         )
 
 from processing.core.ProcessingConfig import ProcessingConfig
@@ -51,6 +52,11 @@ from processing.core.ProcessingConfig import ProcessingConfig
 from scipy_filters.scipy_algorithm_baseclasses import groups
 from scipy_filters.helpers import convert_docstring_to_html, tr, MAXSIZE
 
+try:
+    import plotly.graph_objects as go
+    withplotly = True
+except ImportError:
+    withplotly = False
 
 class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     """
@@ -69,6 +75,9 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
     **Percentage of variance to keep** is only used if it is greater than 0 
     (typical values would be in the range between 90 and 100).
+
+    **Plot** If plotly is available, a plot of the variance explained by
+    the principal components is created and saved as HTML file.
 
     **Output** The output raster contains 
     the data projected into the principal components 
@@ -101,6 +110,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     # calling from the QGIS console.
 
     OUTPUT = 'OUTPUT'
+    PLOT = 'PLOT'
     INPUT = 'INPUT'
     NCOMPONENTS = 'NCOMPONENTS'
     PERCENTVARIANCE = 'PERCENTVARIANCE'
@@ -175,6 +185,13 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         # Set as advanced parameter
         dtype_param.setFlags(dtype_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
         self.addParameter(dtype_param)
+
+        if withplotly:
+            self.addParameter(QgsProcessingParameterFileDestination(
+                self.PLOT,
+                tr('Plot of Variance Explained (PCA)'),
+                tr('HTML files (*.html)'),
+            ))
 
 
         self.addParameter(
@@ -383,9 +400,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         updatemetadata = self.UpdateMetadata(encoded)
         context.layerToLoadOnCompletionDetails(self.output_raster).setPostProcessor(updatemetadata)
 
-        feedback.setProgress(100)
-
-        return {self.OUTPUT: self.output_raster,
+        output = {self.OUTPUT: self.output_raster,
                 'singular values': S,
                 'loadings': loadings,
                 'variance explained': variance_explained,
@@ -394,6 +409,17 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 'band mean': col_mean,
                 'eigenvectors': VT.T,
                 'json': encoded}
+
+        if withplotly:
+            feedback.setProgress(90)
+            html_file = self.parameterAsFileOutput(parameters, self.PLOT, context)  
+            fig = plot_pca_variance(variance_ratio, variance_explained_cumsum)
+            fig.write_html(html_file)
+            output[self.PLOT] = html_file
+
+        feedback.setProgress(100)
+
+        return output
 
 
     def checkParameterValues(self, parameters, context):
@@ -476,4 +502,45 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
 
     def createInstance(self):
         return SciPyPCAAlgorithm()  
+    
+
+def plot_pca_variance(ratio_variance_explained, cumsum_variance_explained):
+    """
+    Plot the variance explained by the principal components.
+
+    Requires plotly.
+    """
+    
+    x = list(range(1, len(ratio_variance_explained) + 1))
+
+    fig = go.Figure(
+        layout_title_text="Variance Explained"
+    )
+
+    fig.add_trace(go.Scatter(
+        x=x,
+        y=ratio_variance_explained,
+        name='Fraction of Variance Explained',
+        hovertemplate='Component %{x}<br>%{y:.5f}',
+        mode='lines+markers'
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=x,
+        y=cumsum_variance_explained,
+        name='Cumulated Sum of Variance Explained',
+        hovertemplate='Component %{x}<br>%{y:.5f}',
+        mode='lines+markers',
+        visible='legendonly',
+    ))
+                
+    fig.update_layout(
+        title='Variance Explained by Principal Components',
+        xaxis_title="Principal Component",
+        yaxis_title="Fraction of Variance Explained",
+        xaxis_dtick=1,
+    )
+
+    return fig
+
     
