@@ -89,6 +89,11 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     Loadings (eigenvectors scaled by sqrt(eigenvalues)),
     Band Mean.
 
+    The plugin should give the same results as sklearn.decomposition.PCA
+    from `scikit-learn <https://scikit-learn.org/>`_: 
+    'singular values' is pca.singular_values_
+    'eigenvectors' is pca.components_
+    'variance explained' is pca.explained_variance_ in sklearn.
     """
 
     # Constants used to refer to parameters and outputs. They will be
