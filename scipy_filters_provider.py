@@ -204,6 +204,13 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         self.addAlgorithm(SciPyFilterApplyNoDataMask())  
         self.addAlgorithm(SciPyFilterFillNoData())  
 
+        # PCA Biplot requires plotly
+        try:
+            from scipy_filters.algs.scipy_pca_biplot import SciPyPCABiplot
+            self.addAlgorithm(SciPyPCABiplot())
+        except ImportError:
+            pass
+
              
 
     def id(self):
