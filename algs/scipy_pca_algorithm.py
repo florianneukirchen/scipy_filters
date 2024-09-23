@@ -69,6 +69,8 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     *number of components* to keep or the *percentage of variance* 
     explained by the kept components can be set. 
 
+    **Standard Scaler** Scale each band to unit variance (std of 1) before PCA (std of each band is reported in the output). Otherwise, the absolute values of the scores will be in a similar range as the original data. (Added in version 1.5)
+
     **Number of components** to keep. 0 for all components. If negative: 
     number of components to remove. 
     Ignored if percentage of variance is set.
@@ -112,6 +114,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     OUTPUT = 'OUTPUT'
     PLOT = 'PLOT'
     INPUT = 'INPUT'
+    STANDARDSCALER = 'STANDARDSCALER'
     NCOMPONENTS = 'NCOMPONENTS'
     PERCENTVARIANCE = 'PERCENTVARIANCE'
     DTYPE = 'DTYPE'
@@ -140,6 +143,13 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 tr('Input layer'),
             )
         )
+
+        self.addParameter(QgsProcessingParameterBoolean(
+            self.STANDARDSCALER,
+            tr('Standard Scaler: Scale each band to unit variance (std of 1) before PCA'),
+            optional=True,
+            defaultValue=False,
+        ))
 
 
         self.addParameter(QgsProcessingParameterNumber(
@@ -208,6 +218,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         self.inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
         self.output_raster = self.parameterAsOutputLayer(parameters, self.OUTPUT,context)
 
+        self.standardscaler = self.parameterAsBool(parameters, self.STANDARDSCALER, context)
         self.ncomponents = self.parameterAsInt(parameters, self.NCOMPONENTS,context)
         self.percentvariance = self.parameterAsDouble(parameters, self.PERCENTVARIANCE,context)
 
@@ -258,6 +269,15 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         centered = flattened - col_mean[np.newaxis, :]
 
         flattened = None
+
+        # Eventually scale each band to unit variance (std of 1) 
+        if self.standardscaler:
+            col_std = centered[~nodata_mask].std(axis=0)
+            centered = centered / col_std[np.newaxis, :]
+
+        feedback.setProgress(5)
+        if feedback.isCanceled():
+            return {}
 
         # Get eigenvectors, eigenvalues, loadings with SVD
 
@@ -315,6 +335,10 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         feedback.pushInfo(str(loadings.tolist()))
         feedback.pushInfo("\nBand Mean:")
         feedback.pushInfo(str(col_mean.tolist()) + "\n")
+        if self.standardscaler:
+            feedback.pushInfo("Standard deviation of each band:")
+            feedback.pushInfo(str(col_std.tolist()) + "\n")
+
         feedback.setProgress(30)
         if feedback.isCanceled():
             return {}
@@ -385,7 +409,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         new_array = None
 
         # Save loadings etc as json in the metadata abstract of the layer
-        encoded = json.dumps({
+        json_dict = {
                 'singular values': S.tolist(),
                 'eigenvectors': VT.T.tolist(),
                 'loadings': loadings.tolist(),
@@ -393,7 +417,12 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 'variance_ratio': variance_ratio.tolist(),
                 'variance explained cumsum': variance_explained_cumsum.tolist(),
                 'band mean': col_mean.tolist(),
-                })
+                }
+        
+        if self.standardscaler:
+            json_dict['band std'] = col_std.tolist()
+
+        encoded = json.dumps(json_dict)
 
         
         global updatemetadata
@@ -409,6 +438,9 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
                 'band mean': col_mean,
                 'eigenvectors': VT.T,
                 'json': encoded}
+        
+        if self.standardscaler:
+            output['band std'] = col_std
 
         if withplotly:
             feedback.setProgress(90)
