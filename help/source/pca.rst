@@ -5,7 +5,7 @@ Principal Component Analysis (PCA)
 ----------------------------------
 
 .. versionchanged:: 1.5
-    Add parameter standard scaler 
+    Add parameters plot and standard scaler 
 
 .. autoclass:: scipy_filters.algs.scipy_pca_algorithm.SciPyPCAAlgorithm
 

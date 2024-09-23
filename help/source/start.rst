@@ -6,6 +6,7 @@ Installation
 
 The plugin can be installed with "manage and install plugins" in QGIS. The plugin requires `SciPy <https://scipy.org/>`_, but the plugin offers to install it (using pip) if it is not already installed.
 
+Optional dependency: `Plotly <https://plotly.com/python>`_.
 
 Usage
 -----
