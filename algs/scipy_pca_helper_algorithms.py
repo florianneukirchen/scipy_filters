@@ -68,12 +68,11 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     OUTPUT = 'OUTPUT'
     INPUT = 'INPUT'
     BANDMEAN = 'BANDMEAN'
+    BANDSTD = 'BANDSTD'
     DTYPE = 'DTYPE'
 
 
     NODATA = -9999
-
-    # Overwrite constants of base class
 
     _groupid = "pca" 
     _name = ''
@@ -87,6 +86,8 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
     falsemean = False
 
     _bandmean = None
+    _bandstd = None
+
     V = None
     abstract = ""
 
@@ -135,6 +136,18 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
       
         self.addParameter(mean_param)
 
+        std_param = QgsProcessingParameterString(
+            self.BANDSTD,
+            tr('Std of original bands if standard scaler was used, otherwise leave empty'),
+            defaultValue="",
+            multiLine=False,
+            optional=True,
+            )
+
+        std_param.setFlags(std_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
+
+        self.addParameter(std_param)
+
         dtype_param = QgsProcessingParameterEnum(
             self.DTYPE,
             tr('Output data type'),
@@ -167,7 +180,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             self.abstract = self.inputlayer.metadata().abstract()
             # The other case is handled in the inheriting class
 
-        eigenvectors, means = self.json_to_parameters(self.abstract)
+        eigenvectors, means, bandstd = self.json_to_parameters(self.abstract)
 
 
         if self.V is None:
@@ -199,6 +212,26 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
                 if not a is None:
                     self._bandmean = a[np.newaxis, :]
         
+        # Get the standard deviations,  start with metadata of layer and eventually overwrite it
+        if isinstance(bandstd, np.ndarray) and bandstd.ndim == 1:
+            self._bandstd = bandstd[np.newaxis, :]
+
+        bandstd = self.parameterAsString(parameters, self.BANDSTD, context)
+        bandstd = bandstd.strip()
+
+        if bandstd != "":
+            if not (bandstd[0] == "[" and bandstd[-1] == "]"):
+                bandstd = "[" + bandstd + "]"
+            try:
+                decoded = json.loads(bandstd)
+                a = np.array(decoded)
+            except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                a = None
+
+            if not a is None:
+                self._bandstd = a[np.newaxis, :]
+
+
         self.outdtype = self.parameterAsInt(parameters, self.DTYPE, context)
         self.outdtype = self.outdtype + 6 # float32 and float64 in gdal
 
@@ -248,6 +281,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
                 return False, tr("Could not decode metadata abstract")
             eigenvectors = decoded.get("eigenvectors", None)
             layermeans = decoded.get("band mean", "")
+            layerstds = decoded.get("band std", None)
 
             if not eigenvectors is None:
                 try:
@@ -296,6 +330,30 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
                 return False, tr("False shape of means list")
             if layermeans.shape[0] != V.shape[0]:
                 return False, tr("False shape of means list")
+            
+        # Check provided standard deviations
+        if isinstance(layerstds, list) and len(layerstds) > 1:
+            layerstds = np.array(layerstds)
+        
+        bandstd = self.parameterAsString(parameters, self.BANDSTD, context)
+        bandstd = bandstd.strip()
+        if bandstd != "":
+            if not (bandstd[0] == "[" and bandstd[-1] == "]"):
+                bandstd = "[" + bandstd + "]"
+
+        if not bandstd == "":
+            try:
+                decoded = json.loads(bandstd)
+                bandstd = np.array(decoded)
+            except (json.decoder.JSONDecodeError, ValueError, TypeError):
+                return False, tr("Could not parse list of standard deviations")
+            layerstds = bandstd
+
+        if not layerstds is None:
+            if layerstds.ndim != 1:
+                return False, tr("False shape of standard deviations list")
+            if layerstds.shape[0] != V.shape[0]:
+                return False, tr("False shape of standard deviations list")
 
         return super().checkParameterValues(parameters, context)
 
@@ -368,6 +426,10 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
             a = a - self._bandmean
 
+            # Scale data
+            if not self._bandstd is None:
+                a = a / self._bandstd
+
 
         # Transform to PC
         if self._inverse:
@@ -387,6 +449,9 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
         # Add the original band means
         if self._inverse:
+            if not self._bandstd is None:
+                new_array = new_array * self._bandstd
+
             new_array = new_array + self._bandmean
 
         # Set no data value
@@ -457,20 +522,26 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
     def json_to_parameters(self, s):
         """
-        Get eigenvectors and means from json string
+        Get eigenvectors, band means and eventually band stds from json string
         
+        Band means have been used for centering data, stds for scaling.
+
         Returns: 
         
         eigenvectors: np.array | None, 
         means: np.array | None
+        stds: np.array | None
         """
+        if s is None:
+            return None, None, None
+        
         s = s.strip()
         if s == "":
-            return None, None
+            return None, None, None
         try:
             decoded = json.loads(s)
         except (json.decoder.JSONDecodeError, ValueError, TypeError):
-            return None, None
+            return None, None, None
 
         eigenvectors = decoded.get("eigenvectors", None)
 
@@ -484,7 +555,14 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
             means = np.array(means)
         except (ValueError, TypeError):
             means = None
-        return eigenvectors, means
+
+        stds = decoded.get("band std", None)
+        try:
+            stds = np.array(stds)
+        except (ValueError, TypeError):
+            stds = None
+
+        return eigenvectors, means, stds
 
 
     class UpdateMetadata(QgsProcessingLayerPostProcessorInterface):
@@ -533,7 +611,7 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
 
     Transform data into given principal components 
     with a matrix of eigenvectors by taking the 
-    dot product with a matrix of weights (after centering the data). 
+    dot product with a matrix of weights (after centering or scaling the data). 
 
 
     The eigenvectors can also be read from the metadata of an 
@@ -561,6 +639,10 @@ class SciPyTransformToPCAlgorithm(SciPyTransformPcBaseclass):
 
     **Use false mean** See also *false mean of each band*. The 
     false mean to be used can also be read from the metadata of a PCA layer. 
+
+    **Std of original bands** Empty string (no scaling) or list of standard deviations
+    for each band of the original data that was used for PCA. If provided, the data is 
+    scaled by dividing by the provided standard deviations. 
     
     **Output data type** Float32 or Float64.
     """
@@ -644,6 +726,9 @@ class SciPyTransformFromPCAlgorithm(SciPyTransformPcBaseclass):
     after rotating back into the original feature space. 
     Optional if the meta data of the input layer is complete. 
     (Use false means if they were used for the forward transformation.)
+
+    **Std of original bands** Empty string (no scaling was used) or list of standard deviations
+    for each band of the original data that was used for PCA. 
             
     **Output data type** Float32 or Float64.
     """
