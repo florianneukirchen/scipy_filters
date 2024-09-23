@@ -30,11 +30,13 @@ Python users get `helpers.RasterWizard` to quickly get the data of a raster laye
 ## Installation
 The plugin can be installed with "manage and install plugins" in QGIS. Eventually, in the settings of "install plugins", the checkbox "Show also experimental plugins" must be checked.
 
-The plugin requires [SciPy](https://scipy.org/), which can be installed with pip:
+The plugin requires [SciPy](https://scipy.org/), which can be installed with pip or conda, e.g.:
 ```
 pip install scipy
 ```
 Since version 0.2, the plugin offers an automatic installation of SciPy (using pip) if it is not yet installed in the python environment used by QGIS.
+
+[Plotly](https://plotly.com/python/) is an optional dependency, used for plotting charts (e.g. variance explained in PCA).
 
 ## Settings
 The plugin settings can be found in the processing section of the QGIS settings. The window size should be large (SciPy is optimized to process large arrays), but not too large (SciPy / QGIS becomes unstable if the data does not fit into the memory). 
@@ -109,6 +111,9 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 ## Changelog
 
 ### Git
+- PCA: optionally scale the data to unit variance (Std of 1) before performing PCA
+- PCA: add a plot of the variance explained to the output if Plotly is installed
+- PCA Biplot algorithm (requires Plotly)
 - Check if layer is provided by gdal (i.e. local file, not wms etc.) and give feedback if otherwise (RasterWizard raises TypeError). 
 - RasterWizard: Support setting band descriptions and accessing bands by band description.
 ### 1.4 (09/2024)
