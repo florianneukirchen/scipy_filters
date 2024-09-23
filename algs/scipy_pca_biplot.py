@@ -147,6 +147,8 @@ class SciPyPCABiplot(QgsProcessingAlgorithm):
     The loadings are plotted as vectors, with the length and direction indicating the contribution of the bands
     to the first and second principal component.
 
+    Use the zoom tool to explore.
+
     **Input** PCA layer
     
     **Plot** The plot is saved as html and can be opened in a browser.
