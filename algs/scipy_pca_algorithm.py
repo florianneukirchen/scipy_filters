@@ -69,7 +69,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
     *number of components* to keep or the *percentage of variance* 
     explained by the kept components can be set. 
 
-    **Standard Scaler** Scale each band to unit variance (std of 1) before PCA (std of each band is reported in the output). Otherwise, the absolute values of the scores will be in a similar range as the original data. (Added in version 1.5)
+    **Standard Scaler** Optionally scale each band to unit variance (std of 1) before performing PCA (std of each band is reported in the output). Otherwise, the absolute values of the scores will be in a similar range as the original data. (Added in version 1.5)
 
     **Number of components** to keep. 0 for all components. If negative: 
     number of components to remove. 
