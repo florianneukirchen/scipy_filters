@@ -158,7 +158,7 @@ class SciPyPCABiplot(QgsProcessingAlgorithm):
     INPUT = 'INPUT'
 
     _name = 'biplot'
-    _displayname = tr('PCA Biplot')
+    _displayname = tr('Biplot')
 
     # Init Algorithm
     def initAlgorithm(self, config):
