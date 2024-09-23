@@ -175,7 +175,7 @@ class SciPyPCABiplot(QgsProcessingAlgorithm):
 
         self.addParameter(QgsProcessingParameterFileDestination(
                 self.OUTPUT,
-                tr('Plot of Variance Explained (PCA)'),
+                tr('PCA Biplot'),
                 tr('HTML files (*.html)'),
             ))
         
