@@ -142,7 +142,7 @@ class SciPyPCABiplot(QgsProcessingAlgorithm):
     with at least the first two components (2 bands).
     The loadings are read from the metadata.
 
-    The scores (PC1 and PC2 of each pixel) are plotted as contours.
+    The scores (PC1 and PC2 of each pixel) are plotted as contours (there would be too many points for a scatter plot).
 
     The loadings are plotted as vectors, with the length and direction indicating the contribution of the bands
     to the first and second principal component.
