@@ -60,6 +60,7 @@ from scipy_filters.scipy_algorithm_baseclasses import groups
 import numpy as np
 import plotly.graph_objects as go
 
+gdal.UseExceptions()
 
 def pca_biplot(pc1, pc2, loadings, labels=None):
     """
