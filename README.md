@@ -114,6 +114,7 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 - PCA: optionally scale the data to unit variance (Std of 1) before performing PCA
 - PCA: add a plot of the variance explained to the output if Plotly is installed
 - PCA Biplot algorithm (requires Plotly)
+- Bugfix: In PCA, correctly apply nodata mask, also if nodata value was 0
 - Check if layer is provided by gdal (i.e. local file, not wms etc.) and give feedback if otherwise (RasterWizard raises TypeError). 
 - RasterWizard: Support setting band descriptions and accessing bands by band description.
 ### 1.4 (09/2024)
