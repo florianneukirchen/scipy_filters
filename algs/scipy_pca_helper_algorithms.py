@@ -236,6 +236,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
         self.outdtype = self.outdtype + 6 # float32 and float64 in gdal
 
     def checkParameterValues(self, parameters, context):
+        layerstds = None
 
         inputlayer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
 
