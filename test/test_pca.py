@@ -76,12 +76,39 @@ class TestPCA(unittest.TestCase):
         pca_mask = processing.run("scipy_filters:no_data_mask", {'INPUT':rlayer,'SEPARATE':False,'OUTPUT':'TEMPORARY_OUTPUT'})
         self.assertEqual(rasterhash(orig_mask['OUTPUT']), rasterhash(pca_mask['OUTPUT']), "No data mask does not match")
 
+        to_output = processing.run("scipy_filters:transform_to_PC", {'INPUT':testfile,'EIGENVECTORS':str(pca_out['eigenvectors'].tolist()),'BANDMEAN':'','BANDSTD':'','DTYPE':0,'OUTPUT':'TEMPORARY_OUTPUT','PARAMETERLAYER':None,'NCOMPONENTS':0,'FALSEMEAN':False})
+        to_mask = processing.run("scipy_filters:no_data_mask", {'INPUT':to_output['OUTPUT'],'SEPARATE':False,'OUTPUT':'TEMPORARY_OUTPUT'})
+        self.assertEqual(rasterhash(orig_mask['OUTPUT']), rasterhash(to_mask['OUTPUT']), "No data mask of Transform To PCA does not match")
 
 
-    def test_pca_roundtrip(self):
+    def test_pca_roundtrip_filled_nodata(self):
         rlayer = QgsRasterLayer(testfile, "landsat lowres")
 
-        pca_out = processing.run("scipy_filters:pca", {'INPUT':'/home/riannek/.local/share/QGIS/QGIS3/profiles/default/python/plugins/scipy_filters/test/testimage_landsat.tif','STANDARDSCALER':False,'NCOMPONENTS':0,'PERCENTVARIANCE':0,'BANDSTATS':True,'DTYPE':0,'PLOT':'TEMPORARY_OUTPUT','OUTPUT':'TEMPORARY_OUTPUT'})
+        filled = processing.run("scipy_filters:fill_no_data", {'INPUT':testfile,'MODE':0,'VALUE':0,'OUTPUT':'TEMPORARY_OUTPUT'})
 
-        output = processing.run("scipy_filters:transform_from_PC", {'INPUT':pca_out['OUTPUT'],'EIGENVECTORS': str(pca_out['eigenvectors'].tolist()),'BANDMEAN': str(pca_out['band mean'].tolist()),'BANDSTD':'','DTYPE':0,'OUTPUT':'TEMPORARY_OUTPUT'})
+        pca_out = processing.run("scipy_filters:pca", {'INPUT':filled['OUTPUT'],'STANDARDSCALER':False,'NCOMPONENTS':0,'PERCENTVARIANCE':0,'BANDSTATS':True,'DTYPE':0,'PLOT':'TEMPORARY_OUTPUT','OUTPUT':'TEMPORARY_OUTPUT'})
+        from_output = processing.run("scipy_filters:transform_from_PC", {'INPUT':pca_out['OUTPUT'],'EIGENVECTORS': str(pca_out['eigenvectors'].tolist()),'BANDMEAN': str(pca_out['band mean'].tolist()),'BANDSTD':'','DTYPE':0,'OUTPUT':'TEMPORARY_OUTPUT'})
+        to_output = processing.run("scipy_filters:transform_to_PC", {'INPUT':filled['OUTPUT'],'EIGENVECTORS':str(pca_out['eigenvectors'].tolist()),'BANDMEAN':'','BANDSTD':'','DTYPE':0,'OUTPUT':'TEMPORARY_OUTPUT','PARAMETERLAYER':None,'NCOMPONENTS':0,'FALSEMEAN':False})
+
+        ds = gdal.Open(pca_out['OUTPUT'])
+        data_pca = ds.ReadAsArray().astype(np.float32)
+
+        ds = gdal.Open(from_output['OUTPUT'])
+        data_from_pca = ds.ReadAsArray().astype(np.float32)
+
+        ds = gdal.Open(to_output['OUTPUT'])
+        data_to_pca = ds.ReadAsArray().astype(np.float32)
+
+        ds = gdal.Open(testfile)
+        data_orig = ds.ReadAsArray().astype(np.float32)
+
+
+        npt.assert_array_almost_equal(data_from_pca, data_orig, decimal=3, err_msg="Transform from PCA does not match original data")
+        npt.assert_array_almost_equal(data_pca, data_to_pca, decimal=3, err_msg="Transform to PCA does not match PCA")
+
+        
+
+
+
+
 
