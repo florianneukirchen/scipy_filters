@@ -244,6 +244,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             )
         )
 
+    # TODO check parameters: agg only if agg_column is set, etc.
     def get_parameters(self, parameters, context):
         kwargs = super().get_parameters(parameters, context)
 
