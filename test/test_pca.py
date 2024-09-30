@@ -47,7 +47,7 @@ class TestPCA(unittest.TestCase):
 
         self.assertTrue(rlayer.isValid())
 
-        output = processing.run("scipy_filters:pca", {'INPUT':'/home/riannek/.local/share/QGIS/QGIS3/profiles/default/python/plugins/scipy_filters/test/testimage_landsat.tif','STANDARDSCALER':False,'NCOMPONENTS':0,'PERCENTVARIANCE':0,'BANDSTATS':True,'DTYPE':0,'PLOT':'TEMPORARY_OUTPUT','OUTPUT':'TEMPORARY_OUTPUT'})
+        output = processing.run("scipy_filters:pca", {'INPUT':rlayer ,'STANDARDSCALER':False,'NCOMPONENTS':0,'PERCENTVARIANCE':0,'BANDSTATS':True,'DTYPE':0,'PLOT':'TEMPORARY_OUTPUT','OUTPUT':'TEMPORARY_OUTPUT'})
 
         self.assertEqual(rasterhash(output['OUTPUT']), '0824a9ad47383157220dab7b5229d56ec2601ad78b74f02a0df767aa', "PCA hash does not match")
 
@@ -66,9 +66,22 @@ class TestPCA(unittest.TestCase):
         loadings = np.array([[2190.585693359375, 1024.546142578125, 410.78875732421875, -116.733642578125, 47.89857864379883], [2491.505859375, 823.0457153320312, 19.350610733032227, 166.49822998046875, -106.6514663696289], [2843.092041015625, 321.34332275390625, -283.9226989746094, 145.06333923339844, 98.73011016845703], [3094.87158203125, -123.05712127685547, -290.19805908203125, -245.13966369628906, -37.201595306396484], [3096.548583984375, -1559.072021484375, 244.551025390625, 60.43208312988281, -1.5397099256515503]])
         npt.assert_array_almost_equal(output['loadings'].astype(np.float32), loadings, decimal=5, err_msg="Loadings does not match")
 
+
+
+    def test_pca_nodata(self):
+        rlayer = QgsRasterLayer(testfile, "landsat lowres")
+
+        orig_mask = processing.run("scipy_filters:no_data_mask", {'INPUT':rlayer,'SEPARATE':False,'OUTPUT':'TEMPORARY_OUTPUT'})
+        pca_out = processing.run("scipy_filters:pca", {'INPUT':rlayer,'STANDARDSCALER':False,'NCOMPONENTS':0,'PERCENTVARIANCE':0,'BANDSTATS':True,'DTYPE':0,'PLOT':'TEMPORARY_OUTPUT','OUTPUT':'TEMPORARY_OUTPUT'})
+        pca_mask = processing.run("scipy_filters:no_data_mask", {'INPUT':rlayer,'SEPARATE':False,'OUTPUT':'TEMPORARY_OUTPUT'})
+        self.assertEqual(rasterhash(orig_mask['OUTPUT']), rasterhash(pca_mask['OUTPUT']), "No data mask does not match")
+
+
+
     def test_pca_roundtrip(self):
         rlayer = QgsRasterLayer(testfile, "landsat lowres")
 
         pca_out = processing.run("scipy_filters:pca", {'INPUT':'/home/riannek/.local/share/QGIS/QGIS3/profiles/default/python/plugins/scipy_filters/test/testimage_landsat.tif','STANDARDSCALER':False,'NCOMPONENTS':0,'PERCENTVARIANCE':0,'BANDSTATS':True,'DTYPE':0,'PLOT':'TEMPORARY_OUTPUT','OUTPUT':'TEMPORARY_OUTPUT'})
 
-        
+        output = processing.run("scipy_filters:transform_from_PC", {'INPUT':pca_out['OUTPUT'],'EIGENVECTORS': str(pca_out['eigenvectors'].tolist()),'BANDMEAN': str(pca_out['band mean'].tolist()),'BANDSTD':'','DTYPE':0,'OUTPUT':'TEMPORARY_OUTPUT'})
+
