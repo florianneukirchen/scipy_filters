@@ -383,7 +383,7 @@ class SciPyPCAAlgorithm(QgsProcessingAlgorithm):
         self.out_ds.WriteArray(new_array[0:bands,:,:])   
 
         # Set no data value
-        if nodatavalue:
+        if nodatavalue is not None:
             for b in range(1, bands + 1):
                 self.out_ds.GetRasterBand(b).SetNoDataValue(self.NODATA)
 

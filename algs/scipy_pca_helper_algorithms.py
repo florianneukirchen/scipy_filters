@@ -479,7 +479,7 @@ class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):
 
 
         # Set no data value
-        if nodatavalue:
+        if nodatavalue is not None:
             for b in range(1, bands + 1):
                 self.out_ds.GetRasterBand(b).SetNoDataValue(self.NODATA)
 
@@ -834,7 +834,7 @@ class SciPyKeepN(QgsProcessingAlgorithm):
         self.out_ds.WriteArray(a[0:self.ncomponents,:,:])
 
         # Set no data value
-        if nodatavalue:
+        if nodatavalue is not None:
             for b in range(1, self.ncomponents + 1):
                 self.out_ds.GetRasterBand(b).SetNoDataValue(nodatavalue)
 
