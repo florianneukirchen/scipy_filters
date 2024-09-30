@@ -33,8 +33,12 @@ QgsApplication.processingRegistry().addProvider(provider)
 
 testfile = os.path.join(dir_path, "testimage_landsat.tif")
 
-def rasterhash(filename):
-    ds = gdal.Open(filename)
+def rasterhash(rlayer):
+    if isinstance(rlayer, QgsRasterLayer):
+        rlayer = rlayer.source()
+    if not isinstance(rlayer, str):
+        raise TypeError("rlayer must be a string (file path) or QgsRasterLayer")
+    ds = gdal.Open(rlayer)
     data = ds.ReadAsArray()
 
     return hashlib.sha224(data.data).hexdigest()
