@@ -117,7 +117,6 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 - Bugfix: In PCA, correctly apply nodata mask, also if nodata value was 0
 - Check if layer is provided by gdal (i.e. local file, not wms etc.) and give feedback if otherwise (RasterWizard raises TypeError). 
 - RasterWizard: Support setting band descriptions and accessing bands by band description.
-- Bugfix: Fill No Data: correct central value (0) for signed integer
 ### 1.4 (09/2024)
 - RasterWizard: Raise TypeError if layer is not a QgsRasterLayer
 ### 1.3 (09/2024)
