@@ -7,8 +7,7 @@ import sys
 import numpy as np
 import numpy.testing as npt
 from osgeo import gdal
-
-import hashlib
+from scipy_filters.helpers.rasterhash import rasterhash
 
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -33,15 +32,6 @@ QgsApplication.processingRegistry().addProvider(provider)
 
 testfile = os.path.join(dir_path, "testimage_landsat.tif")
 
-def rasterhash(rlayer):
-    if isinstance(rlayer, QgsRasterLayer):
-        rlayer = rlayer.source()
-    if not isinstance(rlayer, str):
-        raise TypeError("rlayer must be a string (file path) or QgsRasterLayer")
-    ds = gdal.Open(rlayer)
-    data = ds.ReadAsArray()
-
-    return hashlib.sha224(data.data).hexdigest()
 
 class TestPCA(unittest.TestCase):
 

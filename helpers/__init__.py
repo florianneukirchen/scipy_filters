@@ -5,3 +5,4 @@ from .window import *
 from .nodata import *
 from .wizard import *
 from .docstring_html import *
+from .rasterhash import *
