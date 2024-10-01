@@ -29,6 +29,16 @@ from collections import OrderedDict
 from .i18n import tr
 
 def str_to_array(s, dims=2, to_int=True):
+    """Turn string of kernel/footprint/structure to numpy array
+
+    String should be a list of lists, e.g. [[1,2,3],[4,5,6],[7,8,9]]
+    or a code such as "square", "cross", "cross3D", "ball", "cube".
+
+    :param s: string to be converted
+    :param dims: number of dimensions of the array, 2 or 3
+    :param to_int: if True, dtype of array must be int
+    :return: numpy array
+    """
     s = s.strip()
     if not s:
         return None
@@ -70,8 +80,15 @@ def check_structure(s, dims=2, odd=False, optional=True):
     """
     Check if structure is valid 
     
+    A valid structure can be converted with str_to_array().
     Returns tuple: (ok: bool, message: str, shape: tuple | None)
     Shape is required for origin
+
+    :param s: string to be converted
+    :param dims: number of dimensions of the array, 2 or 3
+    :param odd: if True, all values must be odd (for Wiener filter)
+    :param optional: if True, empty string is allowed and returns True
+    :return: tuple: (ok: bool, message: str, shape: tuple | None)
     """
     s = s.strip()
     if optional and not s:
@@ -137,8 +154,15 @@ def check_origin(s, shape):
 
 
 def str_to_int_or_list(s):
-    """
-    Allow to have parameters for axes (one or several) or size (for all or each dimension)
+    """Parse string to int or list of ints
+
+    String should be a list of integers, e.g. [1,2,3], optionally without brackets;
+    or a single integer.
+
+    Used to have parameters for axes (one or several) or size (for all or each dimension)
+
+    :param s: string to be converted
+    :return: int or list of ints
     """
     if s == "0":
         return 0
@@ -169,6 +193,12 @@ def str_to_int_or_list(s):
 
 
 def array_to_str(a):
+    """Convert numpy array to string
+    
+    For pretty printing of arrays, line breaks are added.
+    :param a: numpy array
+    :return: string
+    """
     s = str(a.tolist())
     s = s.replace('], [', '],\n[')
     return s
