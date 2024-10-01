@@ -52,10 +52,10 @@ def maximumvalue(dtype):
 
 def centralvalue(dtype):
     """Return the difference of max and min of possible dtype values"""
-    if np.issubdtype(dtype, np.integer):
+    if np.issubdtype(dtype, np.unsignedinteger):
         return (np.iinfo(dtype).max - np.iinfo(dtype).min) // 2
     else: 
-        # Float
+        # Float, signed integer
         return 0
 
 def bandmean(dataset, band, approx=True):
