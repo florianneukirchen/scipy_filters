@@ -470,7 +470,7 @@ class RasterWizard():
         Set up a new output dataset for writing.
 
         Only to be used directly when iterating over windows, see :py:meth:`.get_windows` for example.
-        Otherwise, the output is set in :py:meth`tolayer`.
+        Otherwise, the output is set in :py:meth:`.tolayer`.
 
         With default values, the file is written to memory only and has the dtype matching the NumPy array.
 

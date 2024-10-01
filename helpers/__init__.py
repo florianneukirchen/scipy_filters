@@ -6,3 +6,4 @@ from .nodata import *
 from .wizard import *
 from .docstring_html import *
 from .rasterhash import *
+from .get_version import *

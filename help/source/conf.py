@@ -12,13 +12,13 @@
 # serve to show the default.
 
 import sys, os
-from .get_version import get_version
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.append(os.path.abspath('../../..'))
 sys.path.append(os.path.abspath('../..'))
+from scipy_filters.helpers.get_version import get_version
 
 # Paths used by QGIS
 #sys.path.append('/home/riannek/.local/share/QGIS/QGIS3/profiles/default/python/plugins/scipy_filters')

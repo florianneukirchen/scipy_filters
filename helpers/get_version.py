@@ -1,6 +1,6 @@
 import os
 
-metadatafile = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../', 'metadata.txt')
+metadatafile = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../', 'metadata.txt')
 
 def get_version():
     with open(metadatafile) as f:
