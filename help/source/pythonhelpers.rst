@@ -9,4 +9,9 @@ Helpers for the Python console
    :maxdepth: 2
 
    wizard
-   rasterwindow
+   rasterwindow 
+
+More helpers
+~~~~~~~~~~~~
+
+.. autofunction:: helpers.rasterhash

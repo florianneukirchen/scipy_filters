@@ -5,11 +5,13 @@ from qgis.utils import iface
 
 
 def rasterhash(rlayer=None):
-    """Return a SHA224 hash of the raster data for unittests
+    """Return a SHA224 hash of the raster data
 
+    For unit testing. Getting the hash of a layer quickly helps to write unit tests faster.
     Can be used to compare raster data between runs of the same algorithm.
     It is calucated in the same way as in QGIS core TestTools.py, 
     but more convienient to use e.g. in the console. 
+    Parameter rlayer is a QGIS raster layer or a file path to a raster file.
     Default is the active layer.
     
     :param rlayer: raster layer or file path, default is active layer.
