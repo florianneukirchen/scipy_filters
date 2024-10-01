@@ -70,6 +70,81 @@ class TestNoDataHelpers(unittest.TestCase):
         self.assertTrue(is_in_dtype_range(-np.inf, np.float32), "-np.inf is not in float32 range")
         self.assertTrue(is_in_dtype_range(np.inf, np.float32), "np.inf is not in float32 range")
 
+class TestStructures(unittest.TestCase):
+    def test_checkstructure_codes(self):
+        ok, s, shape = check_structure("square", 2)
+        self.assertTrue(ok)
+        self.assertEqual(shape, (3, 3))
+
+        ok, s, shape = check_structure("square", 3)
+        self.assertTrue(ok)
+
+        ok, s, shape = check_structure("sfsdf", 2)
+        self.assertFalse(ok)
+        self.assertIsNot(s, "")
+
+        ok, s, shape = check_structure("cube", 3)
+        self.assertTrue(ok)
+        self.assertEqual(shape, (3, 3, 3))
+
+        ok, s, shape = check_structure("cube", 2)
+        self.assertFalse(ok)
+        self.assertIsNot(s, "")
+
+    def test_structure(self):
+        kernel = "[[1, 2, 1],[2, 4, 2],[1, 2, 1]]"
+
+        ok, s, shape = check_structure(kernel, 2)
+        self.assertTrue(ok)
+        self.assertEqual(shape, (3, 3))
+
+        ok, s, shape = check_structure(kernel, 3)
+        self.assertTrue(ok)
+        self.assertEqual(shape, (1, 3, 3))
+
+        kernel = "[[1, 2, 1],\n[2, 4, 2],\n[1, 2, 1]]"
+        ok, s, shape = check_structure(kernel, 2)
+        self.assertTrue(ok)
+        self.assertEqual(shape, (3, 3))
+
+        kernel = "[[1, 2, 1],[2, 4, 2],[1, 2, 1]"
+        ok, s, shape = check_structure(kernel, 2)
+        self.assertFalse(ok)
+        self.assertIsNot(s, "")
+
+        kernel = "[[1, 2, 1],[2, 4, 2],[1,  1]]"
+        self.assertFalse(ok)
+
+        kernel = '[[[1.0, 1.0, 1.0],[1.0, 1.0, 1.0],[1.0, 1.0, 1.0]],[[1.0, 1.0, 1.0],[1.0, 1.0, 1.0],[1.0, 1.0, 1.0]],[[1.0, 1.0, 1.0],[1.0, 1.0, 1.0],[1.0, 1.0, 1.0]]]'
+        ok, s, shape = check_structure(kernel, 3)
+        self.assertTrue(ok)
+        self.assertEqual(shape, (3, 3, 3))
+
+        ok, s, shape = check_structure(kernel, 2)
+        self.assertFalse(ok)
+
+    def test_odd_structure(self):
+        kernel = "[[1, 2, 1],[2, 4, 2],[1, 2, 1]]"
+        ok, s, shape = check_structure(kernel, 2, odd=True)
+        self.assertFalse(ok)
+
+        kernel = "[[1, 3, 1],[3, 5, 3],[1, 3, 1]]"
+        ok, s, shape = check_structure(kernel, 2, odd=True)
+        self.assertTrue(ok)
+
+    # TODO test for check origin
+
+    def test_str_to_int_or_list(self):
+        self.assertEqual(str_to_int_or_list("2"), 2)
+        self.assertEqual(str_to_int_or_list("0"), 0)
+        self.assertEqual(str_to_int_or_list("[1,2,1]"), [1, 2, 1])
+        self.assertEqual(str_to_int_or_list("1,2,1"), [1, 2, 1])
+
+        with self.assertRaises(ValueError):
+            str_to_int_or_list("[[1,2,1],[2,4,2],[1,2,1]]")
+
+        with self.assertRaises(ValueError):
+            str_to_int_or_list("gssfsfsr")
 
 if __name__ == '__main__':
     unittest.main()     
