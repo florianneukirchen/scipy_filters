@@ -67,6 +67,15 @@ class TestWizard(unittest.TestCase):
         dtype = ds.GetRasterBand(1).DataType
         self.assertEqual(dtype, "Float64")
 
+        # Test if setting of and accessing bands with description works
+        ld = wizard.tolayer(a, description=['a','b'])
+        wizard2 = RasterWizard(ld)
+        banddesc = wizard2.banddesc()
+        self.assertEqual(banddesc[0], 'a')
+        a = wizard2.toarray("a")
+        self.assertIsInstance(a, np.ndarray)
+        self.assertEqual(a.ndim, 2)
+
 
 
 class TestWizard(unittest.TestCase):
