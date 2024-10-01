@@ -4,29 +4,25 @@ import sys
 import numpy as np
 import numpy.testing as npt
 from osgeo import gdal
-from qgis.core import *
-from scipy_filters.helpers.rasterhash import rasterhash
-
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-
-app = QgsApplication([], True)
-# app.setPrefixPath("/usr/lib/qgis/plugins", True)
-app.setPrefixPath("/usr", True)
-app.initQgis()
-
 sys.path.append('/usr/share/qgis/python/plugins')
 sys.path.append(os.path.abspath(os.path.join(dir_path, '../../')))
 
+from qgis.core import *
+from scipy_filters.helpers.rasterhash import rasterhash
 from scipy_filters.scipy_filters_provider import SciPyFiltersProvider
 import processing
 from processing.core.Processing import Processing
+
+app = QgsApplication([], True)
+app.setPrefixPath("/usr", True)
+app.initQgis()
+
  
 Processing.initialize()
-# QgsApplication.processingRegistry().addProvider(QgsNativeAlgorithms())
 provider = SciPyFiltersProvider()
 QgsApplication.processingRegistry().addProvider(provider)
-
 
 testfile = os.path.join(dir_path, "testimage_landsat.tif")
 
@@ -82,3 +78,6 @@ class TestEdgeFilters(unittest.TestCase):
     def test_gaussian_gradient_magnitude(self):
         output = processing.run("scipy_filters:gaussian_gradient_magnitude", {'INPUT': testfile,'DIMENSION':0,'SIGMA':5,'BANDSTATS':True,'DTYPE':6,'OUTPUT':'TEMPORARY_OUTPUT','MODE':0,'CVAL':0})
         self.assertEqual(rasterhash(output['OUTPUT']), 'f3e4867d69f6f1d083578656663f147b3feec118b9fb3f45e848acbc', "Gaussian gradient magnitude hash does not match")
+
+if __name__ == '__main__':
+    unittest.main()       

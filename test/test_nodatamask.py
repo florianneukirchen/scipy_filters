@@ -4,29 +4,25 @@ import sys
 import numpy as np
 import numpy.testing as npt
 from osgeo import gdal
-from qgis.core import *
-from scipy_filters.helpers.rasterhash import rasterhash
-
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-
-app = QgsApplication([], True)
-# app.setPrefixPath("/usr/lib/qgis/plugins", True)
-app.setPrefixPath("/usr", True)
-app.initQgis()
-
 sys.path.append('/usr/share/qgis/python/plugins')
 sys.path.append(os.path.abspath(os.path.join(dir_path, '../../')))
 
+from qgis.core import *
+from scipy_filters.helpers.rasterhash import rasterhash
 from scipy_filters.scipy_filters_provider import SciPyFiltersProvider
 import processing
 from processing.core.Processing import Processing
+
+app = QgsApplication([], True)
+app.setPrefixPath("/usr", True)
+app.initQgis()
+
  
 Processing.initialize()
-# QgsApplication.processingRegistry().addProvider(QgsNativeAlgorithms())
 provider = SciPyFiltersProvider()
 QgsApplication.processingRegistry().addProvider(provider)
-
 
 testfile = os.path.join(dir_path, "testimage_landsat.tif")
 
@@ -61,4 +57,5 @@ class TestNoDataMask(unittest.TestCase):
         filled = processing.run("scipy_filters:fill_no_data", {'INPUT':testfile,'MODE':6,'VALUE':0,'OUTPUT':'TEMPORARY_OUTPUT'})
         self.assertEqual(rasterhash(filled['OUTPUT']), '781fd404477f8fcd2087af32f3f0d6f3393185b63a84240853148e2e', "Fill No Data with central value, hash does not match")
 
-        
+if __name__ == '__main__':
+    unittest.main()           

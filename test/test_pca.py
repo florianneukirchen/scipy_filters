@@ -1,37 +1,30 @@
-from qgis.core import *
-# from qgis.analysis import QgsNativeAlgorithms
-
 import unittest
 import os
 import sys
 import numpy as np
 import numpy.testing as npt
 from osgeo import gdal
-from scipy_filters.helpers.rasterhash import rasterhash
-
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-
-app = QgsApplication([], True)
-# app.setPrefixPath("/usr/lib/qgis/plugins", True)
-app.setPrefixPath("/usr", True)
-app.initQgis()
-
 sys.path.append('/usr/share/qgis/python/plugins')
 sys.path.append(os.path.abspath(os.path.join(dir_path, '../../')))
 
+from qgis.core import *
+from scipy_filters.helpers.rasterhash import rasterhash
 from scipy_filters.scipy_filters_provider import SciPyFiltersProvider
 import processing
 from processing.core.Processing import Processing
+
+app = QgsApplication([], True)
+app.setPrefixPath("/usr", True)
+app.initQgis()
+
  
 Processing.initialize()
-# QgsApplication.processingRegistry().addProvider(QgsNativeAlgorithms())
 provider = SciPyFiltersProvider()
 QgsApplication.processingRegistry().addProvider(provider)
 
-
 testfile = os.path.join(dir_path, "testimage_landsat.tif")
-
 
 class TestPCA(unittest.TestCase):
 
@@ -102,7 +95,8 @@ class TestPCA(unittest.TestCase):
 
         
 
-
+if __name__ == '__main__':
+    unittest.main()           
 
 
 
