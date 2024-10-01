@@ -37,6 +37,10 @@ def convert_docstring_to_html(docstring):
     # Note
     docstring = re.sub(r'.. note::', '<i>Note:</i>', docstring)
 
+    # versionadded, versionchanged
+    docstring = re.sub(r'.. versionadded::', '<i>Version added:</i>', docstring)
+    docstring = re.sub(r'.. versionchanged::', '<i>Version changed:</i>', docstring)
+
     # Links im Sphinx-Format in HTML umwandeln
     docstring = re.sub(r'`([^<]+)<([^>]+)>`_', r'<a href="\2">\1</a>', docstring)
 
