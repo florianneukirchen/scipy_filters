@@ -1,9 +1,12 @@
 import hashlib
 from osgeo import gdal
 from qgis.core import QgsRasterLayer
+from qgis.utils import iface
 
 
-def rasterhash(rlayer):
+def rasterhash(rlayer=None):
+    if rlayer is None:
+        rlayer = iface.activeLayer()
     if isinstance(rlayer, QgsRasterLayer):
         rlayer = rlayer.source()
     if not isinstance(rlayer, str):
