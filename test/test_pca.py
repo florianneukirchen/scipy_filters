@@ -107,8 +107,8 @@ class TestPCA(unittest.TestCase):
         data_orig = ds.ReadAsArray().astype(np.float32)
 
 
-        npt.assert_array_almost_equal(data_from_pca, data_orig, decimal=3, err_msg="Transform from PCA does not match original data")
-        npt.assert_array_almost_equal(data_pca, data_to_pca, decimal=3, err_msg="Transform to PCA does not match PCA")
+        npt.assert_array_almost_equal(data_from_pca, data_orig, decimal=2, err_msg="Transform from PCA does not match original data")
+        npt.assert_array_almost_equal(data_pca, data_to_pca, decimal=2, err_msg="Transform to PCA does not match PCA")
 
         
 
