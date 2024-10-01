@@ -150,6 +150,8 @@ class SciPyPCABiplot(QgsProcessingAlgorithm):
 
     Use the zoom tool to explore.
 
+    .. note:: Requires Plotly.
+
     **Input** PCA layer
     
     **Plot** The plot is saved as html and can be opened in a browser.
