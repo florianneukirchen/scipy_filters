@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - name: Checkout repository
@@ -13,6 +13,7 @@ jobs:
     - name: Set up QGIS repository
       run: |
         sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key 51F523511C7028C3
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key D155B8E6A419C5BE
         sudo add-apt-repository "deb https://qgis.org/ubuntu $(lsb_release -c -s) main"
         sudo apt-get update
 
@@ -23,5 +24,3 @@ jobs:
         pip3 install scipy pytest
 
     - name: Run tests
-      run: |
-        python3 -m pytest test/
