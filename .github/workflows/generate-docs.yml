@@ -35,8 +35,14 @@ jobs:
         make clean html
         make html
 
+    - name: Move documentation to test directory
+      run: |
+        mkdir -p ./help/_build/html/test
+        mv ./help/_build/html/* ./help/_build/html/test
+
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GH_TOKEN }}
-        publish_dir: ./docs/_build/html/test
+        publish_dir: ./help/_build/html/test
+        keep_files: true
