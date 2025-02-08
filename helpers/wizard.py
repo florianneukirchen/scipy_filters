@@ -190,7 +190,7 @@ class RasterWizard():
             return 3
         
     @property
-    def shape(self) -> tuple[int]:
+    def shape(self):
         """
         Shape of the raster layer
          
