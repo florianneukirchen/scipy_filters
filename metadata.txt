@@ -6,7 +6,7 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=1.4
+version=1.5
 author=Florian Neukirchen
 email=mail@riannek.de
 
@@ -37,7 +37,15 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=1.4
+changelog=1.5
+    - PCA: optionally scale the data to unit variance (Std of 1) before performing PCA
+    - PCA: add a plot of the variance explained to the output if Plotly is installed
+    - PCA Biplot algorithm (requires Plotly)
+    - RasterWizard: Support setting band descriptions and accessing bands by band description.
+    - Bugfix: Check if layer is provided by gdal (i.e. local file, not wms etc.) and give feedback if otherwise (RasterWizard raises TypeError). 
+    - Bugfix: In PCA, correctly apply nodata mask, also if nodata value was 0
+    - Bugfix: In Fill no data, get correct central value for signed integer (0)
+    1.4
     - helpers.RasterWizard: Raise type error if layer is not a raster layer
     1.3
     - Add helpers.RasterWizard
