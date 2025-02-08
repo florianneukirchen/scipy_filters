@@ -38,7 +38,8 @@ jobs:
     - name: Move documentation to test directory
       run: |
         mkdir -p ./help/_build/html/test
-        mv ./help/_build/html/* ./help/_build/html/test
+        find ./help/_build/html -maxdepth 1 -mindepth 1 -not -name test -exec mv {} ./help/_build/html/test/ \;
+
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
