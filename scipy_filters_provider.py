@@ -136,8 +136,10 @@ class SciPyFiltersProvider(QgsProcessingProvider):
         Unloads the provider. Any tear-down steps required by the provider
         should be implemented here.
         """
-        # pass
-        ProcessingConfig.removeSetting('WINDOWSIZE')
+        if 'WINDOWSIZE' in ProcessingConfig.settings:
+            ProcessingConfig.removeSetting('WINDOWSIZE')
+        if 'MAXSIZE' in ProcessingConfig.settings:
+            ProcessingConfig.removeSetting('MAXSIZE')
 
     def loadAlgorithms(self):
         """
