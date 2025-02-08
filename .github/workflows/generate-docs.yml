@@ -31,7 +31,7 @@ jobs:
 
     - name: Build Sphinx documentation
       run: |
-        cd docs
+        cd help
         make clean html
         make html
 
