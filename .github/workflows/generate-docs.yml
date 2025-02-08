@@ -1,0 +1,42 @@
+name: Generate Docs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up QGIS repository
+      run: |
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key 51F523511C7028C3
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key D155B8E6A419C5BE
+        sudo add-apt-repository "deb https://qgis.org/ubuntu $(lsb_release -c -s) main"
+        sudo apt-get update
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y qgis python3-qgis
+        sudo apt-get install -y python3-pip
+        pip3 install scipy sphinx sphinx_rtd_theme
+
+    - name: Build Sphinx documentation
+      run: |
+        cd docs
+        make clean html
+        make html
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/_build/html
