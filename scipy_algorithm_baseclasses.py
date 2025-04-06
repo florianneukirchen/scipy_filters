@@ -400,7 +400,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
         # output no data value
         self._nodata = self.ds.GetRasterBand(1).GetNoDataValue()
-        if self._nodata:
+        if self._nodata is not None:
             if not is_in_dtype_range(self._nodata, kwargs['output']):
                 self._nodata = np.iinfo(kwargs['output']).min
 
@@ -498,7 +498,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     return {}
 
         # Set no data value on all bands
-        if self._nodata:
+        if self._nodata is not None:
             for b in range(1, self._outbands + 1):
                 self.out_ds.GetRasterBand(b).SetNoDataValue(self._nodata) 
 
