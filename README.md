@@ -110,6 +110,9 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 
 ## Changelog
 
+### 1.6 (03/2025)
+- Bugfix: Fix issue #2 by correctly handling no data in a moving window operation
+
 ### 1.5 (02/2025)
 - PCA: optionally scale the data to unit variance (Std of 1) before performing PCA
 - PCA: add a plot of the variance explained to the output if Plotly is installed
