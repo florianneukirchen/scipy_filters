@@ -436,13 +436,13 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                     # The actual function
                     filtered = self.fct(a, **kwargs)
                     
-                    # chop off margin
-                    slices = win.getslice(2)
-                    filtered = filtered[slices]
-
                     # Replace no data cells with output no data value
                     if self._nodata:
                         filtered[nodata_mask] = self._nodata
+
+                    # chop off margin
+                    slices = win.getslice(2)
+                    filtered = filtered[slices]
 
                     self.out_ds.GetRasterBand(i).WriteArray(filtered, *win.gdalout)
 
