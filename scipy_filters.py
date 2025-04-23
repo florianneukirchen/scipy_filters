@@ -104,9 +104,9 @@ class SciPyFiltersPlugin(object):
             None,
             tr('SciPy Filters: SciPy is not installed'),
             tr('SciPy is not installed. Do you want to install it automatically (using pip)?'),
-            QMessageBox.Yes | QMessageBox.No
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
-        if choice == QMessageBox.Yes:
+        if choice == QMessageBox.StandardButton.Yes:
             msg = None
             res = ""
             import subprocess
