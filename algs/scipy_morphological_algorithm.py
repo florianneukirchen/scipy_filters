@@ -250,7 +250,7 @@ class SciPyBinaryMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
 
         self.masklayer = self.parameterAsRasterLayer(parameters, self.MASK, context)
 
-        iterations = self.parameterAsInt(parameters, self.MASK, context)
+        iterations = self.parameterAsInt(parameters, self.ITERATIONS, context)
         if iterations:
             kwargs['iterations'] = iterations
 
