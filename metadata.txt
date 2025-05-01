@@ -6,7 +6,7 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=1.6
+version=1.7
 author=Florian Neukirchen
 email=mail@riannek.de
 
@@ -37,7 +37,10 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=1.6
+changelog=1.7
+    - Fix issue #2 iterations not working in scipy_morphological_algorithm.py
+    - Run pyqgis4-checker to support QGIS4/Qt6. But not tested yet.
+    1.6
     - Bugfix: Fix issue #2 by correctly handling no data in a moving window operation
     1.5
     - PCA: optionally scale the data to unit variance (Std of 1) before performing PCA

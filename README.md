@@ -110,6 +110,10 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 
 ## Changelog
 
+### 1.7 (05/2025)
+- Fix issue #2 iterations not working in scipy_morphological_algorithm.py
+- Run pyqgis4-checker to support QGIS4/Qt6. But not tested yet.
+
 ### 1.6 (03/2025)
 - Bugfix: Fix issue #2 by correctly handling no data in a moving window operation
 
