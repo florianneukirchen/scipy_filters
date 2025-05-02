@@ -39,6 +39,7 @@ hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
 changelog=1.7
     - Merge pull request issue #3 fix iterations not working in scipy_morphological_algorithm.py
+    - Fix the scipy installer (issue #4)
     - Run pyqgis4-checker to support QGIS4/Qt6. But not tested yet with Qt6.
     1.6
     - Bugfix: Fix issue #2 by correctly handling no data in a moving window operation

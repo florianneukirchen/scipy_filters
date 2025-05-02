@@ -112,6 +112,7 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 
 ### 1.7 (05/2025)
 - Merge pull request issue #3 iterations not working in scipy_morphological_algorithm.py
+- Fix the scipy installer (issue #4)
 - Run pyqgis4-checker to support QGIS4/Qt6. But not tested yet with Qt6.
 
 ### 1.6 (03/2025)
