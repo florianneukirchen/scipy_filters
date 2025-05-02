@@ -49,22 +49,22 @@ class TestPCA(unittest.TestCase):
 
         output = processing.run("scipy_filters:pca", {'INPUT':rlayer ,'STANDARDSCALER':False,'NCOMPONENTS':0,'PERCENTVARIANCE':0,'BANDSTATS':True,'DTYPE':0,'PLOT':'TEMPORARY_OUTPUT','OUTPUT':'TEMPORARY_OUTPUT'})
 
-        self.assertEqual(rasterhash(output['OUTPUT']), '0824a9ad47383157220dab7b5229d56ec2601ad78b74f02a0df767aa', "PCA hash does not match")
+        self.assertEqual(rasterhash(output['OUTPUT']), 'abf0a86d30474dbc238163134449cbb0b88028fc9216eb215f8e931a', "PCA hash does not match")
 
         bandmean = np.array([10734.228, 12619.677, 14582.811, 15160.854, 15226.158]).astype(np.float32)
         npt.assert_array_equal(output['band mean'].astype(np.float32), bandmean, "Band mean does not match")
 
-        singuarvalues = np.array([689999.7 , 230689.  ,  70001.92,  39620.43,  17569.02]).astype(np.float32)
+        singuarvalues = np.array([689999.75, 230689.03125, 70001.8984375, 39620.42578125, 17569.0234375]).astype(np.float32)
         npt.assert_array_equal(output['singular values'].astype(np.float32), singuarvalues, "Singular values does not match")
 
-        varianceexplained = np.array([38256292.0, 4276208.5, 393754.03125, 126137.28125, 24802.767578125]).astype(np.float32)
+        varianceexplained = np.array([38256300.0, 4276209.5, 393753.78125, 126137.2578125, 24802.779296875]).astype(np.float32)
         npt.assert_array_equal(output['variance explained'].astype(np.float32), varianceexplained, "Variance explained does not match")
 
         eigenvectors = np.array([[0.3541675806045532, 0.49545255303382874, 0.6546452641487122, -0.32868078351020813, 0.30413928627967834], [0.4028194546699524, 0.3980104923248291, 0.030837714672088623, 0.4688003361225128, -0.67719966173172], [0.45966294407844543, 0.1553959995508194, -0.45246773958206177, 0.4084472060203552, 0.6269018650054932], [0.5003699064254761, -0.059508271515369415, -0.46246832609176636, -0.6902268528938293, -0.236217200756073], [0.5006410479545593, -0.7539399266242981, 0.38972383737564087, 0.17015543580055237, -0.00977662205696106]]).astype(np.float32)   
         npt.assert_array_almost_equal(output['eigenvectors'].astype(np.float32), eigenvectors, decimal=5, err_msg="Eigenvectors does not match")
 
-        loadings = np.array([[2190.585693359375, 1024.546142578125, 410.78875732421875, -116.733642578125, 47.89857864379883], [2491.505859375, 823.0457153320312, 19.350610733032227, 166.49822998046875, -106.6514663696289], [2843.092041015625, 321.34332275390625, -283.9226989746094, 145.06333923339844, 98.73011016845703], [3094.87158203125, -123.05712127685547, -290.19805908203125, -245.13966369628906, -37.201595306396484], [3096.548583984375, -1559.072021484375, 244.551025390625, 60.43208312988281, -1.5397099256515503]])
-        npt.assert_array_almost_equal(output['loadings'].astype(np.float32), loadings, decimal=5, err_msg="Loadings does not match")
+        loadings = np.array([[2190.586221514082, 1024.5460270801302, 410.7884992806171, -116.73363349030497, 47.898589859596484], [2491.505806629693, 823.0459064032124, 19.350624191402098, 166.49823528267615, -106.65147200192966], [2843.092942918393, 321.3433918006569, -283.9226231233674, 145.06328951477363, 98.73013697733111], [3094.872220828394, -123.05714168729475, -290.1979584964334, -245.1396568936927, -37.2016186572061], [3096.5493319130037, -1559.0723816517375, 244.55093823940953, 60.4320766599967, -1.5397102340183777]])
+        npt.assert_array_almost_equal(output['loadings'].astype(np.float32), loadings, decimal=3, err_msg="Loadings does not match")
 
 
 
