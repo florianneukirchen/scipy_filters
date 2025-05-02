@@ -50,8 +50,9 @@ from scipy_filters.helpers import (str_to_int_or_list,
                       check_structure, 
                       str_to_array, 
                       kernelexamples, 
-                      get_np_dtype,
-                      tr)
+                      get_np_dtype)
+
+from scipy_filters.ui.i18n import tr
 
 class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
     """

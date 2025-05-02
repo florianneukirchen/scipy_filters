@@ -51,7 +51,6 @@ from processing.core.ProcessingConfig import ProcessingConfig
 
 
 from scipy_filters.helpers import (str_to_array, 
-                      tr,
                       convert_docstring_to_html,
                       bandmean,
                       minimumvalue,
@@ -63,6 +62,7 @@ from scipy_filters.helpers import (str_to_array,
                       get_np_dtype,
                       DEFAULTWINDOWSIZE)
 
+from scipy_filters.ui.i18n import tr
 from scipy_filters.scipy_algorithm_baseclasses import groups
 
 class SciPyFilterNoDataMask(QgsProcessingAlgorithm):

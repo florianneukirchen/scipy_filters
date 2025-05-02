@@ -46,9 +46,9 @@ from scipy_filters.ui.structure_widget import (StructureWidgetWrapper,
 from scipy_filters.helpers import (str_to_int_or_list, 
                       check_structure, 
                       str_to_array, 
-                      morphostructexamples,
-                      tr)
+                      morphostructexamples)
 
+from scipy_filters.ui.i18n import tr
 
 class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
     """

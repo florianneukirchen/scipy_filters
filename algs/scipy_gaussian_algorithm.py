@@ -35,7 +35,7 @@ from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterEnum,)
 
 from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
-from scipy_filters.helpers import tr
+from scipy_filters.ui.i18n import tr
 
 class SciPyAlgorithmWithSigma(SciPyAlgorithmWithMode):
     """

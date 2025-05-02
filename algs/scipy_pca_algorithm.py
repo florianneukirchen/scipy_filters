@@ -50,7 +50,10 @@ from qgis.core import (QgsProcessingAlgorithm,
 from processing.core.ProcessingConfig import ProcessingConfig
 
 from scipy_filters.scipy_algorithm_baseclasses import groups
-from scipy_filters.helpers import convert_docstring_to_html, tr, MAXSIZE
+from scipy_filters.helpers import convert_docstring_to_html, MAXSIZE
+
+from scipy_filters.ui.i18n import tr
+
 
 try:
     import plotly.graph_objects as go

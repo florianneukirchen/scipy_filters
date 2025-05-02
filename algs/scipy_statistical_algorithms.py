@@ -45,8 +45,10 @@ from scipy_filters.ui.sizes_widget import (SizesWidgetWrapper)
 from scipy_filters.helpers import (str_to_int_or_list, 
                        minimumvalue,
                        maximumvalue,
-                       bandmean,
-                       tr)
+                       bandmean)
+
+from scipy_filters.ui.i18n import tr
+
 
 class SciPyMedianAlgorithm(SciPyStatisticalAlgorithm):
     """

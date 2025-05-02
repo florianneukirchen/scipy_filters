@@ -43,8 +43,9 @@ from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithm, Dimensions
 
 from scipy_filters.helpers import (check_structure, 
                        str_to_array, 
-                       kernelexamples,
-                       tr)
+                       kernelexamples)
+
+from scipy_filters.ui.i18n import tr
 
 from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)

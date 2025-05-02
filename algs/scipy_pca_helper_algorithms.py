@@ -50,12 +50,12 @@ from processing.core.ProcessingConfig import ProcessingConfig
 
 
 from scipy_filters.helpers import (str_to_array, 
-                      tr,
                       convert_docstring_to_html,
                       bandmean,
                       MAXSIZE)
 
 from scipy_filters.scipy_algorithm_baseclasses import groups
+from scipy_filters.ui.i18n import tr
 
 
 class SciPyTransformPcBaseclass(QgsProcessingAlgorithm):

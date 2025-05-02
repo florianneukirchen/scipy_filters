@@ -69,8 +69,9 @@ from scipy_filters.helpers import (RasterWindow,
                       dtype_options,
                       get_np_dtype,
                       is_in_dtype_range,
-                      convert_docstring_to_html,
-                      tr)
+                      convert_docstring_to_html)
+
+from scipy_filters.ui.i18n import tr
 
 # Group IDs and group names
 groups = {

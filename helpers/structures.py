@@ -26,7 +26,7 @@ from scipy import ndimage
 from qgis.core import QgsProcessingException
 from collections import OrderedDict
 
-from .i18n import tr
+from scipy_filters.ui.i18n import tr
 
 def str_to_array(s, dims=2, to_int=True):
     """Turn string of kernel/footprint/structure to numpy array

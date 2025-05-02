@@ -37,7 +37,8 @@ from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterDefinition,
                         )
 
-from scipy_filters.helpers import str_to_int_or_list, tr
+from scipy_filters.helpers import str_to_int_or_list
+from scipy_filters.ui.i18n import tr
 
 from scipy_filters.scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           SciPyStatisticalAlgorithm)

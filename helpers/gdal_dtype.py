@@ -1,6 +1,5 @@
 import numpy as np
-
-from .i18n import tr
+from scipy_filters.ui.i18n import tr
 
 dtype_options = [tr('Same as input'),
                  'Byte (unsigned 8 bit integer)',

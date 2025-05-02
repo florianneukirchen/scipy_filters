@@ -37,7 +37,7 @@ from scipy_filters.scipy_algorithm_baseclasses import (SciPyAlgorithmWithMode,
                                           SciPyAlgorithmWithModeAxis,
                                           Dimensions)
 
-from scipy_filters.helpers import tr
+from scipy_filters.ui.i18n import tr
 
 class SciPyLaplaceAlgorithm(SciPyAlgorithmWithMode):
     """

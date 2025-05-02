@@ -37,7 +37,7 @@ import inspect
 from qgis.core import QgsApplication
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 
-from scipy_filters.helpers import tr
+from scipy_filters.ui.i18n import tr
 
 # This fails if scipy is not installed
 try:
