@@ -110,6 +110,9 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 
 ## Changelog
 
+### Git
+- Rename layer only if it is a temporary layer (issue #5)
+
 ### 1.7 (05/2025)
 - Merge pull request issue #3 iterations not working in scipy_morphological_algorithm.py
 - Fix the scipy installer (issue #4)
