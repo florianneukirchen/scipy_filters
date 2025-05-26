@@ -530,13 +530,11 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         self.out_ds = None 
 
         feedback.setProgress(100)
-        print(self.output_raster)
         
         # Optionally rename the output layer
         is_temporary = "OUTPUT" in os.path.basename(self.output_raster)
-        print("is_temporary", is_temporary)
+
         if self._outputname and is_temporary:
-            print("Renaming")
             global renamer
             renamer = self.Renamer(tr(self._outputname))
             context.layerToLoadOnCompletionDetails(self.output_raster).setPostProcessor(renamer)
