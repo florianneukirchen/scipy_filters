@@ -25,7 +25,12 @@ Python users get `helpers.RasterWizard` to quickly get the data of a raster laye
 - Bug tracker: [https://github.com/florianneukirchen/scipy_filters/issues](https://github.com/florianneukirchen/scipy_filters/issues)
 - Documentation: [https://florianneukirchen.github.io/scipy_filters/](https://florianneukirchen.github.io/scipy_filters/)
 
+## Note on QGIS 4 / Qt6
 
+QGIS 4 will use Qt6.
+On Linux, the plugin already works with QGIS built with Qt6 (simply add `supportsQt6=True` to `metadata.txt`). However, it crashes QGIS-Qt6 on Windows. The problem is caused by the widget wrapper, unfortunately it is deprecated and should't be used in the future anyway. But there is no alternative to wrap custom widgets into the processing UI. Removing the custom widget would remove a lot of checks and functionality. 
+
+At the moment I don't have the time to dive deeper into the issue. I will probably just wait for an easy way to fix it until I will release a version for QGIS 4. 
 
 ## Installation
 The plugin can be installed with "manage and install plugins" in QGIS. Eventually, in the settings of "install plugins", the checkbox "Show also experimental plugins" must be checked.
@@ -34,7 +39,7 @@ The plugin requires [SciPy](https://scipy.org/), which can be installed with pip
 ```
 pip install scipy
 ```
-Since version 0.2, the plugin offers an automatic installation of SciPy (using pip) if it is not yet installed in the python environment used by QGIS.
+Since version 0.2, the plugin offers an automatic installation of SciPy (using pip) if it is not yet installed in the python environment used by QGIS. However this fails on some platforms.
 
 [Plotly](https://plotly.com/python/) is an optional dependency, used for plotting charts (e.g. variance explained in PCA).
 
@@ -110,7 +115,7 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 
 ## Changelog
 
-### Git
+### 1.8 (07/2025)
 - Rename layer only if it is a temporary layer (issue #5)
 
 ### 1.7 (05/2025)

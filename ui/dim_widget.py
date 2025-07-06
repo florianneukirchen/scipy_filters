@@ -82,6 +82,7 @@ class DimsWidgetWrapper(WidgetWrapper):
         return self.widget.currentIndex()
 
     def createWidget(self):
+        # print(self.param, dir(self.param))
         options = self.param.options()
         defaultValue = self.param.defaultValue()
         widget = QComboBox()

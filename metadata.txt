@@ -6,9 +6,13 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=1.7
+version=1.8
 author=Florian Neukirchen
 email=mail@riannek.de
+
+# Works with Qt6 on Linux (experimental), but crashes QGIS on Windows!
+# supportsQt6=True
+
 
 about=QGIS plugin providing access to SciPy filters via the processing toolbox. SciPy offers a range of highly optimised algorithms for i.e. multidimensional image processing and signal processing, and some can be useful to analyze raster layers.
     Includes raster filters such as:
@@ -37,7 +41,9 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=1.7
+changelog=1.8
+    - Rename layer only if it is a temporary layer (issue #5)
+    1.7
     - Merge pull request issue #3 fix iterations not working in scipy_morphological_algorithm.py
     - Fix the scipy installer (issue #4)
     - Run pyqgis4-checker to support QGIS4/Qt6. But not tested yet with Qt6.
