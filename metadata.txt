@@ -6,7 +6,7 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=1.8
+version=1.9
 author=Florian Neukirchen
 email=mail@riannek.de
 
@@ -41,7 +41,9 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=1.8
+changelog=1.9
+    - merge "fixing custom footprint to be converted to array" (issue #7, thanks to Dodekaphonia) 
+    1.8
     - Rename layer only if it is a temporary layer (issue #5)
     1.7
     - Merge pull request issue #3 fix iterations not working in scipy_morphological_algorithm.py

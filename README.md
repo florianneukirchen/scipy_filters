@@ -115,11 +115,14 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 
 ## Changelog
 
+### 1.9 (07/2025)
+- merge "fixing custom footprint to be converted to array" (issue #7, thanks to Dodekaphonia) 
+
 ### 1.8 (07/2025)
 - Rename layer only if it is a temporary layer (issue #5)
 
 ### 1.7 (05/2025)
-- Merge pull request issue #3 iterations not working in scipy_morphological_algorithm.py
+- Merge pull request issue #3 iterations not working in scipy_morphological_algorithm.py (thanks to 1eo1i)
 - Fix the scipy installer (issue #4)
 - Run pyqgis4-checker to support QGIS4/Qt6. But not tested yet with Qt6.
 
