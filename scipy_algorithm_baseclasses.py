@@ -906,8 +906,9 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
 
         footprint = self.parameterAsString(parameters, self.FOOTPRINT, context)
         if footprint:
-            kwargs['footprint'] = str_to_array(footprint, self._ndim)
-            sizelist = sizelist.extend(footprint.shape)
+            footprint = str_to_array(footprint, self._ndim) #converting footprint from str to array
+            kwargs['footprint'] = footprint
+            sizelist.extend(footprint.shape) #list is updated with the footprint shape
 
 
         origin = self.parameterAsString(parameters, self.ORIGIN, context)
