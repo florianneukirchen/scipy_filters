@@ -115,6 +115,9 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 
 ## Changelog
 
+### 1.10 (11/2025)
+- Fix issue #8
+
 ### 1.9 (07/2025)
 - merge "fixing custom footprint to be converted to array" (issue #7, thanks to Dodekaphonia) 
 
