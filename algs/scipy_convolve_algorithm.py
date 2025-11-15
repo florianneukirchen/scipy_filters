@@ -181,7 +181,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
         kwargs = super().get_parameters(parameters, context)
 
         weights = self.parameterAsString(parameters, self.KERNEL, context)
-        weights = str_to_array(weights, self._ndim)
+        weights = str_to_array(weights, self._ndim, to_int=False)
 
         normalization = self.parameterAsDouble(parameters, self.NORMALIZATION, context)
 

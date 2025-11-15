@@ -523,7 +523,7 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
         kwargs = super().get_parameters(parameters, context)
 
         kernel = self.parameterAsString(parameters, self.KERNEL, context)
-        kernel = str_to_array(kernel, 2)
+        kernel = str_to_array(kernel, 2, to_int=False)
 
         normalization = self.parameterAsDouble(parameters, self.NORMALIZATION, context)
 
