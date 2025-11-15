@@ -71,8 +71,15 @@ from scipy_filters.helpers import (RasterWindow,
                       get_np_dtype,
                       is_in_dtype_range,
                       convert_docstring_to_html)
+from scipy_filters.ui.scipy_processing_dialog import ScipyProcessingDialog
 
 from scipy_filters.ui.i18n import tr
+import sys
+import scipy
+
+import sys
+import scipy
+
 
 # Group IDs and group names
 groups = {
@@ -178,6 +185,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
     # Function to insert Parameters (overwrite in inherited classes)
     def insert_parameters(self, config):
         return
+
+    def createCustomParametersWidget(self, parent):
+        return ScipyProcessingDialog(self, parent)
 
     # Init Algorithm
     def initAlgorithm(self, config):
