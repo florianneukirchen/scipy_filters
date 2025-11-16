@@ -26,14 +26,14 @@ from qgis.core import (
     QgsProperty,
     QgsProcessingUtils,
     QgsProject,
-    Qgis
 )
 from qgis import processing 
 from qgis.PyQt.QtCore import QTimer
 from scipy_filters.ui.sizes_widget import SizesWidget
 from scipy_filters.ui.structure_widget import StructureWidget, SciPyParameterStructure
 from scipy_filters.ui.origin_widget import SciPyParameterOrigin, OriginWidget
-import sys
+from datetime import datetime
+
 
 class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
     """
@@ -321,20 +321,12 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         feedback = self.createFeedback()
         self.showLog()
 
-        feedback.pushInfo(f"Algorithm: {self._alg.displayName()}")
-        feedback.pushInfo(f"QGIS Version: {Qgis.QGIS_VERSION}")
-        feedback.pushInfo(f"Python Version: {sys.version}")
+        feedback.pushVersionInfo()
+        ts = datetime.now().isoformat(timespec='seconds')
+        feedback.pushInfo(f"Algorithm {self._alg.displayName()} started at: {ts}")
         feedback.pushInfo("")
         feedback.pushInfo("Parameters:")
-        for name, value in params.items():
-            # format param nicely (avoid dumping huge objects)
-            if isinstance(value, str) and len(value) > 100:
-                val_str = value[:100] + "..."
-            else:
-                val_str = str(value)
-            feedback.pushInfo(f"  {name}: {val_str}")
-        feedback.pushInfo("")
-
+        feedback.pushInfo(str(params))
 
         try:
             results = processing.run(self._alg, params, context=self.context, feedback=feedback)
@@ -343,6 +335,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             import traceback
             self.pushInfo(f"Algorithm failed: {e}")
             print(traceback.format_exc())
+
 
         for name, widget in self.widgets.items():
             if isinstance(widget, QgsProcessingLayerOutputDestinationWidget):

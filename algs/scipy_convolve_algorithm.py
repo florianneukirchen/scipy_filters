@@ -221,6 +221,7 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
 
         msg = tr("Input values are in the range {}...{}").format(inmin, inmax)
         feedback.pushInfo(msg)
+        print(msg)
 
         # Calculate the possible range after applying the kernel
         outmax = ((np.where(self.kernel < 0, 0, self.kernel)    # positive part of kernel
