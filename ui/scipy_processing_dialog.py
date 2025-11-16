@@ -242,6 +242,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             params = self.transformParameters(params)
 
         feedback = self.createFeedback()
+        self.showLog()
 
         try:
             results = processing.run(self._alg, params, context=self.context, feedback=feedback)
