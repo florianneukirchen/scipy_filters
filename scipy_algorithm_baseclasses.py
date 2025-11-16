@@ -176,6 +176,7 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
 
     _dimension = Dimensions.nD
     _ndim = None # to be set while getting parameters
+    _dlg = None
 
 
     # Return the function to be called, to be overwritten
@@ -187,7 +188,8 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         return
 
     def createCustomParametersWidget(self, parent):
-        return ScipyProcessingDialog(self, parent)
+        self._dlg = ScipyProcessingDialog(self, parent)
+        return self._dlg
 
     # Init Algorithm
     def initAlgorithm(self, config):
@@ -557,6 +559,9 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
         # Check parameters before starting processing, eventually giving feedback and stopping
         dim_option = self.parameterAsInt(parameters, self.DIMENSION, context)
         layer = self.parameterAsRasterLayer(parameters, self.INPUT, context)
+
+        if layer is None:
+            return False, tr("No raster layer selected")
 
         if not layer.providerType() == "gdal":
             return False, tr("Raster provider {} is not supported, must be raster layer with a local file".format(layer.providerType()))

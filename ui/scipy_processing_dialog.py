@@ -2,7 +2,7 @@ from qgis.gui import (
     QgsProcessingAlgorithmDialogBase, 
     QgsPanelWidget, 
     QgsMapLayerComboBox,
-    QgsFileWidget,
+    QgsProcessingLayerOutputDestinationWidget,
 )
 from qgis.PyQt.QtWidgets import (
    QWidget, QVBoxLayout, QHBoxLayout, QLabel,
@@ -13,11 +13,13 @@ from qgis.core import (
     QgsProcessingParameterDefinition,
     QgsProcessingParameterRasterLayer,
     QgsProcessingParameterRasterDestination,
+    QgsProcessingDestinationParameter,
     QgsProcessingParameterEnum,
     QgsProcessingParameterNumber,
     QgsMapLayerProxyModel,
     QgsProviderRegistry,
-    QgsProcessingContext
+    QgsProcessingContext,
+    QgsProcessing
 )
 
 from qgis import processing 
@@ -45,21 +47,34 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
 
     def buildUI(self):
+
+        output_params = []
         
         for param in self._alg.parameterDefinitions():
-            label, widget = self.createWidgetForParameter(param)
-
-            if widget is None:
+            if isinstance(param, QgsProcessingDestinationParameter):
+                output_params.append(param)
                 continue
 
-            if label is not None:
-                self.layout.addWidget(QLabel(label)) 
+            label, widget = self.createWidgetForParameter(param)
+            self.add_widget(label, widget, param.name())
 
-            self.widgets[param.name()] = widget
-
-            self.layout.addWidget(widget)
+        for param in output_params:
+            label, widget = self.createWidgetForParameter(param)
+            self.add_widget(label, widget, param.name())
+            widget.destinationChanged.connect(lambda name=param.name(): self.outputDestinationChanged(name))
 
         self.setMainWidget(self.panel)
+
+    def add_widget(self, label, widget, name):
+        if widget is None:
+            return
+
+        if label is not None:
+            self.layout.addWidget(QLabel(label)) 
+
+        self.widgets[name] = widget
+
+        self.layout.addWidget(widget)
 
     def createWidgetForParameter(self, param: QgsProcessingParameterDefinition):
         """Return (label, widget) for any supported parameter."""
@@ -73,13 +88,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             return label, w
 
         if isinstance(param, QgsProcessingParameterRasterDestination):
-            w = QgsFileWidget()
-            w.setStorageMode(QgsFileWidget.SaveFile)
-            w.setDefaultRoot(param.defaultValue() or "")
-            filters = QgsProviderRegistry.instance().fileRasterFilters()
-            w.setFilter(filters)
-            # w.setSelectedFilter("GeoTIFF (*.tif *.tiff)")
-
+            w = QgsProcessingLayerOutputDestinationWidget(param, True, parent=self.panel)
             return label, w
 
         if isinstance(param, QgsProcessingParameterEnum):
@@ -137,17 +146,48 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         print(label, "-", ptype, param)
         return None, None
 
+    def outputDestinationChanged(self, param_name):
+        widget = self.widgets[param_name]
+        if widget and not widget.value():  # or appropriate check
+            widget.setValue(QgsProcessing.TEMPORARY_OUTPUT)
+
 
     def getParameters(self) -> dict:
         params = {}
         for name, widget in self.widgets.items():
-            if hasattr(widget, "value"):
+
+            # Raster layer selector
+            if isinstance(widget, QgsMapLayerComboBox):
+                params[name] = widget.currentLayer()
+                continue
+
+            # Enum
+            if isinstance(widget, QComboBox):
+                params[name] = widget.currentIndex()
+                continue
+
+            # Integer/float spin boxes etc.
+            if hasattr(widget, "value"):  
                 params[name] = widget.value()
-            elif hasattr(widget, "isChecked"):
+                continue
+
+            # Boolean
+            if isinstance(widget, QCheckBox):
                 params[name] = widget.isChecked()
-            elif hasattr(widget, "text"):
+                continue
+
+            # Text
+            if isinstance(widget, QLineEdit):
                 params[name] = widget.text()
+                continue
+
+            # Fallback
+            params[name] = widget
+
+        print(params)
+
         return params
+
     
 
     def runAlgorithm(self):
@@ -159,8 +199,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         feedback = self.createFeedback()
 
         try:
-            print("h", type(self.algorithm()))
-            print("b", type(self._alg))
             results = processing.run(self._alg, params, context=self.context, feedback=feedback)
             self.setResults(results)
         except Exception as e:
