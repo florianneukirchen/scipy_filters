@@ -2,11 +2,12 @@ from qgis.gui import (
     QgsProcessingAlgorithmDialogBase, 
     QgsPanelWidget, 
     QgsMapLayerComboBox,
+    QgsFileWidget,
 )
 from qgis.PyQt.QtWidgets import (
    QWidget, QVBoxLayout, QHBoxLayout, QLabel,
    QSpinBox, QCheckBox, QLineEdit, QComboBox,
-   QDoubleSpinBox
+   QDoubleSpinBox, 
 )
 from qgis.core import (
     QgsProcessingParameterDefinition,
@@ -15,6 +16,7 @@ from qgis.core import (
     QgsProcessingParameterEnum,
     QgsProcessingParameterNumber,
     QgsMapLayerProxyModel,
+    QgsProviderRegistry,
     # , QgsProcessingContext
 )
 
@@ -71,10 +73,13 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             return label, w
 
         if isinstance(param, QgsProcessingParameterRasterDestination):
-            # Output destinations are simple line edits
-            w = QLineEdit()
-            if param.defaultValue():
-                w.setText(param.defaultValue())
+            w = QgsFileWidget()
+            w.setStorageMode(QgsFileWidget.SaveFile)
+            w.setDefaultRoot(param.defaultValue() or "")
+            filters = QgsProviderRegistry.instance().fileRasterFilters()
+            w.setFilter(filters)
+            # w.setSelectedFilter("GeoTIFF (*.tif *.tiff)")
+
             return label, w
 
         if isinstance(param, QgsProcessingParameterEnum):
