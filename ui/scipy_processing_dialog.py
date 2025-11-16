@@ -107,6 +107,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             w.setFilters(QgsMapLayerProxyModel.RasterLayer)
             if param.defaultValue():
                 w.setLayer(param.defaultValue())
+            w.layerChanged.connect(self.inputLayerChanged)
             return label, w
 
         if isinstance(param, QgsProcessingParameterRasterDestination):
@@ -117,10 +118,13 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         if isinstance(param, QgsProcessingParameterEnum):
             w = QComboBox()
+            print(param.name())
             for opt in param.options():
                 w.addItem(opt)
             if param.defaultValue() is not None:
                 w.setCurrentIndex(param.defaultValue())
+            if param.name() == "DIMENSION":
+                self._dimension = w
             return label, w
 
         if isinstance(param, QgsProcessingParameterNumber):
@@ -234,7 +238,16 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         return params
 
-    
+    def inputLayerChanged(self, layer):
+        print(layer)
+        if not layer:
+            return
+        if layer.bandCount() > 1:
+            self._dimension.setEnabled(True)
+        else:
+            self._dimension.setCurrentIndex(0)
+            self._dimension.setEnabled(False)
+
 
     def runAlgorithm(self):
         print("Run")

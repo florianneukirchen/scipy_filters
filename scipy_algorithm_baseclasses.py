@@ -51,7 +51,6 @@ from qgis.core import (QgsProcessingAlgorithm,
 from processing.core.ProcessingConfig import ProcessingConfig
 
 from scipy_filters.ui.sizes_widget import (SizesWidgetWrapper)
-from scipy_filters.ui.dim_widget import (DimsWidgetWrapper, SciPyParameterDims)
 from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
 
@@ -224,21 +223,15 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
                             tr('3D (All bands as a 3D data cube)')]
 
         if self._dimension == Dimensions.nD:
-            # Algorithms based on scipy.ndimage can have any number of dimensions
-            dim_param = SciPyParameterDims(
+
+            self.addParameter(QgsProcessingParameterEnum(
                 self.DIMENSION,
                 tr('Dimension'),
                 dimension_options,
                 defaultValue=0,
-                optional=False,)
+                optional=False
+            ))
 
-            dim_param.setMetadata({
-                'widget_wrapper': {
-                    'class': DimsWidgetWrapper
-                }
-            })
-
-            self.addParameter(dim_param)
 
 
         # Insert Parameters 
