@@ -19,7 +19,9 @@ from qgis.core import (
     QgsMapLayerProxyModel,
     QgsProviderRegistry,
     QgsProcessingContext,
-    QgsProcessing
+    QgsProcessing,
+    QgsProcessingOutputRasterLayer,
+    QgsProperty,
 )
 
 from qgis import processing 
@@ -158,12 +160,34 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
             # Raster layer selector
             if isinstance(widget, QgsMapLayerComboBox):
-                params[name] = widget.currentLayer()
+                # Use the layer's data source string; Processing algorithms
+                # accept that as the raster layer parameter value.
+                layer = widget.currentLayer()
+                params[name] = layer.source() if layer is not None else None
                 continue
 
             # Enum
             if isinstance(widget, QComboBox):
                 params[name] = widget.currentIndex()
+                continue
+
+            # Raster destination output
+            if isinstance(widget, QgsProcessingLayerOutputDestinationWidget):
+                out_def = widget.value()
+
+                sink = getattr(out_def, 'sink', None)
+                print("s", sink, type(sink))
+
+                if isinstance(sink, QgsProperty):
+                    sinkvalue = sink.staticValue()
+                else:
+                    sinkvalue = ""
+
+                if sinkvalue:
+                    params[name] = out_def
+                else:
+                    params[name] = QgsProcessing.TEMPORARY_OUTPUT
+
                 continue
 
             # Integer/float spin boxes etc.
