@@ -11,7 +11,7 @@ author=Florian Neukirchen
 email=mail@riannek.de
 
 # Works with Qt6 on Linux (experimental), but crashes QGIS on Windows!
-# supportsQt6=True
+supportsQt6=True
 
 
 about=QGIS plugin providing access to SciPy filters via the processing toolbox. SciPy offers a range of highly optimised algorithms for i.e. multidimensional image processing and signal processing, and some can be useful to analyze raster layers.
