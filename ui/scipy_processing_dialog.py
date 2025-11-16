@@ -3,6 +3,7 @@ from qgis.gui import (
     QgsPanelWidget, 
     QgsMapLayerComboBox,
     QgsProcessingLayerOutputDestinationWidget,
+    QgsCollapsibleGroupBox,
 )
 from qgis.PyQt.QtWidgets import (
    QWidget, QVBoxLayout, QLabel,
@@ -48,7 +49,9 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         self.panel = QgsPanelWidget(self.parent())
         self.layout = QVBoxLayout()
         self.panel.setLayout(self.layout)
-        
+        self.advancedBox = QgsCollapsibleGroupBox(self.tr("Advanced parameters"))
+        self.advancedLayout = QVBoxLayout()
+        self.advancedBox.setLayout(self.advancedLayout)
         QTimer.singleShot(0, self.buildUI)
         
 
@@ -66,25 +69,34 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                 continue
 
             label, widget = self.createWidgetForParameter(param)
-            self.add_widget(label, widget, param.name())
+            self.add_widget(label, widget, param)
+
+        self.layout.addWidget(self.advancedBox)
 
         for param in output_params:
             label, widget = self.createWidgetForParameter(param)
-            self.add_widget(label, widget, param.name())
+            self.add_widget(label, widget, param)
             widget.destinationChanged.connect(lambda name=param.name(): self.outputDestinationChanged(name))
 
+        self.layout.addStretch()
         self.setMainWidget(self.panel)
 
-    def add_widget(self, label, widget, name):
+    def add_widget(self, label, widget, param):
         if widget is None:
             return
 
-        if label is not None:
-            self.layout.addWidget(QLabel(label)) 
+        if param.flags() & QgsProcessingParameterDefinition.FlagAdvanced:
+            target = self.advancedLayout
+        else:
+            target = self.layout
 
+        if label is not None:
+            target.addWidget(QLabel(label)) 
+
+        name = param.name()
         self.widgets[name] = widget
 
-        self.layout.addWidget(widget)
+        target.addWidget(widget)
 
     def createWidgetForParameter(self, param: QgsProcessingParameterDefinition):
         """Return (label, widget) for any supported parameter."""
