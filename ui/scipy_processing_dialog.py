@@ -27,6 +27,7 @@ from qgis.core import (
 )
 
 from qgis import processing 
+from qgis.PyQt.QtCore import QTimer
 
 class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
     """
@@ -38,6 +39,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         super().__init__(parent)
 
         self._alg = alg
+        
 
         print("init", type(alg))
 
@@ -46,12 +48,14 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         self.panel = QgsPanelWidget(self.parent())
         self.layout = QVBoxLayout()
         self.panel.setLayout(self.layout)
-        self.buildUI()
+        
+        QTimer.singleShot(0, self.buildUI)
+        
 
 
 
     def buildUI(self):
-
+        self.setAlgorithm(self._alg)
         output_params = []
         
         for param in self._alg.parameterDefinitions():
