@@ -62,6 +62,8 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             if isinstance(param, QgsProcessingDestinationParameter):
                 output_params.append(param)
                 continue
+            if param.flags() & QgsProcessingParameterDefinition.Flag.FlagHidden:
+                continue
 
             label, widget = self.createWidgetForParameter(param)
             self.add_widget(label, widget, param.name())
