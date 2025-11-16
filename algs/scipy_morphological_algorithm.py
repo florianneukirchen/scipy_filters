@@ -381,7 +381,7 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
         struct_param = SciPyParameterStructure(
             self.FOOTPRINT,
             tr('Footprint array'),
-            defaultValue="[[1, 1, 1],\n[1, 1, 1],\n[1, 1, 1]]",
+            defaultValue="",
             examples=footprintexamples,
             multiLine=True,
             to_int=True,

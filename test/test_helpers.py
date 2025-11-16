@@ -22,6 +22,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append('/usr/share/qgis/python/plugins')
 sys.path.append(os.path.abspath(os.path.join(dir_path, '../../')))
 
+
 from qgis.core import *
 from scipy_filters.helpers import *
 from scipy_filters.scipy_filters_provider import SciPyFiltersProvider
