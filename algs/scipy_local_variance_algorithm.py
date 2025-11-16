@@ -43,8 +43,6 @@ from scipy_filters.ui.i18n import tr
 from scipy_filters.scipy_algorithm_baseclasses import (SciPyAlgorithm,
                                           SciPyStatisticalAlgorithm)
 
-from scipy_filters.ui.sizes_widget import GreaterZeroSizesWidgetWrapper
-
 def estimate_local_variance(raster, size, output=None):
     """
     Estimate local variance within window of size.
@@ -138,8 +136,8 @@ class SciPyEstimateVarianceAlgorithm(SciPyAlgorithm):
             )
         
         sizes_param.setMetadata({
-            'widget_wrapper': {
-                'class': GreaterZeroSizesWidgetWrapper
+            'my_flags': {
+                'positive': True # greater than zero
             }
         })
 

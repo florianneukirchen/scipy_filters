@@ -50,7 +50,6 @@ from qgis.core import (QgsProcessingAlgorithm,
 
 from processing.core.ProcessingConfig import ProcessingConfig
 
-from scipy_filters.ui.sizes_widget import (SizesWidgetWrapper)
 from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
 
@@ -796,12 +795,6 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             defaultValue="", 
             optional=True, 
             )
-        
-        sizes_param.setMetadata({
-            'widget_wrapper': {
-                'class': SizesWidgetWrapper
-            }
-        })
 
         self.addParameter(sizes_param)   
 

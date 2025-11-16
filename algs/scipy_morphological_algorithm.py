@@ -45,8 +45,6 @@ from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithm
 from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
                                   SciPyParameterStructure,)
 
-from scipy_filters.ui.sizes_widget import (SizesWidgetWrapper)
-
 from scipy_filters.ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
 
@@ -353,12 +351,6 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             defaultValue="", 
             optional=True, 
             )
-        
-        sizes_param.setMetadata({
-            'widget_wrapper': {
-                'class': SizesWidgetWrapper
-            }
-        })
 
         self.addParameter(sizes_param)  
         

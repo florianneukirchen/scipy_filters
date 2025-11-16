@@ -122,7 +122,7 @@ class SizesWidget(BASE, WIDGET):
         bands = self.mSizeBandsQgsSpinBox.value()
         if self.ndim == 2:
             return f"{cols}, {rows}"
-        else:
+        else:  
             return f"{bands}, {cols}, {rows}"
 
 

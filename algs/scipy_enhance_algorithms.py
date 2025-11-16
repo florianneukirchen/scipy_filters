@@ -41,8 +41,6 @@ from scipy_filters.scipy_algorithm_baseclasses import (SciPyAlgorithm,
 
 from scipy_filters.algs.scipy_gaussian_algorithm import SciPyAlgorithmWithSigma
 
-from scipy_filters.ui.sizes_widget import (OddSizesWidgetWrapper)
-
 
 from scipy_filters.helpers import str_to_int_or_list 
 from scipy_filters.ui.i18n import tr
@@ -104,8 +102,8 @@ class SciPyWienerAlgorithm(SciPyAlgorithm):
             )
 
         sizes_param.setMetadata({
-            'widget_wrapper': {
-                'class': OddSizesWidgetWrapper
+            'my_flags': {
+                'odd': True
             }
         })
 

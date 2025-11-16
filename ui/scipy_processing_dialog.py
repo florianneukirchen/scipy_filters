@@ -17,6 +17,7 @@ from qgis.core import (
     QgsProcessingDestinationParameter,
     QgsProcessingParameterEnum,
     QgsProcessingParameterNumber,
+    QgsProcessingParameterString,
     QgsMapLayerProxyModel,
     QgsProviderRegistry,
     QgsProcessingContext,
@@ -29,6 +30,7 @@ from qgis.core import (
 
 from qgis import processing 
 from qgis.PyQt.QtCore import QTimer
+from scipy_filters.ui.sizes_widget import SizesWidget
 
 class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
     """
@@ -125,6 +127,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                 w.setCurrentIndex(param.defaultValue())
             if param.name() == "DIMENSION":
                 self._dimension = w
+                self._dimension.currentIndexChanged.connect(self.dimensionChanged)
             return label, w
 
         if isinstance(param, QgsProcessingParameterNumber):
@@ -148,23 +151,49 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                 if param.defaultValue() is not None:
                     w.setValue(float(param.defaultValue()))
                 return label, w
+            
+        if isinstance(param, QgsProcessingParameterString):
+            if param.name() == "SIZES":
+                meta = param.metadata()
+                print(meta)
+                meta = meta.get("my_flags", {})
+                if meta:
+                    odd = meta.get("odd", False)
+                    gtz = meta.get("positive", False)
+                else:
+                    odd = False 
+                    gtz = False
+                print("odd gtz", odd, gtz)
+                w = SizesWidget(odd, gtz)
+                if param.defaultValue():
+                    w.setValue(str(param.defaultValue()))
+                self._sizewidget = w
 
+            else:
+                w = QLineEdit()
+
+                if param.defaultValue():
+                    w.setText(str(param.defaultValue()))
+            return label, w
+        
+
+
+
+
+        # Fallback
         ptype = param.type()
 
-        # Integer fallback
         if ptype == "int":
             spin = QSpinBox()
             spin.setValue(param.defaultValue() or 0)
             spin.setRange(-999999999, 999999999)
             return label, spin
 
-        # Boolean
         if ptype == "boolean":
             chk = QCheckBox(label)
             chk.setChecked(bool(param.defaultValue()))
             return None, chk
 
-        # String
         if ptype == "string":
             edit = QLineEdit()
             if param.defaultValue():
@@ -248,6 +277,11 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             self._dimension.setCurrentIndex(0)
             self._dimension.setEnabled(False)
 
+    def dimensionChanged(self, dim_option):
+        if dim_option == 1: # 3D; see enum in baseclass
+            self._sizewidget.setDim(3)
+        else:
+            self._sizewidget.setDim(2)
 
     def runAlgorithm(self):
         print("Run")

@@ -38,7 +38,6 @@ from qgis.core import (QgsProcessingParameterNumber,
                        QgsProcessingParameterDefinition,
                         )
 
-from scipy_filters.ui.sizes_widget import SizesWidgetWrapper
 from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithm, Dimensions
 
 from scipy_filters.helpers import (check_structure, 
@@ -207,12 +206,6 @@ class SciPyFourierEllipsoidAlgorithm(SciPyAlgorithm):
             defaultValue="", 
             optional=True, 
             )
-        
-        sizes_param.setMetadata({
-            'widget_wrapper': {
-                'class': SizesWidgetWrapper
-            }
-        })
 
         self.addParameter(sizes_param)
 
@@ -350,12 +343,6 @@ class SciPyFourierUniformAlgorithm(SciPyAlgorithm):
             defaultValue="", 
             optional=True, 
             )
-        
-        sizes_param.setMetadata({
-            'widget_wrapper': {
-                'class': SizesWidgetWrapper
-            }
-        })
 
         self.addParameter(sizes_param)
         
