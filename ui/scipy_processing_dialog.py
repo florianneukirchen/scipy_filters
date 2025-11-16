@@ -299,6 +299,12 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         if hasattr(self, "transformParameters"):
             params = self.transformParameters(params)
 
+        valid, msg = self._alg.checkParameterValues(params, self.context)
+        if not valid:
+            print("not valid")
+            self.messageBar().pushWarning(self.tr("Invalid Parameter"), msg)  
+            return  
+    
         feedback = self.createFeedback()
         self.showLog()
 
