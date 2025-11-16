@@ -155,7 +155,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         if isinstance(param, QgsProcessingParameterString):
             if param.name() == "SIZES":
                 meta = param.metadata()
-                print(meta)
                 meta = meta.get("my_flags", {})
                 if meta:
                     odd = meta.get("odd", False)
@@ -163,7 +162,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                 else:
                     odd = False 
                     gtz = False
-                print("odd gtz", odd, gtz)
                 w = SizesWidget(odd, gtz)
                 if param.defaultValue():
                     w.setValue(str(param.defaultValue()))
@@ -176,9 +174,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                     w.setText(str(param.defaultValue()))
             return label, w
         
-
-
-
 
         # Fallback
         ptype = param.type()
