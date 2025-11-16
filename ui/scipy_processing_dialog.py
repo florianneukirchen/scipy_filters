@@ -17,7 +17,7 @@ from qgis.core import (
     QgsProcessingParameterNumber,
     QgsMapLayerProxyModel,
     QgsProviderRegistry,
-    # , QgsProcessingContext
+    QgsProcessingContext
 )
 
 from qgis import processing 
@@ -36,7 +36,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         print("init", type(alg))
 
         self.widgets = {}   # key: param name → value: widget instance
-       # self.context = QgsProcessingContext()
+        self.context = QgsProcessingContext()
         self.panel = QgsPanelWidget(self.parent())
         self.layout = QVBoxLayout()
         self.panel.setLayout(self.layout)
@@ -151,6 +151,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
     
 
     def runAlgorithm(self):
+        print("Run")
         params = self.getParameters()
         if hasattr(self, "transformParameters"):
             params = self.transformParameters(params)
@@ -160,7 +161,9 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         try:
             print("h", type(self.algorithm()))
             print("b", type(self._alg))
-            results = processing.run(self.algorithm(), params, context=self.context, feedback=feedback)
+            results = processing.run(self._alg, params, context=self.context, feedback=feedback)
             self.setResults(results)
         except Exception as e:
+            import traceback
             self.pushInfo(f"Algorithm failed: {e}")
+            print(traceback.format_exc())
