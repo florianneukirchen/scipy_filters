@@ -22,28 +22,28 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         self.widgets = {}   # key: param name → value: widget instance
        # self.context = QgsProcessingContext()
         self.panel = QgsPanelWidget(self.parent())
+        self.layout = QVBoxLayout()
+        self.panel.setLayout(self.layout)
         self.buildUI()
 
 
 
     def buildUI(self):
         
-        layout = QVBoxLayout()
-        self.panel.setLayout(layout)
+
 
         for param in self._alg.parameterDefinitions():
-            widget = self.createWidgetForParameter(param)
+            label, widget = self.createWidgetForParameter(param)
 
             if widget is None:
                 continue
 
+            if label is not None:
+                self.layout.addWidget(QLabel(label)) 
+
             self.widgets[param.name()] = widget
 
-            row = QHBoxLayout()
-            row.addWidget(QLabel(param.description()))
-            row.addWidget(widget)
-
-            layout.addLayout(row)
+            self.layout.addWidget(widget)
 
         self.setMainWidget(self.panel)
 
@@ -51,29 +51,30 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         """Factory to create widgets based on parameter type."""
 
         ptype = param.type()
+        label = param.description()
 
         # Integer
         if ptype == "int":
             spin = QSpinBox()
             spin.setValue(param.defaultValue() or 0)
             spin.setRange(-999999999, 999999999)
-            return spin
+            return label, spin
 
         # Boolean
         if ptype == "boolean":
-            chk = QCheckBox()
+            chk = QCheckBox(label)
             chk.setChecked(bool(param.defaultValue()))
-            return chk
+            return None, chk
 
         # String
         if ptype == "string":
             edit = QLineEdit()
             if param.defaultValue():
                 edit.setText(str(param.defaultValue()))
-            return edit
+            return label, edit
 
         # Let QGIS insert its own standard widget: return None
-        return None
+        return None, None
 
 
 
