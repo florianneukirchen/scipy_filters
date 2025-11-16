@@ -132,7 +132,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         if isinstance(param, QgsProcessingParameterEnum):
             w = QComboBox()
-            print(param.name())
             for opt in param.options():
                 w.addItem(opt)
             if param.defaultValue() is not None:
@@ -255,7 +254,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                 out_def = widget.value()
 
                 sink = getattr(out_def, 'sink', None)
-                print("s", sink, type(sink))
 
                 if isinstance(sink, QgsProperty):
                     sinkvalue = sink.staticValue()
@@ -292,7 +290,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         return params
 
     def inputLayerChanged(self, layer):
-        print(layer)
         if not layer:
             return
         if layer.bandCount() > 1:
@@ -316,7 +313,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         valid, msg = self._alg.checkParameterValues(params, self.context)
         if not valid:
-            print("not valid")
             self.messageBar().pushWarning(self.tr("Invalid Parameter"), msg)  
             return  
     
