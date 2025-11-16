@@ -5,7 +5,7 @@ from qgis.gui import (
     QgsProcessingLayerOutputDestinationWidget,
 )
 from qgis.PyQt.QtWidgets import (
-   QWidget, QVBoxLayout, QHBoxLayout, QLabel,
+   QWidget, QVBoxLayout, QLabel,
    QSpinBox, QCheckBox, QLineEdit, QComboBox,
    QDoubleSpinBox, 
 )
@@ -22,6 +22,8 @@ from qgis.core import (
     QgsProcessing,
     QgsProcessingOutputRasterLayer,
     QgsProperty,
+    QgsProcessingUtils,
+    QgsProject,
 )
 
 from qgis import processing 
@@ -91,6 +93,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         if isinstance(param, QgsProcessingParameterRasterDestination):
             w = QgsProcessingLayerOutputDestinationWidget(param, True, parent=self.panel)
+            w.addOpenAfterRunningOption()
             return label, w
 
         if isinstance(param, QgsProcessingParameterEnum):
@@ -229,3 +232,19 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             import traceback
             self.pushInfo(f"Algorithm failed: {e}")
             print(traceback.format_exc())
+
+        for name, widget in self.widgets.items():
+            if isinstance(widget, QgsProcessingLayerOutputDestinationWidget):
+                if widget.openAfterRunning():     # User ticked the checkbox
+                    output_path = results.get(name)
+                    if output_path:
+                        param = self._alg.parameterDefinition(name)
+                        label = param.description() 
+                        self.openOutputLayer(output_path, label)
+
+    def openOutputLayer(self, path, name):
+        """Load the output layer into QGIS."""
+        layer = QgsProcessingUtils.mapLayerFromString(path, self.context)
+        if layer:
+            layer.setName(name)
+            QgsProject.instance().addMapLayer(layer)
