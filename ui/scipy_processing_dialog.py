@@ -93,6 +93,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                     if name == widget.watch:
                         print(name)
                         w.valueChanged.connect(widget.setShape)
+                        w.checknow()
 
 
     def add_widget(self, label, widget, param):

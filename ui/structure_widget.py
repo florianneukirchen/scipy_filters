@@ -107,7 +107,6 @@ class StructureWidget(BASE, WIDGET):
         self.statusLabel.setText(self.ok_txt)
 
         self.plainTextEdit.textChanged.connect(self.checknow)
-        self.checknow()
 
     def is3d(self, check):
         """check string or np.array, return bool"""
@@ -146,11 +145,10 @@ class StructureWidget(BASE, WIDGET):
         ok, s, shape = check_structure(text, dims=self.ndim, optional=self.isoptional)
         print("check", ok, shape)
         if ok:
-            self.statusLabel.setText(self.ok_txt)
-            if shape:
-                self.valueChanged.emit(shape)
+            self.statusLabel.setText(self.ok_txt)              
         else:
             self.statusLabel.setText(s)
+        self.valueChanged.emit(shape)
         
     def threeDEnabled(self, yes):
         for action in self.three_d_items:

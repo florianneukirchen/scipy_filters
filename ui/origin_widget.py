@@ -94,7 +94,9 @@ class OriginWidget(BASE, WIDGET):
 
     def setShape(self, shape):
         self.shape = shape
-        if shape == None:
+        print("set shape", shape)
+        if shape is None:
+            print(shape is None)
             # Disable all spinboxes if no valid structure
             self.mOriginRowsQgsSpinBox.setDisabled(True)
             self.originRowsLabel.setDisabled(True)
