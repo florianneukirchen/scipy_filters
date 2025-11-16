@@ -138,40 +138,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         return None, None
 
 
-
-    # def createWidgetForParameter(self, param: QgsProcessingParameterDefinition):
-    #     """Factory to create widgets based on parameter type."""
-
-    #     ptype = param.type()
-    #     label = param.description()
-
-    #     # Integer
-    #     if ptype == "int":
-    #         spin = QSpinBox()
-    #         spin.setValue(param.defaultValue() or 0)
-    #         spin.setRange(-999999999, 999999999)
-    #         return label, spin
-
-    #     # Boolean
-    #     if ptype == "boolean":
-    #         chk = QCheckBox(label)
-    #         chk.setChecked(bool(param.defaultValue()))
-    #         return None, chk
-
-    #     # String
-    #     if ptype == "string":
-    #         edit = QLineEdit()
-    #         if param.defaultValue():
-    #             edit.setText(str(param.defaultValue()))
-    #         return label, edit
-
-    #     # Let QGIS insert its own standard widget: return None
-    #     print(label, "-", ptype, param)
-    #     return None, None
-
-
-
-
     def getParameters(self) -> dict:
         params = {}
         for name, widget in self.widgets.items():
