@@ -50,8 +50,7 @@ from qgis.core import (QgsProcessingAlgorithm,
 
 from processing.core.ProcessingConfig import ProcessingConfig
 
-from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
-                                  SciPyParameterStructure,)
+from scipy_filters.ui.structure_widget import SciPyParameterStructure
 
 from scipy_filters.ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
@@ -807,12 +806,6 @@ class SciPyStatisticalAlgorithm(SciPyAlgorithmWithMode):
             optional=True,
             to_int=True,
             )
-                
-        footprint_param.setMetadata({
-            'widget_wrapper': {
-                'class': StructureWidgetWrapper
-            }
-        })
 
         self.addParameter(footprint_param)
 

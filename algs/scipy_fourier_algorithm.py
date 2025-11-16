@@ -46,8 +46,7 @@ from scipy_filters.helpers import (check_structure,
 
 from scipy_filters.ui.i18n import tr
 
-from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
-                                  SciPyParameterStructure,)
+from scipy_filters.ui.structure_widget import SciPyParameterStructure
 
 from scipy_filters.helpers import str_to_int_or_list, get_np_dtype
 
@@ -483,12 +482,6 @@ class SciPyFFTConvolveAlgorithm(SciPyAlgorithm):
             to_int=False,
             optional=False
             )
-        
-        kernel_param.setMetadata({
-            'widget_wrapper': {
-                'class': StructureWidgetWrapper
-            }
-        })
 
         self.addParameter(kernel_param)
         

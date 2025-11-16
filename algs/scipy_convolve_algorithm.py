@@ -40,8 +40,7 @@ from qgis.core import (QgsProcessingParameterNumber,
 
 from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithmWithMode
 
-from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
-                                  SciPyParameterStructure,)
+from scipy_filters.ui.structure_widget import SciPyParameterStructure
 
 from scipy_filters.ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
@@ -132,12 +131,6 @@ class SciPyConvolveAlgorithm(SciPyAlgorithmWithMode):
             to_int=False,
             optional=False,
             )
-        
-        kernel_param.setMetadata({
-            'widget_wrapper': {
-                'class': StructureWidgetWrapper
-            }
-        })
 
         self.addParameter(kernel_param)
 

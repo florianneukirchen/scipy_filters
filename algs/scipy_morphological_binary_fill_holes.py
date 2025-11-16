@@ -40,8 +40,7 @@ from qgis.core import (QgsProcessingParameterDefinition,
 
 from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithm
 
-from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
-                                  SciPyParameterStructure,)
+from scipy_filters.ui.structure_widget import SciPyParameterStructure
 
 from scipy_filters.helpers import (str_to_int_or_list, 
                       check_structure, 
@@ -104,12 +103,6 @@ class SciPyBinaryFillHolesAlgorithm(SciPyAlgorithm):
             optional=True,
             )
         
-        struct_param.setMetadata({
-            'widget_wrapper': {
-                'class': StructureWidgetWrapper
-            }
-        })
-
         self.addParameter(struct_param)
 
         origin_param = SciPyParameterOrigin(

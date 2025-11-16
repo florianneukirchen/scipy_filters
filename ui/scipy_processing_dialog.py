@@ -31,6 +31,7 @@ from qgis.core import (
 from qgis import processing 
 from qgis.PyQt.QtCore import QTimer
 from scipy_filters.ui.sizes_widget import SizesWidget
+from scipy_filters.ui.structure_widget import StructureWidget, SciPyParameterStructure
 
 class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
     """
@@ -47,6 +48,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         print("init", type(alg))
 
         self.widgets = {}   # key: param name → value: widget instance
+        self._sizewidget = None
         self.context = QgsProcessingContext()
         self.panel = QgsPanelWidget(self.parent())
         self.layout = QVBoxLayout()
@@ -152,6 +154,18 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                     w.setValue(float(param.defaultValue()))
                 return label, w
             
+        if isinstance(param, SciPyParameterStructure):
+            examples = param.examples
+            try:
+                to_int = param.to_int
+            except AttributeError:
+                to_int=None
+            defaultValue = param.defaultValue()
+            optional = param.isoptional
+            w = StructureWidget(examples, to_int, defaultValue=defaultValue, isoptional=optional)
+            self._dimension.currentIndexChanged.connect(w.dimensionChanged)
+            return label, w
+
         if isinstance(param, QgsProcessingParameterString):
             if param.name() == "SIZES":
                 meta = param.metadata()
@@ -273,10 +287,11 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             self._dimension.setEnabled(False)
 
     def dimensionChanged(self, dim_option):
-        if dim_option == 1: # 3D; see enum in baseclass
-            self._sizewidget.setDim(3)
-        else:
-            self._sizewidget.setDim(2)
+        if self._sizewidget is not None:
+            if dim_option == 1: # 3D; see enum in baseclass
+                self._sizewidget.setDim(3)
+            else:
+                self._sizewidget.setDim(2)
 
     def runAlgorithm(self):
         print("Run")

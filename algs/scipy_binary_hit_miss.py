@@ -40,8 +40,7 @@ from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithm
 from scipy_filters.ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
 
-from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
-                                  SciPyParameterStructure,)
+from scipy_filters.ui.structure_widget import SciPyParameterStructure
 
 from scipy_filters.helpers import (str_to_int_or_list, 
                       check_structure, 
@@ -103,11 +102,6 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
             examples=morphostructexamples,
             )
         
-        struct1_param.setMetadata({
-            'widget_wrapper': {
-                'class': StructureWidgetWrapper
-            }
-        })
 
         self.addParameter(struct1_param)        
 
@@ -121,12 +115,6 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
             examples=morphostructexamples,
             )
         
-        struct2_param.setMetadata({
-            'widget_wrapper': {
-                'class': StructureWidgetWrapper
-            }
-        })
-
         self.addParameter(struct2_param)
 
         origin1_param = SciPyParameterOrigin(

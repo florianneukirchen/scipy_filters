@@ -42,8 +42,7 @@ from qgis.core import (QgsProcessingParameterRasterLayer,
 
 from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithm
 
-from scipy_filters.ui.structure_widget import (StructureWidgetWrapper, 
-                                  SciPyParameterStructure,)
+from scipy_filters.ui.structure_widget import SciPyParameterStructure
 
 from scipy_filters.ui.origin_widget import (OriginWidgetWrapper, 
                                SciPyParameterOrigin,)
@@ -92,12 +91,6 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
             to_int=True,
             optional=True,
             )
-        
-        struct_param.setMetadata({
-            'widget_wrapper': {
-                'class': StructureWidgetWrapper
-            }
-        })
 
         self.addParameter(struct_param)
         
@@ -380,12 +373,6 @@ class SciPyGreyMorphologicalAlgorithm(SciPyMorphologicalBaseAlgorithm):
             optional=True,
             )
         
-        struct_param.setMetadata({
-            'widget_wrapper': {
-                'class': StructureWidgetWrapper
-            }
-        })
-
         self.addParameter(struct_param)
 
 

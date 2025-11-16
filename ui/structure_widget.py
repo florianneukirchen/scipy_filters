@@ -129,6 +129,12 @@ class StructureWidget(BASE, WIDGET):
     def value(self):
         return self.plainTextEdit.toPlainText()
 
+    def dimensionChanged(self, dim_option):
+        if dim_option == 1: # 3D; see enum im basclass
+            self.setDim(3)
+        else:
+            self.setDim(2)
+
     def setDim(self, dims):
         self.ndim = dims
         self.checknow()
