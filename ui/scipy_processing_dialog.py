@@ -112,6 +112,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         if isinstance(param, QgsProcessingParameterRasterDestination):
             w = QgsProcessingLayerOutputDestinationWidget(param, True, parent=self.panel)
             w.addOpenAfterRunningOption()
+            w.setContext(self.context)
             return label, w
 
         if isinstance(param, QgsProcessingParameterEnum):
