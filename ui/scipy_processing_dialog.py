@@ -32,6 +32,7 @@ from qgis import processing
 from qgis.PyQt.QtCore import QTimer
 from scipy_filters.ui.sizes_widget import SizesWidget
 from scipy_filters.ui.structure_widget import StructureWidget, SciPyParameterStructure
+from scipy_filters.ui.origin_widget import SciPyParameterOrigin, OriginWidget
 
 class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
     """
@@ -84,6 +85,15 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         self.layout.addStretch()
         self.setMainWidget(self.panel)
+
+        # Connect the origin widgets to the correct structure widget
+        for _, widget in self.widgets.items():
+            if isinstance(widget, OriginWidget):
+                for name, w in self.widgets.items():
+                    if name == widget.watch:
+                        print(name)
+                        w.valueChanged.connect(widget.setShape)
+
 
     def add_widget(self, label, widget, param):
         if widget is None:
@@ -153,7 +163,12 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                 if param.defaultValue() is not None:
                     w.setValue(float(param.defaultValue()))
                 return label, w
-            
+        
+        if isinstance(param, SciPyParameterOrigin):
+            w = OriginWidget(param.watch)
+            self._dimension.currentIndexChanged.connect(w.dimensionChanged)
+            return label, w
+
         if isinstance(param, SciPyParameterStructure):
             examples = param.examples
             try:

@@ -37,8 +37,7 @@ from qgis.core import (QgsProcessingParameterDefinition,
 
 from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithm
 
-from scipy_filters.ui.origin_widget import (OriginWidgetWrapper, 
-                               SciPyParameterOrigin,)
+from scipy_filters.ui.origin_widget import SciPyParameterOrigin
 
 from scipy_filters.ui.structure_widget import SciPyParameterStructure
 
@@ -124,12 +123,6 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
             optional=False,
             watch="STRUCTURE1"
             )
-        
-        origin1_param.setMetadata({
-            'widget_wrapper': {
-                'class': OriginWidgetWrapper
-            }
-        })
 
         origin1_param.setFlags(origin1_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
 
@@ -142,12 +135,6 @@ class SciPyBinaryHitMissAlgorithm(SciPyAlgorithm):
             optional=False,
             watch="STRUCTURE2"
             )
-        
-        origin2_param.setMetadata({
-            'widget_wrapper': {
-                'class': OriginWidgetWrapper
-            }
-        })
 
         origin2_param.setFlags(origin2_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
 

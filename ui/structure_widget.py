@@ -30,7 +30,7 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QToolButton, QMenu, QAction
 
 from qgis.core import QgsProcessingParameterString
-
+from qgis.PyQt.QtCore import pyqtSignal
 
 from scipy_filters.helpers import array_to_str, check_structure, tr
 
@@ -61,7 +61,7 @@ class SciPyParameterStructure(QgsProcessingParameterString):
 
 
 class StructureWidget(BASE, WIDGET):
-
+    valueChanged = pyqtSignal(object)
 
     def __init__(self, examples, to_int=False, defaultValue="", isoptional=True):
         super().__init__(None)
@@ -107,6 +107,7 @@ class StructureWidget(BASE, WIDGET):
         self.statusLabel.setText(self.ok_txt)
 
         self.plainTextEdit.textChanged.connect(self.checknow)
+        self.checknow()
 
     def is3d(self, check):
         """check string or np.array, return bool"""
@@ -143,8 +144,11 @@ class StructureWidget(BASE, WIDGET):
     def checknow(self):
         text = self.plainTextEdit.toPlainText()
         ok, s, shape = check_structure(text, dims=self.ndim, optional=self.isoptional)
+        print("check", ok, shape)
         if ok:
             self.statusLabel.setText(self.ok_txt)
+            if shape:
+                self.valueChanged.emit(shape)
         else:
             self.statusLabel.setText(s)
         

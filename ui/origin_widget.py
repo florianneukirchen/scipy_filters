@@ -58,9 +58,11 @@ class OriginWidget(BASE, WIDGET):
     ndim = None
     shape = None
 
-    def __init__(self):
+    def __init__(self, watch):
         self.context = dataobjects.createContext()
         super().__init__(None)
+        self.watch = watch # name (str)
+        self.watch_structure = None
         self.setupUi(self)
 
         self.mOriginRowsQgsSpinBox.setValue(0)
@@ -75,12 +77,20 @@ class OriginWidget(BASE, WIDGET):
         self.setDim(2)
 
 
+    def dimensionChanged(self, dim_option):
+        if dim_option == 1: # 3D; see enum im basclass
+            self.setDim(3)
+        else:
+            self.setDim(2)
+
     def setDim(self, dims):
         self.ndim = dims
         # Disable bands axis if dims == 2, otherwise enable
         self.mOriginBandsQgsSpinBox.setDisabled(dims == 2)
         self.originBandsLabel.setDisabled(dims == 2)
 
+    # def structureChanged(self, shape):
+    #     self.setShape(shape)
 
     def setShape(self, shape):
         self.shape = shape

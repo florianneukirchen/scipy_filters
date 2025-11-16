@@ -44,8 +44,7 @@ from scipy_filters.scipy_algorithm_baseclasses import SciPyAlgorithm
 
 from scipy_filters.ui.structure_widget import SciPyParameterStructure
 
-from scipy_filters.ui.origin_widget import (OriginWidgetWrapper, 
-                               SciPyParameterOrigin,)
+from scipy_filters.ui.origin_widget import SciPyParameterOrigin
 
 from scipy_filters.helpers import (str_to_int_or_list, 
                       check_structure, 
@@ -101,12 +100,6 @@ class SciPyMorphologicalBaseAlgorithm(SciPyAlgorithm):
             optional=False,
             watch="STRUCTURE"
             )
-        
-        origin_param.setMetadata({
-            'widget_wrapper': {
-                'class': OriginWidgetWrapper
-            }
-        })
 
         origin_param.setFlags(origin_param.flags() | QgsProcessingParameterDefinition.Flag.FlagAdvanced)
         
