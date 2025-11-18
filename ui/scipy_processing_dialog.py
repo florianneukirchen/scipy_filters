@@ -331,6 +331,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         try:
             results = processing.run(self._alg, params, context=self.context, feedback=feedback)
             self.setResults(results)
+
         except Exception as e:
             import traceback
             self.pushInfo(f"Algorithm failed: {e}")
