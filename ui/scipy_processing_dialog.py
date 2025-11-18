@@ -101,7 +101,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         if widget is None:
             return
 
-        if param.flags() & QgsProcessingParameterDefinition.FlagAdvanced:
+        if param.flags() & QgsProcessingParameterDefinition.Flag.FlagAdvanced:
             target = self.advancedLayout
         else:
             target = self.layout
@@ -120,7 +120,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         if isinstance(param, QgsProcessingParameterRasterLayer):
             w = QgsMapLayerComboBox()
-            w.setFilters(QgsMapLayerProxyModel.RasterLayer)
+            w.setFilters(QgsMapLayerProxyModel.Filter.RasterLayer)
             if param.defaultValue():
                 w.setLayer(param.defaultValue())
             w.layerChanged.connect(self.inputLayerChanged)
@@ -144,7 +144,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             return label, w
 
         if isinstance(param, QgsProcessingParameterNumber):
-            if param.dataType() == QgsProcessingParameterNumber.Integer:
+            if param.dataType() == QgsProcessingParameterNumber.Type.Integer:
 
                 w = QSpinBox()
                 if param.minimum() is not None:
