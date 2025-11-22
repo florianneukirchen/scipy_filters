@@ -4,6 +4,7 @@ from qgis.gui import (
     QgsMapLayerComboBox,
     QgsProcessingLayerOutputDestinationWidget,
     QgsCollapsibleGroupBox,
+    QgsGui,
 )
 from qgis.PyQt.QtWidgets import (
    QWidget, QVBoxLayout, QLabel,
@@ -26,6 +27,8 @@ from qgis.core import (
     QgsProperty,
     QgsProcessingUtils,
     QgsProject,
+    QgsProcessingAlgorithm,
+    QgsProcessingAlgRunnerTask,
 )
 from qgis import processing 
 from qgis.PyQt.QtCore import QTimer
@@ -320,6 +323,12 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
     
         feedback = self.createFeedback()
         self.showLog()
+        self.algorithmAboutToRun.emit(self.context)
+        self.setExecutedAnyResult(True)
+        # enable cancel only if algorithm supports it
+        self.cancelButton().setEnabled(
+            self._alg.flags() & QgsProcessingAlgorithm.Flag.FlagCanCancel
+        )
 
         feedback.pushVersionInfo(self.algorithm().provider())
         ts = datetime.now().isoformat(timespec='seconds')
@@ -328,26 +337,58 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         feedback.pushInfo("Parameters:")
         feedback.pushInfo(str(params))
 
-        try:
-            results = processing.run(self._alg, params, context=self.context, feedback=feedback)
+        history_details = {
+            "python_command": self._alg.asPythonCommand(params, self.context),
+            "algorithm_id": self._alg.id(),
+            "parameters": self._alg.asMap(params, self.context),
+        }
+
+        # Add to history
+        process_command, command_ok = self._alg.asQgisProcessCommand(params, self.context)
+        if command_ok:
+            history_details["process_command"] = process_command
+        self.history_log_id, _ = QgsGui.historyProviderRegistry().addEntry("processing", history_details)
+
+        task = QgsProcessingAlgRunnerTask(self._alg, params, self.context, feedback)
+
+        def on_complete(ok, results):
+            # update history with results/log
+            if self.history_log_id is not None:
+                history_details["results"] = {k: v for k, v in results.items() if k != "CHILD_INPUTS"}
+                try:
+                    history_details["log"] = feedback.htmlLog()
+                    from qgis.gui import QgsGui
+                    QgsGui.historyProviderRegistry().updateEntry(self.history_log_id, history_details)
+                except Exception:
+                    pass
+
             self.setResults(results)
+            self.setExecuted(True)
+            self.algorithmFinished.emit(ok, results)
 
-        except Exception as e:
-            import traceback
-            self.pushInfo(f"Algorithm failed: {e}")
-            trace = traceback.format_exc()
-            print(trace)
-            self.pushDebugInfo(trace)
+            # open outputs 
+            for name, widget in self.widgets.items():
+                from qgis.PyQt.QtWidgets import QWidget
+                from qgis.gui import QgsProcessingLayerOutputDestinationWidget
+                if isinstance(widget, QgsProcessingLayerOutputDestinationWidget):
+                    if widget.openAfterRunning():
+                        output_path = results.get(name)
+                        if output_path:
+                            param = self._alg.parameterDefinition(name)
+                            label = param.description()
+                            self.openOutputLayer(output_path, label)
+
+            # reset UI (enable run buttons etc.)
+            try:
+                # reset controls in your dialog - adapt as needed
+                self.resetGui()
+            except Exception:
+                pass
+
+        task.executed.connect(on_complete)
+        self.setCurrentTask(task)
 
 
-        for name, widget in self.widgets.items():
-            if isinstance(widget, QgsProcessingLayerOutputDestinationWidget):
-                if widget.openAfterRunning():     # User ticked the checkbox
-                    output_path = results.get(name)
-                    if output_path:
-                        param = self._alg.parameterDefinition(name)
-                        label = param.description() 
-                        self.openOutputLayer(output_path, label)
 
     def openOutputLayer(self, path, name):
         """Load the output layer into QGIS."""
