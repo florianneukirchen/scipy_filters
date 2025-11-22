@@ -321,7 +321,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         feedback = self.createFeedback()
         self.showLog()
 
-        feedback.pushVersionInfo()
+        feedback.pushVersionInfo(self.algorithm().provider())
         ts = datetime.now().isoformat(timespec='seconds')
         feedback.pushInfo(f"Algorithm {self._alg.displayName()} started at: {ts}")
         feedback.pushInfo("")
@@ -335,7 +335,9 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         except Exception as e:
             import traceback
             self.pushInfo(f"Algorithm failed: {e}")
-            print(traceback.format_exc())
+            trace = traceback.format_exc()
+            print(trace)
+            self.pushDebugInfo(trace)
 
 
         for name, widget in self.widgets.items():
