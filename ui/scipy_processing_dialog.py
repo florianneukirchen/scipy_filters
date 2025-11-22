@@ -353,3 +353,15 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         if layer:
             layer.setName(name)
             QgsProject.instance().addMapLayer(layer)
+
+    def processingContext(self):
+        return self.context
+
+    def createContext(self):
+        return QgsProcessingContext()
+
+    def createFeedback(self):
+        return super().createFeedback()
+    
+    def createProcessingParameters(self, flags):
+        return self.getParameters()
