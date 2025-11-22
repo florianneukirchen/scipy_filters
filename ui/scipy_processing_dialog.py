@@ -48,20 +48,20 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         super().__init__(parent)
 
         self._alg = alg
-        
 
         print("init", type(alg))
 
-        self.widgets = {}   # key: param name → value: widget instance
         self._sizewidget = None
         self.context = QgsProcessingContext()
-        self.panel = QgsPanelWidget(self.parent())
+        self.panel = QgsPanelWidget(self)
         self.layout = QVBoxLayout()
         self.panel.setLayout(self.layout)
         self.advancedBox = QgsCollapsibleGroupBox(self.tr("Advanced parameters"))
         self.advancedLayout = QVBoxLayout()
         self.advancedBox.setLayout(self.advancedLayout)
-        QTimer.singleShot(0, self.buildUI)
+        self.widgets = {} 
+
+        self.buildUI()
         
 
 
@@ -295,6 +295,88 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         return params
 
+
+    # def setParameters(self, parameters):
+    #     print("bla")
+    #     self.panel.setParameters(parameters)
+
+    def setParameters(self, parameters):
+        """
+        Restore widget values from a parameters map.
+
+        Accepts:
+         - simple dict returned by getParameters()
+         - asMap() style dict (may contain an 'inputs' key)
+         - QVariantMap-like values or nested dicts with layer ids
+        """
+        if not parameters:
+            return
+        
+        print("parameters", parameters, type(parameters))
+
+        # If this is the asMap() form, it typically contains an "inputs" map
+        if isinstance(parameters, dict) and "inputs" in parameters:
+            param_map = parameters.get("inputs", {})
+        else:
+            param_map = parameters
+
+        input = ["INPUT"]
+        print(input, type(input))
+
+
+        def resolve_layer_value(v):
+            if not v:
+                return None
+
+            layer = QgsProject.instance().mapLayer(v)
+            if layer:
+                return layer
+
+            path = str(v)
+
+            for lyr in QgsProject.instance().mapLayers().values():
+                if lyr.source() == path:
+                    return lyr
+                
+            return None
+
+        # iterate parameters and set widgets
+        for name, val in dict(param_map).items():
+            if name not in self.widgets:
+                continue
+            widget = self.widgets[name]
+
+                
+            try:
+                if isinstance(widget, QgsMapLayerComboBox):
+                    layer = resolve_layer_value(val)
+                    if layer:
+                        widget.setLayer(layer)
+
+                elif isinstance(widget, QgsProcessingLayerOutputDestinationWidget):
+                    if isinstance(val, str) and (
+                        val == QgsProcessing.TEMPORARY_OUTPUT
+                        or val.upper().startswith("TEMPORARY")
+                    ):
+                        widget.setValue(QgsProcessing.TEMPORARY_OUTPUT)
+                    else:
+                        widget.setValue(val)
+
+                elif isinstance(widget, QComboBox):
+                    widget.setCurrentIndex(int(val))
+
+                elif isinstance(widget, QCheckBox):
+                    widget.setChecked(bool(val))
+
+                elif isinstance(widget, QLineEdit):
+                    widget.setText("" if val is None else str(val))
+
+                elif hasattr(widget, "setValue"):
+                    widget.setValue(val)
+
+            except Exception as e:
+                print(f"setParameters: error setting '{name}' with value {val!r}: {e}")
+
     def inputLayerChanged(self, layer):
         if not layer:
             return
@@ -409,3 +491,4 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
     
     def createProcessingParameters(self, flags):
         return self.getParameters()
+    
