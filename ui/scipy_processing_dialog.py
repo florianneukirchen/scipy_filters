@@ -49,8 +49,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         self._alg = alg
 
-        print("init", type(alg))
-
         self._sizewidget = None
         self.context = QgsProcessingContext()
         self.panel = QgsPanelWidget(self)
@@ -96,7 +94,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             if isinstance(widget, OriginWidget):
                 for name, w in self.widgets.items():
                     if name == widget.watch:
-                        print(name)
                         w.valueChanged.connect(widget.setShape)
                         w.checknow()
 
@@ -229,7 +226,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                 edit.setText(str(param.defaultValue()))
             return label, edit
 
-        print(label, "-", ptype, param)
         return None, None
 
     def outputDestinationChanged(self, param_name):
@@ -291,14 +287,8 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             # Fallback
             params[name] = widget
 
-        print(params)
-
         return params
 
-
-    # def setParameters(self, parameters):
-    #     print("bla")
-    #     self.panel.setParameters(parameters)
 
     def setParameters(self, parameters):
         """
@@ -312,17 +302,11 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         if not parameters:
             return
         
-        print("parameters", parameters, type(parameters))
-
         # If this is the asMap() form, it typically contains an "inputs" map
         if isinstance(parameters, dict) and "inputs" in parameters:
             param_map = parameters.get("inputs", {})
         else:
             param_map = parameters
-
-        input = ["INPUT"]
-        print(input, type(input))
-
 
         def resolve_layer_value(v):
             if not v:
@@ -375,6 +359,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                     widget.setValue(val)
 
             except Exception as e:
+                self.messageBar().pushWarning(self.tr("Set Parameters:"), f" Error setting '{name}' with value {val!r}") 
                 print(f"setParameters: error setting '{name}' with value {val!r}: {e}")
 
     def inputLayerChanged(self, layer):
@@ -394,7 +379,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                 self._sizewidget.setDim(2)
 
     def runAlgorithm(self):
-        print("Run")
         params = self.getParameters()
         if hasattr(self, "transformParameters"):
             params = self.transformParameters(params)
@@ -463,7 +447,6 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
             # reset UI (enable run buttons etc.)
             try:
-                # reset controls in your dialog - adapt as needed
                 self.resetGui()
             except Exception:
                 pass
@@ -486,9 +469,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
     def createContext(self):
         return QgsProcessingContext()
 
-    def createFeedback(self):
-        return super().createFeedback()
-    
+
     def createProcessingParameters(self, flags):
         return self.getParameters()
     
