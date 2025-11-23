@@ -6,10 +6,12 @@ from qgis.gui import (
     QgsCollapsibleGroupBox,
     QgsGui,
 )
+# from qgis.processing.gui.BatchAlgorithmDialog import BatchAlgorithmDialog
+# from qgis import iface
 from qgis.PyQt.QtWidgets import (
    QWidget, QVBoxLayout, QLabel,
    QSpinBox, QCheckBox, QLineEdit, QComboBox,
-   QDoubleSpinBox, 
+   QDoubleSpinBox, QPushButton, QDialogButtonBox,
 )
 from qgis.core import (
     QgsProcessingParameterDefinition,
@@ -30,8 +32,12 @@ from qgis.core import (
     QgsProcessingAlgorithm,
     QgsProcessingAlgRunnerTask,
 )
-from qgis import processing 
-from qgis.PyQt.QtCore import QTimer
+from qgis.utils import iface
+
+# This is not public API, might break when QGIS changes it
+from processing.gui.BatchAlgorithmDialog import BatchAlgorithmDialog
+
+from qgis.PyQt.QtCore import QCoreApplication
 from scipy_filters.ui.sizes_widget import SizesWidget
 from scipy_filters.ui.structure_widget import StructureWidget, SciPyParameterStructure
 from scipy_filters.ui.origin_widget import SciPyParameterOrigin, OriginWidget
@@ -61,6 +67,13 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         self.buildUI()
         
+        self.runAsBatchButton = QPushButton(
+                QCoreApplication.translate("AlgorithmDialog", "Run as Batch Process…")
+            )
+        self.runAsBatchButton.clicked.connect(self.runAsBatch)
+        self.buttonBox().addButton(
+                self.runAsBatchButton, QDialogButtonBox.ButtonRole.ResetRole
+            )  
 
 
 
@@ -233,6 +246,16 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         if widget and not widget.value():  # or appropriate check
             widget.setValue(QgsProcessing.TEMPORARY_OUTPUT)
 
+    def runAsBatch(self):
+        self.close()
+        # BatchAlgorithmDialog is not public API! 
+        # This is how its done in QGIS python/plugins/processing/gui/AlgorithmDialog.py
+        dlg = BatchAlgorithmDialog(
+            self.algorithm().create(), 
+            parent=iface.mainWindow()
+            )
+        dlg.show()
+        dlg.exec()
 
     def getParameters(self) -> dict:
         params = {}
@@ -396,6 +419,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
         self.cancelButton().setEnabled(
             self._alg.flags() & QgsProcessingAlgorithm.Flag.FlagCanCancel
         )
+        self.runAsBatchButton.setEnabled(False)
 
         feedback.pushVersionInfo(self.algorithm().provider())
         ts = datetime.now().isoformat(timespec='seconds')
@@ -446,6 +470,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                             self.openOutputLayer(output_path, label)
 
             # reset UI (enable run buttons etc.)
+            self.runAsBatchButton.setEnabled(True)
             try:
                 self.resetGui()
             except Exception:
