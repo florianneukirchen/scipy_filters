@@ -6,11 +6,10 @@
 name=SciPy Filters
 qgisMinimumVersion=3.22
 description=Filter collection implemented with SciPy
-version=1.10
+version=1.99
 author=Florian Neukirchen
 email=mail@riannek.de
 
-# Works with Qt6 on Linux (experimental), but crashes QGIS on Windows!
 supportsQt6=True
 
 
@@ -41,7 +40,9 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=1.10
+changelog=1.99
+    - Port to Qt6 (don't use the deprecated WidgetWrapper)
+    1.10
     - Fix issue #8, kernel in convolution can be floats
     1.9
     - merge "fixing custom footprint to be converted to array" (issue #7, thanks to Dodekaphonia) 
@@ -122,7 +123,7 @@ tags=python,raster,filter,analysis,principal components analysis,pca,edge,smooth
 homepage=https://github.com/florianneukirchen/scipy_filters
 icon=_static/icon/logo32.png
 # experimental flag
-experimental=False
+experimental=True
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False

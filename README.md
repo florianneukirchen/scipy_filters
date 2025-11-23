@@ -27,14 +27,11 @@ Python users get `helpers.RasterWizard` to quickly get the data of a raster laye
 
 ## Note on QGIS 4 / Qt6
 
-QGIS 4 will use Qt6. Porting the code is not easy, because `WidgetWrapper` is depricated and 
-using it crashes QGIS-Qt6 on Windows. I completely rewrote the UI in the qt6 branch,
+QGIS 4 will use Qt6. Porting the code was not easy, because `WidgetWrapper` is depricated and 
+using it crashes QGIS-Qt6 on Windows. I completely rewrote the UI,
 creating my own dialog by subclassing `QgsProcessingAlgorithmDialogBase`. 
-It seems to work with the exception that it does not show up in the processing 
-history after running the tool. There seems to be no API to do this when 
-not using the default dialog.
 
-More testing is required, and suggestions / pull requests for the history problem would be helpful...
+The new version runs with QGIS builds with Qt5 and Qt6, I release a beta version as 1.99 (marked as experimental).
 
 ## Installation
 The plugin can be installed with "manage and install plugins" in QGIS. Eventually, in the settings of "install plugins", the checkbox "Show also experimental plugins" must be checked.
@@ -118,6 +115,9 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 ```
 
 ## Changelog
+
+### 1.99 (11/2055, experimental)
+- Port to Qt6 (don't use the deprecated WidgetWrapper)
 
 ### 1.10 (11/2025)
 - Fix issue #8
