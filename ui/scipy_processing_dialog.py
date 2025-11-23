@@ -314,14 +314,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
 
     def setParameters(self, parameters):
-        """
-        Restore widget values from a parameters map.
-
-        Accepts:
-         - simple dict returned by getParameters()
-         - asMap() style dict (may contain an 'inputs' key)
-         - QVariantMap-like values or nested dicts with layer ids
-        """
+        """Restore widget values from parameters dict  """
         if not parameters:
             return
         
