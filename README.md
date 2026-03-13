@@ -114,6 +114,9 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 
 ## Changelog
 
+### 1.99 (11/2055, experimental)
+- Port to Qt6 (don't use the deprecated WidgetWrapper)
+
 ### 1.10 (11/2025)
 - Fix issue #8
 

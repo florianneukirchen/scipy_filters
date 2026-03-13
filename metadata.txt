@@ -11,7 +11,6 @@ version=2.0
 author=Florian Neukirchen
 email=mail@riannek.de
 
-# Works with Qt6 on Linux (experimental), but crashes QGIS on Windows!
 supportsQt6=True
 
 
@@ -44,6 +43,8 @@ hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
 changelog=2.0
     - Support QGIS 4.x
+    1.99
+    - Port to Qt6 (don't use the deprecated WidgetWrapper)
     1.10
     - Fix issue #8, kernel in convolution can be floats
     1.9
@@ -125,7 +126,7 @@ tags=python,raster,filter,analysis,principal components analysis,pca,edge,smooth
 homepage=https://github.com/florianneukirchen/scipy_filters
 icon=_static/icon/logo32.png
 # experimental flag
-experimental=False
+experimental=True
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False

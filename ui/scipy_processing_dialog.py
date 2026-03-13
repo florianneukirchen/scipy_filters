@@ -75,7 +75,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                 self.runAsBatchButton, QDialogButtonBox.ButtonRole.ResetRole
             )  
 
-
+        self.updateRunButtonVisibility()
 
     def buildUI(self):
         self.setAlgorithm(self._alg)
@@ -100,7 +100,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         self.layout.addStretch()
         self.setMainWidget(self.panel)
-        self.updateRunButtonVisibility()
+        
 
         # Connect the origin widgets to the correct structure widget
         for _, widget in self.widgets.items():
@@ -314,14 +314,7 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
 
     def setParameters(self, parameters):
-        """
-        Restore widget values from a parameters map.
-
-        Accepts:
-         - simple dict returned by getParameters()
-         - asMap() style dict (may contain an 'inputs' key)
-         - QVariantMap-like values or nested dicts with layer ids
-        """
+        """Restore widget values from parameters dict  """
         if not parameters:
             return
         
