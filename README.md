@@ -15,15 +15,13 @@ Most filters are based on [scipy.ndimage](https://docs.scipy.org/doc/scipy/refer
 
 For many filters, a custom footprint and/or structure or kernel can be provided, adjusting the size and shape of the filter. 
 
-For more information, see [https://florianneukirchen.github.io/scipy_filters/](https://florianneukirchen.github.io/scipy_filters/) or the help in the window of the respective processing tool.
-
 Python users get `helpers.RasterWizard` to quickly get the data of a raster layer as numpy array and the processing result back into QGIS as a new raster layer. 
 
 ## Resources
 - QGIS Plugin Repository: [https://plugins.qgis.org/plugins/scipy_filters/](https://plugins.qgis.org/plugins/scipy_filters/)
 - Source code: [https://github.com/florianneukirchen/scipy_filters/](https://github.com/florianneukirchen/scipy_filters/)
 - Bug tracker: [https://github.com/florianneukirchen/scipy_filters/issues](https://github.com/florianneukirchen/scipy_filters/issues)
-- Documentation: [https://florianneukirchen.github.io/scipy_filters/](https://florianneukirchen.github.io/scipy_filters/)
+
 
 ## Note on QGIS 4 / Qt6
 
@@ -81,7 +79,6 @@ When calling an algorithm with "size" as parameter from python, you have two opt
 In the QGIS python console, `RasterWizard` allows to quickly get the data of a raster layer as a numpy array, and the processing result back into QGIS as a new raster layer. This allows for processing with [NumPy](https://numpy.org/), [SciPy](https://scipy.org/), [scikit-image](https://scikit-image.org/), 
 [scikit-learn](https://scikit-learn.org/stable/) or other python libraries. Great for prototype development and experimenting with algorithms.
 
-See the [API documentation of RasterWizard](https://florianneukirchen.github.io/scipy_filters/wizard.html) for more information.
 
 (New in version 1.3)
 
@@ -114,6 +111,8 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 
 ## Changelog
 
+### 2.1 (06/2026)
+- Remove old and unused plugin builder scripts that where reported as security vulerability
 ### 2.0 (03/2026)
 - Support QGIS 4.x
 

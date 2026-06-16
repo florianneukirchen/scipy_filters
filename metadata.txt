@@ -7,7 +7,7 @@ name=SciPy Filters
 qgisMinimumVersion=3.22
 qgisMaximumVersion=4.99
 description=Filter collection implemented with SciPy
-version=2.0
+version=2.1
 author=Florian Neukirchen
 email=mail@riannek.de
 
@@ -41,7 +41,9 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=2.0
+changelog=2.1
+    - Remove old and unused plugin builder scripts that where reported as security vulerability
+    2.0
     - Support QGIS 4.x
     1.99
     - Port to Qt6 (don't use the deprecated WidgetWrapper)
