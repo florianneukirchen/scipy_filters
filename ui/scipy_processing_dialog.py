@@ -1,6 +1,15 @@
 from qgis.gui import (
-    QgsProcessingAlgorithmDialogBase, 
-    QgsPanelWidget, 
+    # QgsProcessingAlgorithmDialogBase was removed in QGIS 4.2; this branch
+    # targets QGIS 4.x only and uses its replacement,
+    # QgsProcessingAlgorithmWidgetBase, directly (see the qgis3 / main branch
+    # for the QGIS 3.x line). It's a QWidget (not QDialog) subclass but
+    # exposes the same API surface we rely on below: setAlgorithm/
+    # setMainWidget, buttonBox()/cancelButton()/messageBar(), createFeedback(),
+    # showLog(), setCurrentTask(), setResults()/setExecuted()/
+    # setExecutedAnyResult(), resetGui(), updateRunButtonVisibility(), and the
+    # algorithmAboutToRun/algorithmFinished signals.
+    QgsProcessingAlgorithmWidgetBase as QgsProcessingAlgorithmDialogBase,
+    QgsPanelWidget,
     QgsMapLayerComboBox,
     QgsProcessingLayerOutputDestinationWidget,
     QgsCollapsibleGroupBox,
