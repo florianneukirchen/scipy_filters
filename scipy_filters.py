@@ -106,32 +106,135 @@ class SciPyFiltersPlugin(object):
             tr('SciPy is not installed. Do you want to install it automatically (using pip)?'),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
-        if choice == QMessageBox.StandardButton.Yes:
-            msg = None
-            res = ""
-            import subprocess
-            import sys
+        if choice != QMessageBox.StandardButton.Yes:
+            return False
 
-            try:
-                res = subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'scipy'])
-            except subprocess.CalledProcessError:
-                msg = tr('Installing SciPy failed. This probably means that pip is not installed.')
-            
+        ok, msg = self._install_scipy_safely()
 
-            # Test if it worked
-            try:
-                import scipy
-            except ModuleNotFoundError:
-                msg = tr('Installing SciPy failed.')
-
-            if not msg:
-                return True
-            
+        if ok:
+            QMessageBox.information(
+                None,
+                tr('SciPy Filters: SciPy installed'),
+                tr('SciPy was installed successfully. Please restart QGIS for the change to take effect.'),
+            )
+        else:
             QMessageBox.warning(
                 None,
-                tr('SciPy Filters: Installing SciPy failed.'),
-                msg + ' ' + res
+                tr('SciPy Filters: Installing SciPy failed'),
+                msg,
             )
 
+        return False  # Either way, the provider is only (re-)loaded on the next start.
 
-        return False
+    def _run(self, args, timeout=None):
+        """Run a subprocess, returning (success, combined stdout+stderr).
+
+        Never raises: a missing executable or a timeout is reported the same
+        way as a non-zero exit code, so callers can always show *some*
+        message to the user instead of a silent/console-only failure.
+        """
+        import subprocess
+        try:
+            result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+        except Exception as e:
+            return False, str(e)
+        output = (result.stdout or '') + (result.stderr or '')
+        return result.returncode == 0, output
+
+    def _pip(self, args, timeout=None):
+        import sys
+        return self._run([sys.executable, '-m', 'pip'] + list(args), timeout=timeout)
+
+    def _ensure_pip_available(self):
+        """Some sandboxed QGIS distributions (e.g. the Flatpak build) ship a
+        Python interpreter without a `pip` module at all. Bootstrap one into
+        the writable per-user location if needed."""
+        ok, output = self._pip(['--version'], timeout=30)
+        if ok:
+            return True, ''
+        import sys
+        ok, output2 = self._run([sys.executable, '-m', 'ensurepip', '--user'], timeout=60)
+        if ok:
+            return True, ''
+        return False, output + output2
+
+    def _gdal_numpy_roundtrip_ok(self):
+        """Check, in a *fresh* interpreter, whether GDAL's compiled Python
+        bindings and the currently installed NumPy actually work together.
+
+        This must run in a subprocess rather than in-process: NumPy (and
+        GDAL's numpy-array support module) may already be imported and
+        cached in this running QGIS session, so re-importing them here would
+        just return the cached module and silently miss any change a pip
+        install just made on disk (e.g. a NumPy 1.x -> 2.x ABI break).
+        """
+        import sys
+        script = (
+            "from osgeo import gdal\n"
+            "import numpy as np\n"
+            "ds = gdal.GetDriverByName('MEM').Create('', 2, 2, 1)\n"
+            "band = ds.GetRasterBand(1)\n"
+            "band.WriteArray(np.zeros((2, 2), dtype=np.uint8))\n"
+            "band.ReadAsArray()\n"
+        )
+        ok, _output = self._run([sys.executable, '-c', script], timeout=60)
+        return ok
+
+    def _installed_numpy_version(self):
+        import sys
+        ok, output = self._run(
+            [sys.executable, '-c', 'import numpy; print(numpy.__version__)'],
+            timeout=30,
+        )
+        return output.strip() if ok else None
+
+    def _install_scipy_safely(self):
+        """Install SciPy without silently breaking GDAL's NumPy ABI.
+
+        GDAL's Python bindings are a compiled extension tied to whatever
+        NumPy version they were built against - which could be either a
+        NumPy 1.x or a 2.x build depending on the QGIS distribution, and
+        there is no metadata we can just read off to know which. So rather
+        than guessing, this empirically preserves whatever NumPy is already
+        working with GDAL (if any) while installing SciPy alongside it, and
+        reports the actual pip failure text if that isn't possible - instead
+        of reporting success while leaving GDAL broken (only visible later,
+        at filter-run time) or reporting failure with no visible reason
+        (previously only the raw subprocess output on the console showed why).
+        """
+        ok, err = self._ensure_pip_available()
+        if not ok:
+            return False, tr('Could not find or install pip:\n{}').format(err)
+
+        gdal_numpy_ok_before = self._gdal_numpy_roundtrip_ok()
+        prior_numpy_version = self._installed_numpy_version() if gdal_numpy_ok_before else None
+
+        if prior_numpy_version:
+            # GDAL already works with the currently installed NumPy - keep
+            # that exact version pinned while adding SciPy, whatever it is.
+            ok, output = self._pip(['install', 'scipy', 'numpy=={}'.format(prior_numpy_version)])
+            if not ok:
+                return False, tr(
+                    'Installing SciPy failed. No SciPy version compatible with the NumPy '
+                    'version required by this QGIS\'s GDAL ({}) could be installed. Consider '
+                    'installing a matching SciPy/NumPy pair manually (e.g. via conda or your '
+                    'OS package manager) instead.\n\npip output:\n{}'
+                ).format(prior_numpy_version, output)
+        else:
+            ok, output = self._pip(['install', 'scipy'])
+            if not ok:
+                return False, tr('Installing SciPy failed.\n\npip output:\n{}').format(output)
+
+        import sys
+        if not self._run([sys.executable, '-c', 'import scipy'], timeout=30)[0]:
+            return False, tr('SciPy was installed but still cannot be imported.\n\npip output:\n{}').format(output)
+
+        if gdal_numpy_ok_before and not self._gdal_numpy_roundtrip_ok():
+            return False, tr(
+                'SciPy was installed, but it changed the installed NumPy version to one that '
+                'is incompatible with this QGIS\'s compiled GDAL bindings (a NumPy ABI '
+                'mismatch). Please install a matching SciPy/NumPy pair manually (e.g. via '
+                'conda or your OS package manager) instead.\n\npip output:\n{}'
+            ).format(output)
+
+        return True, ''
