@@ -29,6 +29,11 @@ Porting the code to QGIS 4 / Qt6  was not easy, because `WidgetWrapper` has been
 using it crashes QGIS-Qt6-builds on Windows. I completely rewrote the UI,
 creating my own dialog by subclassing `QgsProcessingAlgorithmDialogBase`. 
 
+QGIS 4.2 then removed `QgsProcessingAlgorithmDialogBase` entirely, breaking the plugin again
+(issue #10). Since its replacement, `QgsProcessingAlgorithmWidgetBase`, is only available on
+QGIS >= 4.2 (not on any QGIS 3.x release), this version (2.2, this branch) is capped at
+`qgisMaximumVersion=4.0`. QGIS >= 4.2 users should use version 2.3 or later instead.
+
 ## Installation
 The plugin can be installed with "manage and install plugins" in QGIS. Eventually, in the settings of "install plugins", the checkbox "Show also experimental plugins" must be checked.
 
@@ -111,6 +116,9 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 
 ## Changelog
 
+### 2.2 (09/2026, QGIS 3.22-4.0)
+- Cap supported QGIS version at 4.0: QGIS 4.2 removed `QgsProcessingAlgorithmDialogBase`, which this plugin's processing dialog relies on, breaking it on QGIS >= 4.2 (issue #10). For QGIS >= 4.2, use version 2.3 or later instead (ported to the replacement class, `QgsProcessingAlgorithmWidgetBase`).
+- The automatic SciPy installer now preserves whichever NumPy version the installed GDAL bindings already work with (which may be 1.x or 2.x, depending on the QGIS distribution) instead of blindly installing the latest SciPy/NumPy, which could otherwise silently break GDAL's NumPy support with an ABI mismatch. Failures now also show the actual pip error, not just a generic message.
 ### 2.1 (06/2026)
 - Remove old and unused plugin builder scripts that where reported as security vulerability
 ### 2.0 (03/2026)

@@ -5,9 +5,9 @@
 [general]
 name=SciPy Filters
 qgisMinimumVersion=3.22
-qgisMaximumVersion=4.99
+qgisMaximumVersion=4.0
 description=Filter collection implemented with SciPy
-version=2.1
+version=2.2
 author=Florian Neukirchen
 email=mail@riannek.de
 
@@ -41,7 +41,10 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=2.1
+changelog=2.2
+    - Cap supported QGIS version at 4.0: QGIS 4.2 removed QgsProcessingAlgorithmDialogBase, which this plugin's processing dialog relies on, breaking it on QGIS >= 4.2 (issue #10). For QGIS >= 4.2, use version 2.3 or later instead (ported to the replacement class, QgsProcessingAlgorithmWidgetBase).
+    - Make the automatic SciPy installer NumPy-ABI-aware: it now preserves whichever NumPy version the installed GDAL bindings already work with (which may be 1.x or 2.x) instead of blindly installing latest SciPy/NumPy, and shows the actual pip failure output if installation fails.
+    2.1
     - Remove old and unused plugin builder scripts that where reported as security vulerability
     2.0
     - Support QGIS 4.x
