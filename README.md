@@ -22,6 +22,12 @@ Python users get `helpers.RasterWizard` to quickly get the data of a raster laye
 - Source code: [https://github.com/florianneukirchen/scipy_filters/](https://github.com/florianneukirchen/scipy_filters/)
 - Bug tracker: [https://github.com/florianneukirchen/scipy_filters/issues](https://github.com/florianneukirchen/scipy_filters/issues)
 
+## Branches / QGIS version support
+
+This branch (`main`) targets **QGIS >= 4.2** (plugin version 2.3+). For QGIS 3.x up to
+4.0/4.1, use the [`qgis3` branch](https://github.com/florianneukirchen/scipy_filters/tree/qgis3)
+(plugin version 2.2) instead - QGIS 4.2 removed an API this plugin depends on, so one
+codebase can't support both ranges. See "Note on QGIS 4 / Qt6" below for why.
 
 ## Note on QGIS 4 / Qt6
 
@@ -31,9 +37,9 @@ creating my own dialog by subclassing `QgsProcessingAlgorithmDialogBase`.
 
 QGIS 4.2 then removed `QgsProcessingAlgorithmDialogBase` entirely, breaking the plugin again
 (issue #10). Since its replacement, `QgsProcessingAlgorithmWidgetBase`, is only available on
-QGIS >= 4.2 (not on any QGIS 3.x release), this is maintained as a separate plugin version
-(2.3+, `qgis4` branch) that only supports QGIS >= 4.2. QGIS 3.x (and 4.0/4.1) users should
-stay on version 2.2 instead (`qgisMaximumVersion=4.0` there).
+QGIS >= 4.2 (not on any QGIS 3.x release), this branch (version 2.3+) only supports
+QGIS >= 4.2. QGIS 3.x (and 4.0/4.1) users should use the `qgis3` branch / version 2.2 instead
+(`qgisMaximumVersion=4.0` there).
 
 QGIS's modern replacement for building custom Processing parameter widgets
 (`QgsAbstractProcessingParameterWidgetWrapper`/`QgsProcessingParameterWidgetFactoryInterface`)
