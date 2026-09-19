@@ -32,7 +32,15 @@ creating my own dialog by subclassing `QgsProcessingAlgorithmDialogBase`.
 QGIS 4.2 then removed `QgsProcessingAlgorithmDialogBase` entirely, breaking the plugin again
 (issue #10). Since its replacement, `QgsProcessingAlgorithmWidgetBase`, is only available on
 QGIS >= 4.2 (not on any QGIS 3.x release), this is maintained as a separate plugin version
-(2.2+, `qgis4` branch) that only supports QGIS >= 4.2. QGIS 3.x users should stay on version 2.1.
+(2.3+, `qgis4` branch) that only supports QGIS >= 4.2. QGIS 3.x (and 4.0/4.1) users should
+stay on version 2.2 instead (`qgisMaximumVersion=4.0` there).
+
+QGIS's modern replacement for building custom Processing parameter widgets
+(`QgsAbstractProcessingParameterWidgetWrapper`/`QgsProcessingParameterWidgetFactoryInterface`)
+would let QGIS build most of the dialog again instead of this plugin doing it by hand, but is
+currently unusable from Python due to an upstream bug
+([qgis/QGIS#67401](https://github.com/qgis/QGIS/issues/67401)) - see the comment on
+`ScipyProcessingDialog` in `ui/scipy_processing_dialog.py` for details.
 
 ## Installation
 The plugin can be installed with "manage and install plugins" in QGIS. Eventually, in the settings of "install plugins", the checkbox "Show also experimental plugins" must be checked.
@@ -116,9 +124,10 @@ wizard.crs     # CRS as QgsCoordinateReferenceSystem
 
 ## Changelog
 
-### 2.2 (09/2026, QGIS 4.2+ only)
+### 2.3 (09/2026, QGIS 4.2+ only)
 - Fix startup crash on QGIS >= 4.2 (`ImportError: cannot import name 'QgsProcessingAlgorithmDialogBase'`, see issue #10): QGIS 4.2 removed that class, the custom processing dialog is now ported to its replacement, `QgsProcessingAlgorithmWidgetBase`.
-- This version requires QGIS >= 4.2. QGIS 3.x (and QGIS 4.0/4.1) users should stay on version 2.1.
+- This version requires QGIS >= 4.2. QGIS 3.x (and QGIS 4.0/4.1) users should stay on version 2.2 instead.
+- Fix output raster getting the wrong CRS in some cases, unrelated to the actual input CRS.
 - The automatic SciPy installer now preserves whichever NumPy version the installed GDAL bindings already work with (which may be 1.x or 2.x, depending on the QGIS distribution) instead of blindly installing the latest SciPy/NumPy, which could otherwise silently break GDAL's NumPy support with an ABI mismatch. Failures now also show the actual pip error, not just a generic message.
 ### 2.1 (06/2026)
 - Remove old and unused plugin builder scripts that where reported as security vulerability

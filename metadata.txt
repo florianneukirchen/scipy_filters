@@ -7,7 +7,7 @@ name=SciPy Filters
 qgisMinimumVersion=4.2
 qgisMaximumVersion=4.99
 description=Filter collection implemented with SciPy
-version=2.2
+version=2.3
 author=Florian Neukirchen
 email=mail@riannek.de
 
@@ -41,8 +41,9 @@ repository=https://github.com/florianneukirchen/scipy_filters
 
 hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
-changelog=2.2
-    - QGIS 4.2+ only: fix startup crash (ImportError: QgsProcessingAlgorithmDialogBase was removed from QGIS in 4.2), port custom processing dialog to QgsProcessingAlgorithmWidgetBase. See issue #10. For QGIS < 4.2, use version 2.1.
+changelog=2.3
+    - QGIS 4.2+ only: fix startup crash (ImportError: QgsProcessingAlgorithmDialogBase was removed from QGIS in 4.2), port custom processing dialog to QgsProcessingAlgorithmWidgetBase. See issue #10. For QGIS < 4.2, use version 2.2 instead.
+    - Fix output raster getting the wrong CRS in some cases (unrelated to the actual input CRS).
     - Make the automatic SciPy installer NumPy-ABI-aware: it now preserves whichever NumPy version the installed GDAL bindings already work with (which may be 1.x or 2.x) instead of blindly installing latest SciPy/NumPy, and shows the actual pip failure output if installation fails.
     2.1
     - Remove old and unused plugin builder scripts that where reported as security vulerability
