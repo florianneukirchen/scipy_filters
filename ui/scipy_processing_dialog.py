@@ -443,8 +443,8 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
                     history_details["log"] = feedback.htmlLog()
                     from qgis.gui import QgsGui
                     QgsGui.historyProviderRegistry().updateEntry(self.history_log_id, history_details)
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(f"Failed to update history log entry: {e}")
 
             self.setResults(results)
             self.setExecuted(True)
@@ -466,8 +466,8 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
             self.runAsBatchButton.setEnabled(True)
             try:
                 self.resetGui()
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"Failed to reset dialog GUI after run: {e}")
 
         task.executed.connect(on_complete)
         self.setCurrentTask(task)

@@ -135,7 +135,10 @@ class SciPyFiltersPlugin(object):
         """
         import subprocess
         try:
-            result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+            # args is always built by this file's own callers from
+            # sys.executable plus fixed literals ('-m', 'pip', 'install',
+            # 'ensurepip', 'scipy', ...) - never from user input.
+            result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)  # nosec B603
         except Exception as e:
             return False, str(e)
         output = (result.stdout or '') + (result.stderr or '')
