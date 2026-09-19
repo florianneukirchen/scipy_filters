@@ -1,14 +1,16 @@
 from qgis.gui import (
     # QgsProcessingAlgorithmDialogBase was removed in QGIS 4.2; this branch
     # targets QGIS 4.x only and uses its replacement,
-    # QgsProcessingAlgorithmWidgetBase, directly (see the qgis3 / main branch
-    # for the QGIS 3.x line). It's a QWidget (not QDialog) subclass but
-    # exposes the same API surface we rely on below: setAlgorithm/
-    # setMainWidget, buttonBox()/cancelButton()/messageBar(), createFeedback(),
-    # showLog(), setCurrentTask(), setResults()/setExecuted()/
-    # setExecutedAnyResult(), resetGui(), updateRunButtonVisibility(), and the
-    # algorithmAboutToRun/algorithmFinished signals.
-    QgsProcessingAlgorithmWidgetBase as QgsProcessingAlgorithmDialogBase,
+    # QgsProcessingAlgorithmWidgetBase (see the qgis3 / main branch for the
+    # QGIS 3.x line, which still uses the old class directly - no alias, to
+    # avoid the confusion of a "DialogBase"-named import actually being a
+    # QWidget). It exposes the same API surface we rely on below:
+    # setAlgorithm/setMainWidget, buttonBox()/cancelButton()/messageBar(),
+    # createFeedback(), showLog(), setCurrentTask(), setResults()/
+    # setExecuted()/setExecutedAnyResult(), resetGui(),
+    # updateRunButtonVisibility(), and the algorithmAboutToRun/
+    # algorithmFinished signals.
+    QgsProcessingAlgorithmWidgetBase,
     QgsPanelWidget,
     QgsMapLayerComboBox,
     QgsProcessingLayerOutputDestinationWidget,
@@ -53,10 +55,35 @@ from scipy_filters.ui.origin_widget import SciPyParameterOrigin, OriginWidget
 from datetime import datetime
 
 
-class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
+class ScipyProcessingDialog(QgsProcessingAlgorithmWidgetBase):
     """
     Custom dialog that dynamically generates widgets
     for each algorithm parameter.
+
+    This hand-built approach (building a widget for every parameter by hand,
+    see createWidgetForParameter()/getParameters() below) remains necessary
+    on QGIS 4.x, even though QGIS's modern per-parameter widget API
+    (QgsAbstractProcessingParameterWidgetWrapper +
+    QgsProcessingParameterWidgetFactoryInterface, registered via
+    QgsGui.processingGuiRegistry().addParameterWidgetFactory()) would let
+    QGIS's own standard AlgorithmWidget/ParametersPanel build most of this
+    dialog for us instead, with only FOOTPRINT/ORIGIN/SIZES needing custom
+    widgets. That modern API is currently unusable from pure Python: a
+    Python subclass of QgsAbstractProcessingParameterWidgetWrapper obtained
+    through QgsProcessingGuiRegistry.createParameterWidgetWrapper() (the
+    only code path QGIS's own ParametersPanel.py/BatchPanel.py use) gets
+    silently type-erased back to the plain C++ base class by SIP, so the
+    overridden createWidget()/setWidgetValue()/widgetValue() are never
+    called and the widget just doesn't appear - confirmed reproducible on
+    both QGIS 3.44 LTR and QGIS 4.3.0-dev (master) as of 2026-09.
+    See https://github.com/qgis/QGIS/issues/67401. There is no usable
+    fallback on QGIS >= 4.0 either: the old pure-Python stopgap
+    (processing.gui.wrappers.WidgetWrapperFactory, keyed off
+    param.metadata()['widget_wrapper']['class']) bypasses the broken C++
+    registry entirely and does work, but the whole
+    python/plugins/processing/gui/wrappers.py module it lives in has been
+    removed from QGIS >= 4.0. Once #67401 is fixed upstream, most of this
+    dialog can likely be replaced by registered parameter widget factories.
     """
 
     def __init__(self, alg, parent=None):
