@@ -66,6 +66,10 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
         self._sizewidget = None
         self.context = QgsProcessingContext()
+        # Without a project, parameterAsRasterLayer() etc. can't resolve a
+        # layer id back to the actual loaded layer (needed since
+        # getParameters() now passes layer.id(), not a bare path).
+        self.context.setProject(QgsProject.instance())
         self.panel = QgsPanelWidget(self)
         self.layout = QVBoxLayout()
         self.panel.setLayout(self.layout)
@@ -272,10 +276,18 @@ class ScipyProcessingDialog(QgsProcessingAlgorithmDialogBase):
 
             # Raster layer selector
             if isinstance(widget, QgsMapLayerComboBox):
-                # Use the layer's data source string; Processing algorithms
-                # accept that as the raster layer parameter value.
+                # Use the layer's id, not its data source path. A bare path
+                # forces parameterAsRasterLayer() to resolve/construct the
+                # layer itself using self.context (see __init__) rather than
+                # reusing the already-loaded, correctly-CRS-resolved project
+                # layer; on QGIS 4.2 that was observed to silently produce a
+                # layer with a wrong CRS (unrelated to the real input CRS),
+                # writing a plausible-looking but wrong CRS onto the
+                # algorithm's output regardless of the actual input. The
+                # layer id resolves back to the exact already-loaded layer
+                # instead, sidestepping the issue entirely.
                 layer = widget.currentLayer()
-                params[name] = layer.source() if layer is not None else None
+                params[name] = layer.id() if layer is not None else None
                 continue
 
             # Enum

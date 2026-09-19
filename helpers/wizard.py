@@ -263,10 +263,15 @@ class RasterWizard():
         """
         Get the CRS of the layer as WKT string.
 
+        This is the QGIS layer's CRS (:py:attr:`.crs`), not necessarily what is
+        embedded in the source file: if the file has no or a wrong CRS and the
+        user assigned/overrode it in QGIS, that only exists in QGIS's layer
+        metadata, not in the file itself.
+
         :return: CRS as WKT string
         :rtype: str
         """
-        return self._ds.GetProjection()
+        return self._layer.crs().toWkt()
 
     @property
     def crs(self):
@@ -522,7 +527,9 @@ class RasterWizard():
             raise OSError("Failed to create output GDAL dataset")
 
         dst_ds.SetGeoTransform(self.geotransform)
-        dst_ds.SetProjection(self._ds.GetProjection())
+        # Use the QGIS layer's CRS, not necessarily the file's own embedded
+        # one - see crs_wkt.
+        dst_ds.SetProjection(self._layer.crs().toWkt())
 
         self._dst_ds = dst_ds
 

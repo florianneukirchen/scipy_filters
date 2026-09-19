@@ -401,7 +401,13 @@ class SciPyAlgorithm(QgsProcessingAlgorithm):
             eType = self._outdtype)
         
         self.out_ds.SetGeoTransform(self.ds.GetGeoTransform())
-        self.out_ds.SetProjection(self.ds.GetProjection())
+        # Use the QGIS layer's CRS (self.inputlayer.crs()), not the raw file's
+        # embedded projection (self.ds.GetProjection()): if the source file has
+        # no or a wrong CRS and the user assigned/overrode it in QGIS, that
+        # override only exists in QGIS's own layer metadata, not in the file
+        # GDAL just opened, so reading it from the file would silently write a
+        # wrong CRS onto the output (correct pixels, wrong location on Earth).
+        self.out_ds.SetProjection(self.inputlayer.crs().toWkt())
 
         # output no data value
         self._nodata = self.ds.GetRasterBand(1).GetNoDataValue()
